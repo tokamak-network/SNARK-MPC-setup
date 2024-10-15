@@ -93,6 +93,73 @@ fn power_pairs<C: SWCurveConfig>(v: &[Affine<C>]) -> (Affine<C>, Affine<C>) {
     merge_pairs(&v[0..(v.len() - 1)], &v[1..])
 }
 
+////////////////////////
+//// 2nd Week ////
+////////////////////////
+//----------------------------------------------
+use ark_serialize::CanonicalSerialize;
+use ark_serialize::*;
+use blake2::{Blake2b512, Digest};
+use generic_array::GenericArray;
+use std::fs::OpenOptions;
+use std::io::BufWriter;
+use typenum::consts::U64;
+
+/// Compute BLAKE2b("")
+pub fn blank_hash() -> GenericArray<u8, U64> {
+    Blake2b512::new().finalize()
+}
+
+/// The accumulator supports circuits with 2^21 multiplication gates.
+const TAU_POWERS_LENGTH: usize = 1 << 5;
+/// More tau powers are needed in G1 because the Groth16 H query
+/// includes terms of the form tau^i * (tau^m - 1) = tau^(i+m) - tau^i
+/// where the largest i = m - 2, requiring the computation of tau^(2m - 2)
+/// and thus giving us a vector length of 2^22 - 1.
+const TAU_POWERS_G1_LENGTH: usize = (TAU_POWERS_LENGTH << 1) - 1;
+
+/// The `Accumulator` is an object that participants of the ceremony contribute
+/// randomness to. This object contains powers of trapdoor `tau` in G1 and in G2 over
+/// fixed generators, and additionally in G1 over two other generators of exponents
+/// `alpha` and `beta` over those fixed generators. In other words:
+///
+/// * (τ, τ<sup>2</sup>, ..., τ<sup>2<sup>22</sup> - 2</sup>, α, ατ, ατ<sup>2</sup>, ..., ατ<sup>2<sup>21</sup> - 1</sup>, β, βτ, βτ<sup>2</sup>, ..., βτ<sup>2<sup>21</sup> - 1</sup>)<sub>1</sub>
+/// * (β, τ, τ<sup>2</sup>, ..., τ<sup>2<sup>21</sup> - 1</sup>)<sub>2</sub>
+#[derive(PartialEq, Eq, Clone, CanonicalSerialize, CanonicalDeserialize)]
+pub struct Accumulator {
+    /// tau^0, tau^1, tau^2, ..., tau^{TAU_POWERS_G1_LENGTH - 1}
+    pub tau_powers_g1: Vec<G1Affine>,
+    /// tau^0, tau^1, tau^2, ..., tau^{TAU_POWERS_LENGTH - 1}
+    pub tau_powers_g2: Vec<G2Affine>,
+    /// alpha * tau^0, alpha * tau^1, alpha * tau^2, ..., alpha * tau^{TAU_POWERS_LENGTH - 1}
+    pub alpha_tau_powers_g1: Vec<G1Affine>,
+    /// beta * tau^0, beta * tau^1, beta * tau^2, ..., beta * tau^{TAU_POWERS_LENGTH - 1}
+    pub beta_tau_powers_g1: Vec<G1Affine>,
+    /// beta
+    pub beta_g2: G2Affine,
+}
+
+impl Default for Accumulator {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
+impl Accumulator {
+    /// Constructs an "initial" accumulator with τ = 1, α = 1, β = 1.
+    pub fn new() -> Self {
+        Accumulator {
+            tau_powers_g1: vec![G1Affine::generator(); TAU_POWERS_G1_LENGTH],
+            tau_powers_g2: vec![G2Affine::generator(); TAU_POWERS_LENGTH],
+            alpha_tau_powers_g1: vec![G1Affine::generator(); TAU_POWERS_LENGTH],
+            beta_tau_powers_g1: vec![G1Affine::generator(); TAU_POWERS_LENGTH],
+            beta_g2: G2Affine::generator(),
+        }
+    }
+}
+
+//----------------------------------------------
+
 fn main() {
     println!("Starting the ceremmony...");
 
@@ -163,4 +230,27 @@ fn main() {
     // writeln!(file, "Power pairs result: {:?}", power_pairs_result)
     // .expect("Unable to write to file");
     writeln!(file, "Gx: {:?}", gx).expect("Unable to write to file");
+    ////////////////////////
+    //// 2nd Week ////
+    ////////////////////////
+    let writer = OpenOptions::new()
+        .read(false)
+        .write(true)
+        .create_new(true)
+        .open("challenge")
+        .expect("unable to create `./challenge`");
+
+    let mut writer = BufWriter::new(writer);
+
+    // Write a blank BLAKE2b hash:
+    writer
+        .write_all(blank_hash().as_slice())
+        .expect("unable to write blank hash to `./challenge`");
+
+    let acc = Accumulator::new();
+    acc.serialize_uncompressed(&mut writer)
+        .expect("unable to write fresh accumulator to `./challenge`");
+    writer.flush().expect("unable to flush accumulator to disk");
+
+    println!("Wrote a fresh accumulator to `./challenge`");
 }
