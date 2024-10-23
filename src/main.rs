@@ -47,7 +47,8 @@ impl<P: Pairing> Sizes<P> {
         + 64 // blake2b hash of previous contribution
     }
 
-    /// The "public key" is used to verify a contribution was correctly
+
+    ///// The "public key" is used to verify a contribution was correctly
     /// computed.
     pub fn public_key_size(&self) -> usize {
         PublicKey::default().uncompressed_size()
