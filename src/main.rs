@@ -132,7 +132,7 @@ fn power_pairs<C: SWCurveConfig>(v: &[Affine<C>]) -> (Affine<C>, Affine<C>) {
 }
 
 ////////////////////////
-//// 2nd Week ////
+//// 2nd Iteration ////
 ////////////////////////
 //----------------------------------------------
 use ark_serialize::CanonicalSerialize;
@@ -271,7 +271,7 @@ impl Accumulator {
 //----------------------------------------------
 //----------------------------------------------
 ////////////////////////
-//// 3rd Week ////
+//// 3rd Iteration ////
 ////////////////////////
 // use ark_mnt6_753::MNT6_753;
 use ark_serialize::{CanonicalDeserialize, Compress, Validate};
@@ -555,7 +555,7 @@ pub fn verify_transform(
 //----------------------------------------------
 //----------------------------------------------
 ////////////////////////
-//// 4th Week ////
+//// 4th iteration ////
 ////////////////////////
 ///
 ///
@@ -595,7 +595,7 @@ fn main() {
     let mut v = vec![];
     let x = Fr::rand(rng);
     let mut acc = Fr::one();
-    for _ in 0..33 {
+    for _ in 0..99 {
         v.push((G1Affine::generator() * acc).into_affine());
         acc *= x;
     }
@@ -639,7 +639,7 @@ fn main() {
     // .expect("Unable to write to file");
     writeln!(file, "Gx: {:?}", gx).expect("Unable to write to file");
     ////////////////////////
-    //// 2nd Week ////
+    //// 2nd Iteration ////
     ////////////////////////
     let writer = OpenOptions::new()
         .read(false)
@@ -663,7 +663,7 @@ fn main() {
     println!("Wrote a fresh accumulator to `./challenge`");
 
     ////////////////////////
-    //// 3rd Week ////
+    //// 3rd iteration ////
     ////////////////////////
     // Create an RNG based on a mixture of system randomness and user provided randomness
     let mut rng = {
@@ -809,7 +809,7 @@ fn main() {
     println!("\n");
 
     ////////////////////////
-    /////// 4th Week ////
+    /////// 4th Iteration ////
     ////////////////////////
     let mut rng = {
         use crypto::digest::Digest;
