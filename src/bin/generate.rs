@@ -132,7 +132,7 @@ fn power_pairs<C: SWCurveConfig>(v: &[Affine<C>]) -> (Affine<C>, Affine<C>) {
 }
 
 ////////////////////////
-//// 2nd Iteration ////
+//// 2nd iteration ////
 ////////////////////////
 //----------------------------------------------
 use ark_serialize::CanonicalSerialize;
@@ -271,7 +271,7 @@ impl Accumulator {
 //----------------------------------------------
 //----------------------------------------------
 ////////////////////////
-//// 3rd Iteration ////
+//// 3rd iteration ////
 ////////////////////////
 // use ark_mnt6_753::MNT6_753;
 use ark_serialize::{CanonicalDeserialize, Compress, Validate};
@@ -595,7 +595,7 @@ fn main() {
     let mut v = vec![];
     let x = Fr::rand(rng);
     let mut acc = Fr::one();
-    for _ in 0..99 {
+    for _ in 0..33 {
         v.push((G1Affine::generator() * acc).into_affine());
         acc *= x;
     }
@@ -639,7 +639,7 @@ fn main() {
     // .expect("Unable to write to file");
     writeln!(file, "Gx: {:?}", gx).expect("Unable to write to file");
     ////////////////////////
-    //// 2nd Iteration ////
+    //// 2nd iteration ////
     ////////////////////////
     let writer = OpenOptions::new()
         .read(false)
@@ -809,7 +809,7 @@ fn main() {
     println!("\n");
 
     ////////////////////////
-    /////// 4th Iteration ////
+    /////// 4th iteration: Random Beacon ////
     ////////////////////////
     let mut rng = {
         use crypto::digest::Digest;
@@ -828,7 +828,7 @@ fn main() {
             // Print 1024 of the interstitial states
             // so that verification can be
             // parallelized
-            if i % (1u64 << (N - 8)) == 0 {
+            if i % (1u64 << (N - 10)) == 0 {
                 // if i % (1u64 << (N - 10)) == 0 {
                 print!("{}: ", i);
                 for b in cur_hash.iter() {
