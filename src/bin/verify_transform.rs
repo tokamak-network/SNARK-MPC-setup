@@ -4,7 +4,6 @@ use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Validate
 use ceremony::*;
 use std::fs::OpenOptions;
 use std::io::{BufReader, BufWriter, Read, Write};
-
 fn main() {
     let sizes = Sizes::<MNT6_753>::new();
 
