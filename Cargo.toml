@@ -1,31 +1,18 @@
 [package]
-name = "ceremony"
-version = "0.1.0"
+name = "phase2"
+version = "0.3.0"
 edition = "2021"
 
-# [[bin]]
-# name = "verify"
-# path = "src/verify.rs"
 
 [dependencies]
-ark-std = "0.4"
-ark-ff = "0.4"
-ark-ec = "0.4"
-ark-poly = "0.4"
-ark-mnt4-753 = "0.4"
-ark-mnt6-753 = "0.4"
-ark-serialize = { version = "0.4", features = ["derive"] }
-rand = "0.8"
-rayon = "1.7"
-num_cpus = "1.16"
-num-traits = "0.2"
-#2nd Week
-blake2 = "0.10"
-generic-array = "0.14"
-typenum = "1.16"
-#3rd Week
+pairing = "0.23.0"
+rand = "0.8.5"
+bellman = "0.14.0"
+bls12_381 = "0.8.0"
+ff = { version = "0.13" }
+group = "0.13.0"
 rand_chacha = "0.3.1"
-
-#4th Week
-hex-literal = "0.4"
-rust-crypto = "0.2"
+byteorder = "1"
+num_cpus = "1"
+crossbeam = "0.3"
+blake2-rfc = "0.2"
