@@ -152,8 +152,7 @@
 //! ```
 //!
 //! The first time you try this, it will try to read a file like
-//! `phase1radix2m2` from the current directory. You need to grab
-//! that from the [Powers of Tau](https://lists.z.cash.foundation/pipermail/zapps-wg/2018/000362.html).
+//! `phase1radix2m2` from the current directory.
 //!
 //! These parameters are not safe to use; false proofs can be
 //! created for them. Let's contribute some randomness to these
@@ -309,7 +308,7 @@ impl<Fr: PrimeField> ConstraintSystem<Fr> for KeypairAssembly<Fr> {
         NR: Into<String>,
         N: FnOnce() -> NR,
     {
-        // Do nothing; we don't care about namespaces in this context.
+        // We don't care about namespaces in this context.
     }
 
     fn pop_namespace(&mut self) {
