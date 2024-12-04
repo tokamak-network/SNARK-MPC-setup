@@ -557,9 +557,8 @@ pub fn verify_transform(
 ////////////////////////
 //// 4th iteration ////
 ////////////////////////
-///
-///
-///
+/// 
+/// 
 use ark_mnt6_753::MNT6_753;
 // use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Validate};
 use hex_literal::hex;
