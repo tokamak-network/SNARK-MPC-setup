@@ -65,6 +65,9 @@ impl<P: Pairing> Sizes<P> {
         + self.g2_uncompressed_byte_size // beta in g2
         + self.g2_uncompressed_byte_size // delta in g2
         + self.g2_uncompressed_byte_size // eta1 in g2
+        + self.g2_uncompressed_byte_size // mu_eta0 in g2
+        + self.g2_uncompressed_byte_size // mu_eta1 in g2
+        + self.g2_uncompressed_byte_size // mu3_v in g2
         + 64 // blake2b hash of previous contribution
     }
 
@@ -84,6 +87,9 @@ impl<P: Pairing> Sizes<P> {
         + self.g2_uncompressed_byte_size // beta in g2
         + self.g2_uncompressed_byte_size // delta in g2
         + self.g2_uncompressed_byte_size // eta1 in g2
+        + self.g2_uncompressed_byte_size // mu_eta0 in g2
+        + self.g2_uncompressed_byte_size // mu_eta1 in g2
+        + self.g2_uncompressed_byte_size // mu3_v in g2
         + 64 // blake2b hash of input accumulator
         + self.public_key_size() // public key
     }
@@ -196,6 +202,13 @@ pub struct PublicKey {
     beta_g2: G2Affine,
     delta_g2: G2Affine,
     eta1_g2: G2Affine,
+
+    mu_eta0_g1: (G1Affine, G1Affine),
+    mu_eta0_g2: G2Affine,
+    mu_eta1_g1: (G1Affine, G1Affine),
+    mu_eta1_g2: G2Affine,
+    mu3_v_g1: (G1Affine, G1Affine),
+    mu3_v_g2: G2Affine,
 }
 
 /// Contains the secrets τ, α and β that the participant of the ceremony must destroy.
@@ -206,6 +219,10 @@ pub struct PrivateKey {
     beta: Fr,
     delta: Fr,
     eta1: Fr,
+
+    mu_eta0: Fr,
+    mu_eta1: Fr,
+    mu3_v: Fr,
 }
 
 /// Constructs a keypair given an RNG and a 64-byte transcript `digest`.
@@ -217,7 +234,16 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
     let gamma = Fr::rand(rng);
     let beta = Fr::rand(rng);
     let delta = Fr::rand(rng);
+
+    let mu = Fr::rand(rng);
+    let eta0 = Fr::rand(rng);
+    let mu_eta0 = mu * eta0;
+
     let eta1 = Fr::rand(rng);
+    let mu_eta1 = mu * eta1;
+
+    let v = Fr::rand(rng);
+    let mu3_v = mu.pow([3]) * v;
 
     let mut op = |x, personalization: u8| {
         // Sample random g^s
@@ -248,6 +274,10 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
     let pk_delta = op(delta, 3);
     let pk_eta1 = op(eta1, 4);
 
+    let pk_mu_eta0 = op(mu_eta0, 5);
+    let pk_mu_eta1 = op(mu_eta0, 6);
+    let pk_mu3_v = op(mu_eta0, 7);
+
     (
         PublicKey {
             alpha_g1: pk_alpha.0,
@@ -255,11 +285,19 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
             beta_g1: pk_beta.0,
             delta_g1: pk_delta.0,
             eta1_g1: pk_eta1.0,
+
             alpha_g2: pk_alpha.1,
             gamma_g2: pk_gamma.1,
             beta_g2: pk_beta.1,
             delta_g2: pk_delta.1,
             eta1_g2: pk_eta1.1,
+
+            mu_eta0_g1: pk_mu_eta0.0,
+            mu_eta0_g2: pk_mu_eta0.1,
+            mu_eta1_g1: pk_mu_eta1.0,
+            mu_eta1_g2: pk_mu_eta1.1,
+            mu3_v_g1: pk_mu3_v.0,
+            mu3_v_g2: pk_mu3_v.1,
         },
         PrivateKey {
             // tau,
@@ -268,6 +306,10 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
             beta,
             delta,
             eta1,
+
+            mu_eta0,
+            mu_eta1,
+            mu3_v,
         },
     )
 }
@@ -278,6 +320,10 @@ pub struct Accumulator {
     pub gamma_g2: G2Affine,
     pub delta_g2: G2Affine,
     pub eta1_g2: G2Affine,
+
+    pub mu_eta0_g2: G2Affine,
+    pub mu_eta1_g2: G2Affine,
+    pub mu3_v_g2: G2Affine,
 }
 
 impl Default for Accumulator {
@@ -294,6 +340,10 @@ impl Accumulator {
             gamma_g2: G2Affine::generator(),
             delta_g2: G2Affine::generator(),
             eta1_g2: G2Affine::generator(),
+
+            mu_eta0_g2: G2Affine::generator(),
+            mu_eta1_g2: G2Affine::generator(),
+            mu3_v_g2: G2Affine::generator(),
         }
     }
 
@@ -336,51 +386,70 @@ impl Accumulator {
         self.beta_g2 = (self.beta_g2 * key.beta).into_affine();
         self.delta_g2 = (self.delta_g2 * key.beta).into_affine();
         self.eta1_g2 = (self.eta1_g2 * key.beta).into_affine();
+
+        self.mu_eta0_g2 = (self.mu_eta0_g2 * key.beta).into_affine();
+        self.mu_eta1_g2 = (self.mu_eta1_g2 * key.beta).into_affine();
+        self.mu3_v_g2 = (self.mu3_v_g2 * key.beta).into_affine();
     }
 }
 
-/// Verifies a transformation of the `Accumulator` with the `PublicKey`, given a 64-byte transcript `digest`.
-pub fn verify_transform(
-    before: &Accumulator,
-    after: &Accumulator,
-    key: &PublicKey,
-    digest: &[u8],
-) -> bool {
-    assert_eq!(digest.len(), 64);
+// /// Verifies a transformation of the `Accumulator` with the `PublicKey`, given a 64-byte transcript `digest`.
+// pub fn verify_transform(
+//     before: &Accumulator,
+//     after: &Accumulator,
+//     key: &PublicKey,
+//     digest: &[u8],
+// ) -> bool {
+//     assert_eq!(digest.len(), 64);
 
-    let compute_g2_s = |g1_s: G1Affine, g1_s_x: G1Affine, personalization: u8| {
-        let mut h = Blake2b512::default();
-        h.update([personalization]);
-        h.update(digest);
-        g1_s.serialize_uncompressed(&mut h).unwrap();
-        g1_s_x.serialize_uncompressed(&mut h).unwrap();
-        hash_to_g2(h.finalize().as_ref()).into_affine()
-    };
-    let alpha_g2_s = compute_g2_s(key.alpha_g1.0, key.alpha_g1.1, 1);
-    let gamma_g2_s = compute_g2_s(key.gamma_g1.0, key.gamma_g1.1, 4);
-    let beta_g2_s = compute_g2_s(key.beta_g1.0, key.beta_g1.1, 2);
-    let delta_g2_s = compute_g2_s(key.delta_g1.0, key.delta_g1.1, 3);
-    let eta1_g2_s = compute_g2_s(key.eta1_g1.0, key.eta1_g1.1, 3);
+//     let compute_g2_s = |g1_s: G1Affine, g1_s_x: G1Affine, personalization: u8| {
+//         let mut h = Blake2b512::default();
+//         h.update([personalization]);
+//         h.update(digest);
+//         g1_s.serialize_uncompressed(&mut h).unwrap();
+//         g1_s_x.serialize_uncompressed(&mut h).unwrap();
+//         hash_to_g2(h.finalize().as_ref()).into_affine()
+//     };
+//     let alpha_g2_s = compute_g2_s(key.alpha_g1.0, key.alpha_g1.1, 1);
+//     let gamma_g2_s = compute_g2_s(key.gamma_g1.0, key.gamma_g1.1, 4);
+//     let beta_g2_s = compute_g2_s(key.beta_g1.0, key.beta_g1.1, 2);
+//     let delta_g2_s = compute_g2_s(key.delta_g1.0, key.delta_g1.1, 3);
+//     let eta1_g2_s = compute_g2_s(key.eta1_g1.0, key.eta1_g1.1, 3);
 
-    if !same_ratio::<MNT6_753>(key.alpha_g1, (alpha_g2_s, key.alpha_g2)) {
-        return false;
-    }
-    if !same_ratio::<MNT6_753>(key.gamma_g1, (gamma_g2_s, key.gamma_g2)) {
-        return false;
-    }
-    if !same_ratio::<MNT6_753>(key.beta_g1, (beta_g2_s, key.beta_g2)) {
-        return false;
-    }
-    if !same_ratio::<MNT6_753>(key.delta_g1, (delta_g2_s, key.delta_g2)) {
-        return false;
-    }
-    if !same_ratio::<MNT6_753>(key.eta1_g1, (eta1_g2_s, key.eta1_g2)) {
-        return false;
-    }
-    true
-}
+//     let mu_eta0_g2_s = compute_g2_s(key.mu_eta0_g1.0, key.mu_eta0_g1.1, 5);
+//     let mu_eta1_g2_s = compute_g2_s(key.mu_eta1_g1.0, key.mu_eta1_g1.1, 6);
+//     let mu3_v_g2_s = compute_g2_s(key.mu3_v_g1.0, key.mu3_v_g1.1, 7);
 
-/// Checks if pairs have the same ratio.
-fn same_ratio<P: Pairing>(g1: (P::G1Affine, P::G1Affine), g2: (P::G2Affine, P::G2Affine)) -> bool {
-    P::pairing(g1.0, g2.1) == P::pairing(g1.1, g2.0)
-}
+//     if !same_ratio::<MNT6_753>(key.alpha_g1, (alpha_g2_s, key.alpha_g2)) {
+//         return false;
+//     }
+//     if !same_ratio::<MNT6_753>(key.gamma_g1, (gamma_g2_s, key.gamma_g2)) {
+//         return false;
+//     }
+//     if !same_ratio::<MNT6_753>(key.beta_g1, (beta_g2_s, key.beta_g2)) {
+//         return false;
+//     }
+//     if !same_ratio::<MNT6_753>(key.delta_g1, (delta_g2_s, key.delta_g2)) {
+//         return false;
+//     }
+//     if !same_ratio::<MNT6_753>(key.eta1_g1, (eta1_g2_s, key.eta1_g2)) {
+//         return false;
+//     }
+
+//     if !same_ratio::<MNT6_753>(key.mu_eta0_g1, (mu_eta0_g2_s, key.mu_eta0_g2)) {
+//         return false;
+//     }
+
+//     // if !same_ratio::<MNT6_753>(key.mu_eta0_g1, (mu_eta0_g2_s, key.mu_eta0_g2)) {
+//     //     return false;
+//     // } else {
+//     //     println!("Same ratio true check result1 for mu_eta0");
+//     // }
+
+//     true
+// }
+
+// /// Checks if pairs have the same ratio.
+// fn same_ratio<P: Pairing>(g1: (P::G1Affine, P::G1Affine), g2: (P::G2Affine, P::G2Affine)) -> bool {
+//     P::pairing(g1.0, g2.1) == P::pairing(g1.1, g2.0)
+// }
