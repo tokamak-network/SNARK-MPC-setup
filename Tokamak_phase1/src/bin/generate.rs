@@ -137,8 +137,7 @@ fn main() {
         .write_all(current_accumulator_hash.as_ref())
         .expect("unable to write BLAKE2b hash of input accumulator");
 
-    // Write the transformed accumulator (in compressed form, to save upload bandwidth for disadvantaged
-    // players.)
+    // Write the transformed accumulator (in compressed form, to save upload bandwidth for disadvantaged players.)
     current_accumulator
         .serialize_compressed(&mut writer)
         .expect("unable to write transformed accumulator");
