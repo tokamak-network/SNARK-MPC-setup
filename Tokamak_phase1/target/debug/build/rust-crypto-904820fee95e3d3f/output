@@ -1,6 +1,6 @@
 TARGET = Some("x86_64-pc-windows-msvc")
 TARGET = Some("x86_64-pc-windows-msvc")
-running: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\ml64.exe" "/DX64" "/Fo" "C:\\Users\\Albtrs\\Downloads\\week10th_v4\\week10th_v4\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/util_helpers.o" "/c" "src/util_helpers.asm"
+running: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\ml64.exe" "/DX64" "/Fo" "D:\\MPC_ceremony\\SNARK-MPC-setup\\Tokamak_phase1\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/util_helpers.o" "/c" "src/util_helpers.asm"
 cargo:warning=Microsoft (R) Macro Assembler (x64) Version 14.16.27035.0
 cargo:warning=Copyright (C) Microsoft Corporation.  All rights reserved.
 cargo:warning=
@@ -8,14 +8,14 @@ cargo:warning=
 exit code: 0
 TARGET = Some("x86_64-pc-windows-msvc")
 TARGET = Some("x86_64-pc-windows-msvc")
-running: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\ml64.exe" "/DX64" "/Fo" "C:\\Users\\Albtrs\\Downloads\\week10th_v4\\week10th_v4\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/aesni_helpers.o" "/c" "src/aesni_helpers.asm"
+running: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\ml64.exe" "/DX64" "/Fo" "D:\\MPC_ceremony\\SNARK-MPC-setup\\Tokamak_phase1\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/aesni_helpers.o" "/c" "src/aesni_helpers.asm"
+ Assembling: src/aesni_helpers.asm
 cargo:warning=Microsoft (R) Macro Assembler (x64) Version 14.16.27035.0
 cargo:warning=Copyright (C) Microsoft Corporation.  All rights reserved.
 cargo:warning=
- Assembling: src/aesni_helpers.asm
 exit code: 0
 TARGET = Some("x86_64-pc-windows-msvc")
-running: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\lib.exe" "/OUT:C:\\Users\\Albtrs\\Downloads\\week10th_v4\\week10th_v4\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\lib_rust_crypto_helpers.a" "/nologo" "C:\\Users\\Albtrs\\Downloads\\week10th_v4\\week10th_v4\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/util_helpers.o" "C:\\Users\\Albtrs\\Downloads\\week10th_v4\\week10th_v4\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/aesni_helpers.o"
+running: "C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\lib.exe" "/OUT:D:\\MPC_ceremony\\SNARK-MPC-setup\\Tokamak_phase1\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\lib_rust_crypto_helpers.a" "/nologo" "D:\\MPC_ceremony\\SNARK-MPC-setup\\Tokamak_phase1\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/util_helpers.o" "D:\\MPC_ceremony\\SNARK-MPC-setup\\Tokamak_phase1\\target\\debug\\build\\rust-crypto-904820fee95e3d3f\\out\\src/aesni_helpers.o"
 exit code: 0
 TARGET = Some("x86_64-pc-windows-msvc")
 HOST = Some("x86_64-pc-windows-msvc")
@@ -27,4 +27,4 @@ CC_x86_64_pc_windows_msvc = None
 HOST_CC = None
 CC = None
 cargo:rustc-link-lib=static=_rust_crypto_helpers
-cargo:rustc-link-search=native=C:\Users\Albtrs\Downloads\week10th_v4\week10th_v4\target\debug\build\rust-crypto-904820fee95e3d3f\out
+cargo:rustc-link-search=native=D:\MPC_ceremony\SNARK-MPC-setup\Tokamak_phase1\target\debug\build\rust-crypto-904820fee95e3d3f\out

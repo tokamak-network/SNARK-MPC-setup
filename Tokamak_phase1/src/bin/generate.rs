@@ -8,6 +8,7 @@ use ark_mnt6_753::MNT6_753;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize, Compress, Validate};
 // use std::fs::OpenOptions;
 use std::io::{self, BufReader, BufWriter, Read, Write};
+
 fn main() {
     println!("-------------------------------------------------------------------");
     println!("...........The generation of the parameters is starting...........   ");
@@ -30,8 +31,10 @@ fn main() {
         .expect("unable to write fresh accumulator to `./challenge`");
     writer.flush().expect("unable to flush accumulator to disk");
 
+    println!("-------------------------------------------------------------------");
     println!("The parameters (alpha, gamma, beta, delta, eta1) are generated...  ");
-    println!("The parameters (mu_eta0, mu_eta1) are also generated.  ");
+    println!("The parameters (mu_eta0, mu_eta1) are generated, too.  ");
+    println!("The parameters (mu4_kappa, psi-1_z) are also generated.  ");
     println!("All parameters are written to `./challenge`");
     println!("-------------------------------------------------------------------");
 
@@ -79,7 +82,7 @@ fn main() {
         let metadata = reader
             .metadata()
             .expect("unable to get filesystem metadata for `./challenge`");
-        if (metadata.len() + 35752)
+        if (metadata.len()) + 40850
             != (Sizes::<MNT6_753>::new().accumulator_byte_size_with_hash() as u64)
         {
             panic!(
@@ -137,7 +140,8 @@ fn main() {
         .write_all(current_accumulator_hash.as_ref())
         .expect("unable to write BLAKE2b hash of input accumulator");
 
-    // Write the transformed accumulator (in compressed form, to save upload bandwidth for disadvantaged players.)
+    // Write the transformed accumulator (in compressed form, to save upload bandwidth for disadvantaged
+    // players.)
     current_accumulator
         .serialize_compressed(&mut writer)
         .expect("unable to write transformed accumulator");

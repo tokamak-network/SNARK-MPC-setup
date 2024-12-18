@@ -25,7 +25,9 @@ const TAU_POWERS_LENGTH: usize = 1 << 5;
 /// includes terms of the form tau^i * (tau^m - 1) = tau^(i+m) - tau^i
 /// where the largest i = m - 2, requiring the computation of tau^(2m - 2)
 /// and thus giving us a vector length of 2^22 - 1.
-const TAU_POWERS_G1_LENGTH: usize = (TAU_POWERS_LENGTH << 1) - 1;
+// const TAU_POWERS_G1_LENGTH: usize = (TAU_POWERS_LENGTH << 1) - 1;
+
+const TAU_POWERS_G1_LENGTH: usize = (TAU_POWERS_LENGTH << 2);
 
 pub struct Sizes<P: Pairing> {
     g1_uncompressed_byte_size: usize,
@@ -56,18 +58,14 @@ impl<P: Pairing> Sizes<P> {
 
     /// The size of the accumulator on disk.
     pub fn accumulator_byte_size_with_hash(&self) -> usize {
-        (TAU_POWERS_G1_LENGTH * self.g1_uncompressed_byte_size) // alpha in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // gamma in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // beta in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // delta in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // eta1 in g1
-        + 32 // lengths of vectors
-        + self.g2_uncompressed_byte_size // beta in g2
+        self.g2_uncompressed_byte_size // beta in g2
         + self.g2_uncompressed_byte_size // delta in g2
         + self.g2_uncompressed_byte_size // eta1 in g2
         + self.g2_uncompressed_byte_size // mu_eta0 in g2
         + self.g2_uncompressed_byte_size // mu_eta1 in g2
         + self.g2_uncompressed_byte_size // mu3_v in g2
+        +(TAU_POWERS_LENGTH * self.g2_uncompressed_byte_size) // g2 kappa powers
+        +(TAU_POWERS_G1_LENGTH * self.g1_uncompressed_byte_size) // g2 z powers
         + 64 // blake2b hash of previous contribution
     }
 
@@ -79,17 +77,14 @@ impl<P: Pairing> Sizes<P> {
 
     /// The size of the contribution on disk.
     pub fn contribution_byte_size(&self) -> usize {
-        (TAU_POWERS_G1_LENGTH * self.g1_uncompressed_byte_size) // alpha in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // gamma in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // beta in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // delta in g1
-        + (TAU_POWERS_LENGTH * self.g1_uncompressed_byte_size) // eta1 in g1
-        + self.g2_uncompressed_byte_size // beta in g2
+        self.g2_uncompressed_byte_size // beta in g2
         + self.g2_uncompressed_byte_size // delta in g2
         + self.g2_uncompressed_byte_size // eta1 in g2
         + self.g2_uncompressed_byte_size // mu_eta0 in g2
         + self.g2_uncompressed_byte_size // mu_eta1 in g2
         + self.g2_uncompressed_byte_size // mu3_v in g2
+        +(TAU_POWERS_LENGTH * self.g2_uncompressed_byte_size) // g2 kappa powers
+        +(TAU_POWERS_LENGTH * self.g2_uncompressed_byte_size) // g2 z powers
         + 64 // blake2b hash of input accumulator
         + self.public_key_size() // public key
     }
@@ -190,13 +185,12 @@ fn hash_to_g2(digest: &[u8]) -> G2Projective {
 /// It is necessary to verify `same_ratio`((s<sub>1</sub>, s<sub>1</sub><sup>x</sup>), (H(s<sub>1</sub><sup>x</sup>)<sub>2</sub>, H(s<sub>1</sub><sup>x</sup>)<sub>2</sub><sup>x</sup>)).
 #[derive(Default, PartialEq, Eq, CanonicalSerialize, CanonicalDeserialize)]
 pub struct PublicKey {
-    // tau_g1: (G1Affine, G1Affine),
     alpha_g1: (G1Affine, G1Affine),
     gamma_g1: (G1Affine, G1Affine),
     beta_g1: (G1Affine, G1Affine),
     delta_g1: (G1Affine, G1Affine),
     eta1_g1: (G1Affine, G1Affine),
-    // tau_g2: G2Affine,
+
     alpha_g2: G2Affine,
     gamma_g2: G2Affine,
     beta_g2: G2Affine,
@@ -209,11 +203,15 @@ pub struct PublicKey {
     mu_eta1_g2: G2Affine,
     mu3_v_g1: (G1Affine, G1Affine),
     mu3_v_g2: G2Affine,
+
+    mu4_kappa_g1: (G1Affine, G1Affine),
+    mu4_kappa_g2: G2Affine,
+    psi1_z_g1: (G1Affine, G1Affine),
+    psi1_z_g2: G2Affine,
 }
 
 /// Contains the secrets τ, α and β that the participant of the ceremony must destroy.
 pub struct PrivateKey {
-    // tau: Fr,
     alpha: Fr,
     gamma: Fr,
     beta: Fr,
@@ -223,6 +221,8 @@ pub struct PrivateKey {
     mu_eta0: Fr,
     mu_eta1: Fr,
     mu3_v: Fr,
+    mu4_kappa: Fr,
+    psi1_z: Fr,
 }
 
 /// Constructs a keypair given an RNG and a 64-byte transcript `digest`.
@@ -244,6 +244,20 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
 
     let v = Fr::rand(rng);
     let mu3_v = mu.pow([3]) * v;
+
+    let kappa = Fr::rand(rng);
+    let mu4_kappa = mu.pow([4]) * kappa;
+
+    let psi1 = Fr::rand(rng);
+    let z = Fr::rand(rng);
+    // let psi1_z = psi.pow([-1]) * z;
+
+    let psi1_inverse = psi1.inverse().unwrap(); //
+
+    // checking: psi1 * psi1_inverse == 1 olmalı
+    assert_eq!(psi1 * psi1_inverse, Fr::from(1u64));
+
+    let psi1_z = psi1_inverse * z;
 
     let mut op = |x, personalization: u8| {
         // Sample random g^s
@@ -275,9 +289,10 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
     let pk_eta1 = op(eta1, 4);
 
     let pk_mu_eta0 = op(mu_eta0, 5);
-    let pk_mu_eta1 = op(mu_eta0, 6);
-    let pk_mu3_v = op(mu_eta0, 7);
-
+    let pk_mu_eta1 = op(mu_eta1, 6);
+    let pk_mu3_v = op(mu3_v, 7);
+    let pk_mu4_kappa = op(mu4_kappa, 8);
+    let pk_psi1_z = op(psi1_z, 9);
     (
         PublicKey {
             alpha_g1: pk_alpha.0,
@@ -298,6 +313,12 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
             mu_eta1_g2: pk_mu_eta1.1,
             mu3_v_g1: pk_mu3_v.0,
             mu3_v_g2: pk_mu3_v.1,
+
+            mu4_kappa_g1: pk_mu4_kappa.0,
+            mu4_kappa_g2: pk_mu4_kappa.1,
+
+            psi1_z_g1: pk_mu4_kappa.0,
+            psi1_z_g2: pk_mu4_kappa.1,
         },
         PrivateKey {
             // tau,
@@ -310,6 +331,8 @@ pub fn keypair<R: Rng>(rng: &mut R, digest: &[u8]) -> (PublicKey, PrivateKey) {
             mu_eta0,
             mu_eta1,
             mu3_v,
+            mu4_kappa,
+            psi1_z,
         },
     )
 }
@@ -324,6 +347,8 @@ pub struct Accumulator {
     pub mu_eta0_g2: G2Affine,
     pub mu_eta1_g2: G2Affine,
     pub mu3_v_g2: G2Affine,
+    pub mu4_kappa_g2: G2Affine,
+    pub psi1_z_g2: G2Affine,
 }
 
 impl Default for Accumulator {
@@ -344,6 +369,8 @@ impl Accumulator {
             mu_eta0_g2: G2Affine::generator(),
             mu_eta1_g2: G2Affine::generator(),
             mu3_v_g2: G2Affine::generator(),
+            mu4_kappa_g2: G2Affine::generator(),
+            psi1_z_g2: G2Affine::generator(),
         }
     }
 
@@ -390,6 +417,9 @@ impl Accumulator {
         self.mu_eta0_g2 = (self.mu_eta0_g2 * key.beta).into_affine();
         self.mu_eta1_g2 = (self.mu_eta1_g2 * key.beta).into_affine();
         self.mu3_v_g2 = (self.mu3_v_g2 * key.beta).into_affine();
+
+        self.mu4_kappa_g2 = (self.mu4_kappa_g2 * key.beta).into_affine();
+        self.psi1_z_g2 = (self.psi1_z_g2 * key.beta).into_affine();
     }
 }
 
