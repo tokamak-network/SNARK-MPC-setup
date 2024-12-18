@@ -423,6 +423,7 @@ impl Accumulator {
     }
 }
 
+
 // /// Verifies a transformation of the `Accumulator` with the `PublicKey`, given a 64-byte transcript `digest`.
 // pub fn verify_transform(
 //     before: &Accumulator,

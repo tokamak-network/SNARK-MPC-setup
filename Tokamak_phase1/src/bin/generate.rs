@@ -111,8 +111,7 @@ fn main() {
 
     // Read the BLAKE2b hash of the previous contribution
     {
-        // We don't need to do anything with it, but it's important for
-        // the hash chain.
+        // We don't need to do anything with it, but it's important for the hash chain.
         let mut tmp = [0; 64];
         reader
             .read_exact(&mut tmp)
