@@ -1,0 +1,19 @@
+[package]
+name = "phase2"
+version = "0.2.2"
+description = "Library for performing MPCs for creating zk-SNARK public parameters"
+documentation = "https://docs.rs/phase2"
+
+
+[dependencies]
+rand = "0.4"
+bellman_ce = { path = "../bellman" }
+byteorder = "1"
+num_cpus = "1"
+crossbeam = "0.3"
+blake2-rfc = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+memmap = "0.7"
+num-bigint = "0.2.3"
+num-traits = "0.2.8"
