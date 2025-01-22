@@ -1,7 +1,7 @@
 # Data format of MPC files
-This document defines the format for the representation of the binary files generated during the MPC setup ceremony.   
+This document defines the format for the representation of the binary files produced in the MPC ceremony for zk-SNARK parameter generation.  
 
-## Format of the challenge file
+## A. Challenge file
 
 The file structure is shown below in bytes for **compressed** form.
 
@@ -86,12 +86,40 @@ When  `REQUIRED_POWER = 11` is chosen, it means n = 11, the table is shown as be
 | beta_g2 | 128 B |
 | **total** | **758.560 (bytes)** |
 
-## Format of the response file
+### Detailed Size Information
+
+`REQUIRED_POWER = 11`:
+
+1. **`TAU_POWERS_LENGTH`**
+    
+    TAU_POWERS_LENGTH = $2^{\text{REQUIRED-POWER}}=2^{11}=2048$
+    
+    This is the number of powers of τ used in **G2**, and for **alpha** and **beta** in **G1**.
+    
+2. **`TAU_POWERS_G1_LENGTH`**
+    
+    TAU_POWERS_G1_LENGTH $= 2*2^{\text{REQUIRED-POWER}}-1=2*2^{11}-1=4095$
+    
+    This is the number of powers of τ used in **G1**.
+    
+3. **`G1_POINT_SIZE`**
+    - **Compressed:** `32 bytes`
+    - **Uncompressed:** `64 bytes`
+    
+    This size determines how many bytes are used to store a point in the G1 group.
+    
+4. **`G2_POINT_SIZE`**
+    - **Compressed:** `64 bytes`
+    - **Uncompressed:** `128 bytes`
+    
+    This size determines how many bytes are used to store a point in the G2 group.
+
+## B. Response file
 
 The file structure is shown below in bytes for **compressed** form.
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 64        ┃ hash (BLAKE2b of the challenge file)     ┃
+┃ 64             ┃ hash (BLAKE2b of the challenge file)┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ (2ⁿ⁺¹ − 1) * L   ┃ tau_powers_g1                     ┃
@@ -119,7 +147,7 @@ The file structure is shown below in bytes for **uncompress** form.
 
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ 64       ┃ hash (BLAKE2b of the challenge file)      ┃
+┃ 64             ┃ hash (BLAKE2b of the challenge file)┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ (2ⁿ⁺¹ − 1) * 2L  ┃ tau_powers_g1                     ┃
@@ -141,28 +169,28 @@ The file structure is shown below in bytes for **uncompress** form.
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
 
-## Format of the `phase1radix2m10` file
+## C. `phase1radix2m10` file
 
 The file structure is shown below in bytes for **compressed** form.
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ $(2^{n-1})             ┃ `G1 Lagrange Coefficients`  ┃
+┃ (2ⁿ⁻¹) * 2L        ┃ G1 Lagrange Coefficients        ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ $(2^{n-1}) * 2L$       ┃ `G2 Lagrange Coefficients`  ┃
+┃ (2ⁿ⁻¹) * 2L        ┃ G2 Lagrange Coefficients        ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ $(2^{n-1}) * L$        ┃ `alpha Powers`              ┃
+┃ (2ⁿ⁻¹) * L         ┃ alpha Powers                    ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃ $(2^{n-1}) * L$        ┃ `beta Powers`               ┃
+┃ (2ⁿ⁻¹)* L          ┃ beta Powers                     ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
-┃$(2^{n-1} − 1) * L$     ┃ `H Query`                   ┃
+┃ (2ⁿ⁻¹ − 1) * L     ┃ H Query                         ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
 
-## Format of the mimc.params file
+## D. `mimc.params` file
 
 For compress form
 ````
