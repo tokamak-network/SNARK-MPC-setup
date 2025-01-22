@@ -51,7 +51,7 @@ The file structure is shown below in bytes for **uncompressed** form.
 
 ### Table presentation
 
-| No | Data  | Size (bytes) (**Compressed**) | Size (bytes) (Unc**ompressed**) | **Description** |
+| No | Data  | Size (bytes) (**Compressed**) | Size (bytes) (**Uncompressed**) | **Description** |
 | --- | --- | --- | --- | --- |
 | 1. | hash (BLAKE2b) | 64 | 64 | `HASH_SIZE` |
 | 2. | tau_powers_g1 | $(2^{n+1}-1)*L$ | $(2^{n+1}-1)*2L$ | `TAU_POWERS_G1_LENGTH × G1_POINT_SIZE` |
@@ -60,47 +60,24 @@ The file structure is shown below in bytes for **uncompressed** form.
 | 5. | beta_tau_powers_g1  | $(2^{n})*L$ | $(2^{n})*2L$ | `TAU_POWERS_LENGTH × G1_POINT_SIZE` |
 | 6. | beta_g2  | $2L$ | $4L$ | `G2_POINT_SIZE` |
 
-### Parameter Definitions
-
-`REQUIRED_POWER` $= n$
-
-**`TAU_POWERS_LENGTH` $= 2^n$**
-
-**`TAU_POWERS_G1_LENGTH`$= 2^{n+1}-1$**
-
-|  | **Compressed** | **Uncompressed** |
-| --- | --- | --- |
-| **`G1_POINT_SIZE`** | 32 B $(L)$ | 64 B $(2L)$ |
-| **`G2_POINT_SIZE`** | 64 B $(2L)$ | 128 B $(4L)$ |
 
 ### For example:
 
-When  the required power is chosen as $11$, it means $n = 11$, the table is shown as below for an uncompressed form.
+When the required power is chosen as $11$, it means $n = 11$ whe have the following example computations and sizes:
 
-| hash (BLAKE2b) | 64  B |
-| --- | --- |
-| tau_powers_g1 | 262.080  B |
-| tau_powers_g2 | 262.144 B |
-| alpha_tau_powers_g1 | 131.072 B |
-| beta_tau_powers_g1 | 131.072 B |
-| beta_g2 | 128 B |
-| **total** | **758.560 (bytes)** |
-
-#### Example with simple numbers
-
-`n = 11`:
-
-1. **`TAU_POWERS_LENGTH`**
+1. **`REQUIRED_POWER`** $= n$
+    $n = 11$
+2. **`TAU_POWERS_LENGTH` $= 2^n$**
     
-    TAU_POWERS_LENGTH = $2^{\text{n}}=2^{11}=2048$
+    TAU_POWERS_LENGTH = $2^{n} = 2^{11}=2048$
     
     This is the number of powers of τ used in **G2**, and for **alpha** and **beta** in **G1**.
     
-2. **`TAU_POWERS_G1_LENGTH`**
+2. **`TAU_POWERS_G1_LENGTH`$= 2^{n+1}-1$**
     
-    TAU_POWERS_G1_LENGTH = $2*2^{\text{n}}-1=2*2^{11}-1=4095$
+    TAU_POWERS_G1_LENGTH = $2\times2^{n}-1 = 2\times2^{11}-1 = 4095$
     
-    This is the number of powers of τ used in **$G1**.
+    This is the number of powers of τ used in **G1**.
     
 3. **`G1_POINT_SIZE`**
     - **Compressed:** `32 bytes`
@@ -113,6 +90,22 @@ When  the required power is chosen as $11$, it means $n = 11$, the table is show
     - **Uncompressed:** `128 bytes`
     
     This size determines how many bytes are used to store a point in the G2 group.
+
+|  | **Compressed** | **Uncompressed** |
+| --- | --- | --- |
+| **`G1_POINT_SIZE`** | 32 B $(L)$ | 64 B $(2L)$ |
+| **`G2_POINT_SIZE`** | 64 B $(2L)$ | 128 B $(4L)$ |
+
+The table is shown as below for an uncompressed form when $n = 11$.
+
+| hash (BLAKE2b) | 64  B |
+| --- | --- |
+| tau_powers_g1 | 262.080  B |
+| tau_powers_g2 | 262.144 B |
+| alpha_tau_powers_g1 | 131.072 B |
+| beta_tau_powers_g1 | 131.072 B |
+| beta_g2 | 128 B |
+| **total** | **758.560 (bytes)** |
 
 ## B. Response file
 
@@ -140,7 +133,6 @@ The file structure is shown below in bytes for **compressed** form.
 ┃ 18L       ┃ Public Key (Proof of contributor's secret key)  ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
-
 Public Key size  = (6 * G1_UNCOMPRESSED_BYTE_SIZE) + (3 * G2_UCOMPRESSED_BYTE_SIZE)
 
 The file structure is shown below in bytes for **uncompress** form.
@@ -196,17 +188,17 @@ The file structure for `mimc.params` file is shown below.
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ Verifying Key (VK)                                    ┃
-┃   L                  ┃ `Alpha (G1)`                   ┃
-┃   3L                 ┃ `Beta  (G1, G2)`               ┃
-┃   2L                 ┃ `Gamma (G2)`                   ┃
-┃   3L                 ┃ `Delta (G1, G2)`               ┃
-┃   num_inputs         ┃ `Input Coefficients (IC) in G1`┃
+┃   L                  ┃  Alpha (G1)                    ┃
+┃   3L                 ┃  Beta  (G1, G2)                ┃
+┃   2L                 ┃  Gamma (G2)                    ┃
+┃   3L                 ┃  Delta (G1, G2)                ┃
+┃   num_inputs         ┃  Input Coefficients (IC) in G1 ┃
 ┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
 ┃ Proving Key (PK)                                      ┃
-┃   h_query_size       ┃ `H Query (G1)`                 ┃
-┃   l_query_size       ┃ `L Query (G1)`                 ┃
-┃   a_query_size       ┃ `A Query (G1)`                 ┃
-┃   b_g1_query_size    ┃ `B Query in G1`                ┃
-┃   b_g2_query_size    ┃ `B Query in G2`                ┃
+┃   h_query_size       ┃  H Query (G1)                  ┃
+┃   l_query_size       ┃  L Query (G1)                  ┃
+┃   a_query_size       ┃  A Query (G1)                  ┃
+┃   b_g1_query_size    ┃  B Query in G1                 ┃
+┃   b_g2_query_size    ┃  B Query in G2                 ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
