@@ -67,14 +67,14 @@ The file structure is shown below in bytes for **uncompressed** form.
 
 | No | Data  | Size (bytes) (**Compressed**) | Size (bytes) (Unc**ompressed**) | **Description** |
 | --- | --- | --- | --- | --- |
-| 0. | hash (BLAKE2b) | 64 | 64 | `HASH_SIZE` |
-| 1. | tau_powers_g1 | $(2^{n+1}-1)*L$ | $(2^{n+1}-1)*2L$ | `TAU_POWERS_G1_LENGTH × G1_POINT_SIZE` |
-| 2. | tau_powers_g2 | $(2^{n})*2L$ | $(2^{n})*4L$ | `TAU_POWERS_LENGTH × G2_POINT_SIZE` |
-| 3. | alpha_tau_powers_g1 | $(2^{n})*L$ | $(2^{n})*2L$ | `TAU_POWERS_LENGTH × G1_POINT_SIZE` |
-| 4. | beta_tau_powers_g1                                                     | $(2^{n})*L$ | $(2^{n})*2L$ | `TAU_POWERS_LENGTH × G1_POINT_SIZE` |
-| 5 | beta_g2                                                     | $2L$ | $4L$ | `G2_POINT_SIZE` |
+| 1. | hash (BLAKE2b) | 64 | 64 | `HASH_SIZE` |
+| 2. | tau_powers_g1 | $(2^{n+1}-1)*L$ | $(2^{n+1}-1)*2L$ | `TAU_POWERS_G1_LENGTH × G1_POINT_SIZE` |
+| 3. | tau_powers_g2 | $(2^{n})*2L$ | $(2^{n})*4L$ | `TAU_POWERS_LENGTH × G2_POINT_SIZE` |
+| 4. | alpha_tau_powers_g1 | $(2^{n})*L$ | $(2^{n})*2L$ | `TAU_POWERS_LENGTH × G1_POINT_SIZE` |
+| 5. | beta_tau_powers_g1  | $(2^{n})*L$ | $(2^{n})*2L$ | `TAU_POWERS_LENGTH × G1_POINT_SIZE` |
+| 6. | beta_g2  | $2L$ | $4L$ | `G2_POINT_SIZE` |
 
-### Mathematical Definitions
+### Parameter Definitions
 
 `REQUIRED_POWER` $= n$
 
@@ -86,3 +86,125 @@ The file structure is shown below in bytes for **uncompressed** form.
 | --- | --- | --- |
 | **`G1_POINT_SIZE`** | 32 B $(L)$ | 64 B $(2L)$ |
 | **`G2_POINT_SIZE`** | 64 B $(2L)$ | 128 B $(4L)$ |
+
+### For example:
+
+When  `REQUIRED_POWER = 11` is chosen, it means n = 11, the table is shown as below for an uncompressed form.
+
+| hash (BLAKE2b) | 64  B |
+| --- | --- |
+| tau_powers_g1 | 262.080  B |
+| tau_powers_g2 | 262.144 B |
+| alpha_tau_powers_g1 | 131.072 B |
+| beta_tau_powers_g1 | 131.072 B |
+| beta_g2 | 128 B |
+| **total** | **758.560 (bytes)** |
+
+## Format of the response file
+
+The file structure is shown below in bytes for **compressed** form.
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 64       ┃ hash (BLAKE2b of the challenge file)      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ⁺¹ − 1) * L   ┃ tau_powers_g1                     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * 2L        ┃ tau_powers_g2                     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * L         ┃ alpha_tau_powers_g1               ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * L         ┃ beta_tau_powers_g1                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 2L               ┃ beta_g2                           ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 18L ┃ Public Key (Proof of contributor's secret key) ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+Public Key size  = (6 * G1_UNCOMPRESSED_BYTE_SIZE) + (3 * G2_UCOMPRESSED_BYTE_SIZE)
+
+The file structure is shown below in bytes for **uncompress** form.
+
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 64       ┃ hash (BLAKE2b of the challenge file)      ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ⁺¹ − 1) * 2L  ┃ tau_powers_g1                     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * 4L        ┃ tau_powers_g2                     ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * 2L         ┃ alpha_tau_powers_g1              ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * 2L        ┃ beta_tau_powers_g1                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 4L               ┃ beta_g2                           ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 36L ┃ Public Key (Proof of contributor's secret key) ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+
+## Format of the `phase1radix2m10` file
+
+The file structure is shown below in bytes for **compressed** form.
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ $(2^{n-1})             ┃ `G1 Lagrange Coefficients`  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ $(2^{n-1}) * 2L$       ┃ `G2 Lagrange Coefficients`  ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ $(2^{n-1}) * L$        ┃ `alpha Powers`              ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ $(2^{n-1}) * L$        ┃ `beta Powers`               ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃$(2^{n-1} − 1) * L$     ┃ `H Query`                   ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+
+## Format of the mimc.params file
+
+For compress form
+
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ Verifying Key (VK)                                    ┃
+┃   L                  ┃ `Alpha (G1)`                   ┃
+┃   3L                 ┃ `Beta  (G1, G2)`               ┃
+┃   2L                 ┃ `Gamma (G2)`                   ┃
+┃   3L                 ┃ `Delta (G1, G2)`               ┃
+┃   num_inputs         ┃ `Input Coefficients (IC) in G1`┃
+┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫
+┃ Proving Key (PK)                                      ┃
+┃   h_query_size       ┃ `H Query (G1)`                 ┃
+┃   l_query_size       ┃ `L Query (G1)`                 ┃
+┃   a_query_size       ┃ `A Query (G1)`                 ┃
+┃   b_g1_query_size    ┃ `B Query in G1`                ┃
+┃   b_g2_query_size    ┃ `B Query in G2`                ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
