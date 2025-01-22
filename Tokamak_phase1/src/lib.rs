@@ -6,6 +6,7 @@ use ark_serialize::CanonicalSerialize;
 use blake2::{Blake2b512, Digest};
 use rand::{rngs::StdRng, SeedableRng};
 
+
 pub fn oracle_r(alpha_g1: G1Affine, v: &str) -> G2Affine {
     let mut hasher = Blake2b512::new();
 
