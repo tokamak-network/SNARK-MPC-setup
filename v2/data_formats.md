@@ -75,7 +75,7 @@ The file structure is shown below in bytes for **uncompressed** form.
 
 ### For example:
 
-When  `REQUIRED_POWER = 11` is chosen, it means n = 11, the table is shown as below for an uncompressed form.
+When  the required power is chosen as $11$, it means $n = 11$, the table is shown as below for an uncompressed form.
 
 | hash (BLAKE2b) | 64  B |
 | --- | --- |
@@ -86,21 +86,21 @@ When  `REQUIRED_POWER = 11` is chosen, it means n = 11, the table is shown as be
 | beta_g2 | 128 B |
 | **total** | **758.560 (bytes)** |
 
-### Detailed Size Information
+#### Example with simple numbers
 
-`REQUIRED_POWER = 11`:
+`n = 11`:
 
 1. **`TAU_POWERS_LENGTH`**
     
-    TAU_POWERS_LENGTH = $2^{\text{REQUIRED-POWER}}=2^{11}=2048$
+    TAU_POWERS_LENGTH = $2^{\text{n}}=2^{11}=2048$
     
     This is the number of powers of τ used in **G2**, and for **alpha** and **beta** in **G1**.
     
 2. **`TAU_POWERS_G1_LENGTH`**
     
-    TAU_POWERS_G1_LENGTH $= 2*2^{\text{REQUIRED-POWER}}-1=2*2^{11}-1=4095$
+    TAU_POWERS_G1_LENGTH = $2*2^{\text{n}}-1=2*2^{11}-1=4095$
     
-    This is the number of powers of τ used in **G1**.
+    This is the number of powers of τ used in **$G1**.
     
 3. **`G1_POINT_SIZE`**
     - **Compressed:** `32 bytes`
