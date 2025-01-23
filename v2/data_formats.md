@@ -68,7 +68,7 @@ The challenge file structure is shown below in bytes for **uncompressed** form.
 
 ### For example:
 
-When the required power is chosen as $11$ (i.e., $n = 11$) and $L = 32 bytes$, we have the following illusturation for the data sizes:
+Below, we provide an example calculation for the parameters and total challenge file size as follows:
 
 1. **`REQUIRED_POWER`** $= n$
 
@@ -77,7 +77,7 @@ When the required power is chosen as $11$ (i.e., $n = 11$) and $L = 32 bytes$, w
     
     TAU_POWERS_LENGTH = $2^{n} = 2^{11}=2048$
     
-    This is the number of powers of τ used in **G2**, and for **alpha** and **beta** in **G1**.
+    This is the number of powers of τ used in G2, and for alpha and beta in G1.
     
 2. **`TAU_POWERS_G1_LENGTH`$= 2^{n+1}-1$**
     
@@ -171,7 +171,7 @@ The file structure is shown below in bytes for **uncompress** form.
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
 
-## C. Transcript
+## C. Transcript file
 
 The file is the combination of response_old and response files. Its size is double of a response file. The below command is used to combine `response_old` and `response` into a single `transcript` file and it effectively merges the content.
 
