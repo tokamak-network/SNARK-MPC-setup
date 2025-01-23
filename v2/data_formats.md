@@ -25,7 +25,7 @@ The challenge file structure is shown below in bytes for **compressed** form.
 ┃ 2L                ┃  beta_g2                         ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
-where $G1$ and $G2$ point sizes are defined as follows:
+where $n$ represents the required power for some circuit sizes, and the point sizes of $G1$ and $G2$ are defined as follows:
 
 |  | **Compressed** | **Uncompressed** |
 | --- | --- | --- |
