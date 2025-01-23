@@ -29,8 +29,8 @@ where $G1$ and $G2$ point sizes are defined as follows:
 
 |  | **Compressed** | **Uncompressed** |
 | --- | --- | --- |
-| **`G1_POINT_SIZE`** | $(L)$ | $(2L)$ |
-| **`G2_POINT_SIZE`** | $(2L)$ | $(4L)$ |
+| **`G1_POINT_SIZE`** | $L$ | $2L$ |
+| **`G2_POINT_SIZE`** | $2L$ | $4L$ |
 
 The file structure is shown below in bytes for **uncompressed** form.
 
@@ -68,7 +68,7 @@ The file structure is shown below in bytes for **uncompressed** form.
 
 ### For example:
 
-When the required power is chosen as $11$, (i.e., $n = 11$) we have the following example computations and sizes:
+When the required power is chosen as $11$ (i.e., $n = 11$) and $L = 32 bytes$, we have the following illusturation for the data sizes:
 
 1. **`REQUIRED_POWER`** $= n$
 
