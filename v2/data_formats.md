@@ -1,5 +1,5 @@
 # Data format of MPC files
-This document defines the format for the representation of the binary files produced in the MPC ceremony for zk-SNARK parameter generation.  
+This document defines the format for the representation of the binary files produced in the MPC ceremony for Groth16 zk-SNARK parameter generation.  
 
 ## A. Challenge file
 
@@ -25,6 +25,12 @@ The file structure is shown below in bytes for **compressed** form.
 ┃ 2L                ┃  beta_g2                         ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
+where $G1$ and $G2$ point sizes are defined as follows:
+
+|  | **Compressed** | **Uncompressed** |
+| --- | --- | --- |
+| **`G1_POINT_SIZE`** | $(L)$ | $(2L)$ |
+| **`G2_POINT_SIZE`** | $(2L)$ | $(4L)$ |
 
 The file structure is shown below in bytes for **uncompressed** form.
 
@@ -62,7 +68,7 @@ The file structure is shown below in bytes for **uncompressed** form.
 
 ### For example:
 
-When the required power is chosen as $11$, it means $n = 11$ whe have the following example computations and sizes:
+When the required power is chosen as $11$, (i.e., $n = 11$) we have the following example computations and sizes:
 
 1. **`REQUIRED_POWER`** $= n$
 
@@ -91,21 +97,17 @@ When the required power is chosen as $11$, it means $n = 11$ whe have the follow
     
     This size determines how many bytes are used to store a point in the G2 group.
 
-The table is shown as below for an uncompressed form when $n = 11$.
+With the example settings provided above, the table below presents the size of each data type and the total packet size:
 
-|  | **Compressed** | **Uncompressed** |
-| --- | --- | --- |
-| **`G1_POINT_SIZE`** | 32 B $(L)$ | 64 B $(2L)$ |
-| **`G2_POINT_SIZE`** | 64 B $(2L)$ | 128 B $(4L)$ |
-
-| hash (BLAKE2b) | 64  B |
+| Data| Size (Bytes) |
 | --- | --- |
-| tau_powers_g1 | 262.080  B |
-| tau_powers_g2 | 262.144 B |
-| alpha_tau_powers_g1 | 131.072 B |
-| beta_tau_powers_g1 | 131.072 B |
+| hash (BLAKE2b) | 64  B |
+| tau_powers_g1 | 262,080  B |
+| tau_powers_g2 | 262,144 B |
+| alpha_tau_powers_g1 | 131,072 B |
+| beta_tau_powers_g1 | 131,072 B |
 | beta_g2 | 128 B |
-| **total** | **758.560 (bytes)** |
+| **total** | **758.560 B** |
 
 ## B. Response file
 
@@ -133,7 +135,15 @@ The file structure is shown below in bytes for **compressed** form.
 ┃ 18L       ┃ Public Key (Proof of contributor's secret key)  ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
-Public Key size  = (6 * G1_UNCOMPRESSED_BYTE_SIZE) + (3 * G2_UCOMPRESSED_BYTE_SIZE)
+
+### Public Key Components
+
+| **Component** | **Description** |
+| --- | --- |
+| **G1 Elements** | 6 points:  $(g^s, g^{s\tau}), (g^s, g^{s\alpha}), (g^s, g^{s\beta}).$ |
+| **G2 Elements** | 3 points:  $H(g^s)  \text{ for }  \tau, \alpha, \beta.$ |
+| **Purpose** | Proves knowledge of $\tau, \alpha, \beta.$ |
+| **Verification** | Used in pairing-based checks during `verify_transform.rs`. |
 
 The file structure is shown below in bytes for **uncompress** form.
 
@@ -161,7 +171,13 @@ The file structure is shown below in bytes for **uncompress** form.
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
 
-## C. `phase1radix2m10` file
+## C. Transcript
+
+The file is the combination of response_old and response files. Its size is double of a response file. The below command is used to combine `response_old` and `response` into a single `transcript` file and it effectively merges the content.
+
+`Get-Content response_old, response | Add-Content transcript`
+
+## D. `phase1radix2mX` file
 
 The file structure is shown below in bytes for **compressed** form.
 ````
@@ -182,7 +198,27 @@ The file structure is shown below in bytes for **compressed** form.
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
 
-## D. `mimc.params` file
+## E. `mimc.params` file
+
+The `mimc.params` file includes the following parameters:
+
+### Proving Key
+
+- `a`: Vector of G1 elements for the QAP A query.
+- `b_g1`: Vector of G1 elements for the QAP B query (G1 part).
+- `b_g2`: Vector of G2 elements for the QAP B query (G2 part).
+- `h`: Vector of G1 elements representing the coefficients of the quotient polynomial H(x).
+- `l`: Vector of G1 elements for the Lagrange interpolation of the circuit's constraints.
+
+### Verification Key
+
+- `alpha_g1`: G1 group element for the Groth16 alpha parameter.
+- `beta_g1`: G1 group element for the Groth16 beta parameter.
+- `beta_g2`: G2 group element for the Groth16 beta parameter.
+- `gamma_g2`: G2 group element for the Groth16 gamma parameter.
+- `delta_g1`: G1 group element for the Groth16 delta parameter.
+- `delta_g2`: G2 group element for the Groth16 delta parameter.
+- `IC`: Vector of G1 elements for public input coefficients.
 
 The file structure for `mimc.params` file is shown below.
 ````
