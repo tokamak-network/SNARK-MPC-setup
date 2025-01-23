@@ -49,7 +49,7 @@ The file structure is shown below in bytes for **uncompressed** form.
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
 
-### Table presentation
+### Table representation
 
 | No | Data  | Size (bytes) (**Compressed**) | Size (bytes) (**Uncompressed**) | **Description** |
 | --- | --- | --- | --- | --- |
@@ -60,12 +60,12 @@ The file structure is shown below in bytes for **uncompressed** form.
 | 5. | beta_tau_powers_g1  | $(2^{n})*L$ | $(2^{n})*2L$ | `TAU_POWERS_LENGTH × G1_POINT_SIZE` |
 | 6. | beta_g2  | $2L$ | $4L$ | `G2_POINT_SIZE` |
 
-
 ### For example:
 
 When the required power is chosen as $11$, it means $n = 11$ whe have the following example computations and sizes:
 
 1. **`REQUIRED_POWER`** $= n$
+
     $n = 11$
 2. **`TAU_POWERS_LENGTH` $= 2^n$**
     
@@ -75,28 +75,28 @@ When the required power is chosen as $11$, it means $n = 11$ whe have the follow
     
 2. **`TAU_POWERS_G1_LENGTH`$= 2^{n+1}-1$**
     
-    TAU_POWERS_G1_LENGTH = $2\times2^{n}-1 = 2\times2^{11}-1 = 4095$
+    TAU_POWERS_G1_LENGTH = $2^{n+1}-1 = 2^{12}-1 = 4095$
     
     This is the number of powers of τ used in **G1**.
     
 3. **`G1_POINT_SIZE`**
-    - **Compressed:** `32 bytes`
-    - **Uncompressed:** `64 bytes`
+    - **Compressed:** $L$ = `32 bytes`
+    - **Uncompressed:** $2L$ = `64 bytes`
     
     This size determines how many bytes are used to store a point in the G1 group.
     
 4. **`G2_POINT_SIZE`**
-    - **Compressed:** `64 bytes`
-    - **Uncompressed:** `128 bytes`
+    - **Compressed:** $2L$ = `64 bytes`
+    - **Uncompressed:** $4L$ = `128 bytes`
     
     This size determines how many bytes are used to store a point in the G2 group.
+
+The table is shown as below for an uncompressed form when $n = 11$.
 
 |  | **Compressed** | **Uncompressed** |
 | --- | --- | --- |
 | **`G1_POINT_SIZE`** | 32 B $(L)$ | 64 B $(2L)$ |
 | **`G2_POINT_SIZE`** | 64 B $(2L)$ | 128 B $(4L)$ |
-
-The table is shown as below for an uncompressed form when $n = 11$.
 
 | hash (BLAKE2b) | 64  B |
 | --- | --- |
