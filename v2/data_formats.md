@@ -3,7 +3,7 @@ This document defines the format for the representation of the binary files prod
 
 ## A. Challenge file
 
-The file structure is shown below in bytes for **compressed** form.
+The challenge file structure is shown below in bytes for **compressed** form.
 
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -32,7 +32,7 @@ where $G1$ and $G2$ point sizes are defined as follows:
 | **`G1_POINT_SIZE`** | $L$ | $2L$ |
 | **`G2_POINT_SIZE`** | $2L$ | $4L$ |
 
-The file structure is shown below in bytes for **uncompressed** form.
+The challenge file structure is shown below in bytes for **uncompressed** form.
 
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -111,7 +111,7 @@ With the example settings provided above, the table below presents the size of e
 
 ## B. Response file
 
-The file structure is shown below in bytes for **compressed** form.
+The response file structure is shown below in bytes for **compressed** form.
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ 64                   ┃ hash (BLAKE2b of the challenge file) ┃
