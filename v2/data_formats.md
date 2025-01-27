@@ -162,7 +162,7 @@ The response file structure is shown below in bytes for **compressed** form.
 
 | **Component** | **Description** |
 | --- | --- |
-| **G1 Elements** | 6 points:  \left( s \cdot G_1, s\tau \cdot G_1 \right), \quad \left( s \cdot G_1, s\alpha \cdot G_1 \right), \quad \left( s \cdot G_1, s\beta \cdot G_1 \right) |
+| **G1 Elements** | 6 points:  $(s \cdot G_1, s\tau \cdot G_1 \right), \quad \left( s \cdot G_1, s\alpha \cdot G_1 \right), \quad \left( s \cdot G_1, s\beta \cdot G_1)$ |
 | **G2 Elements** | 3 points:  $H(g^s)  \text{ for }  \tau, \alpha, \beta.$ |
 | **Purpose** | Proves knowledge of $\tau, \alpha, \beta.$ |
 | **Verification** | Used in pairing-based checks during `verify_transform.rs`. |
