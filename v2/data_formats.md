@@ -27,6 +27,7 @@ The challenge file structure is shown below in bytes for **compressed** form.
 ````
 where $n$ represents the required power for some circuit sizes, and the generated parameter are defined as following:
 
+````
 $$
 \text{tau\_powers\_g1} = \left\{ \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\} \right\}
 $$
@@ -46,7 +47,7 @@ $$
 $$
 \text{beta\_g2} = \beta \cdot G_2
 $$
-
+````
 The point sizes of $G1$ and $G2$ are defined as follows:
 
 |  | **Compressed** | **Uncompressed** |
