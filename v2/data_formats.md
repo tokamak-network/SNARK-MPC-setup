@@ -34,7 +34,7 @@ The challenge file structure is shown below in bytes for **compressed** form.
 where $n$ represents the required power for some circuit sizes, and the generated parameter are defined as following:
 
 
-tau_powers_g1 $= \left\{ \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\} \right\}$
+tau_powers_g1 $= \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\}$
 
 $$
 \text{tau\_powers\_g2} = \left\{ \tau^i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\}
