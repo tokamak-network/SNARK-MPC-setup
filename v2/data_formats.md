@@ -33,7 +33,6 @@ The challenge file structure is shown below in bytes for **compressed** form.
 ````
 where $n$ represents the required power for some circuit sizes, and the generated parameter are defined as following:
 
-````
 tau_powers_g1 $= \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\}$
 
 tau_powers_g2 $= \tau^i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^n - 1\}$
@@ -43,7 +42,6 @@ alpha_tau_powers_g1 $= \alpha \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots
 beta_tau_powers_g1 $= \beta \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\}$
 
 beta\_g2 $= \beta \cdot G_2$
-````
 
 The point sizes of $G1$ and $G2$ are defined as follows:
 
