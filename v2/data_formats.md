@@ -123,13 +123,13 @@ With the example settings provided above, the table below presents the size of e
 
 | Data| Size (Bytes) |
 | --- | --- |
-| hash (BLAKE2b) | 64  B |
-| tau_powers_g1 | 262,080  B |
-| tau_powers_g2 | 262,144 B |
-| alpha_tau_powers_g1 | 131,072 B |
-| beta_tau_powers_g1 | 131,072 B |
-| beta_g2 | 128 B |
-| **total** | **758.560 B** |
+| hash (BLAKE2b) | 64 |
+| tau_powers_g1 | 262,080 |
+| tau_powers_g2 | 262,144 |
+| alpha_tau_powers_g1 | 131,072 |
+| beta_tau_powers_g1 | 131,072 |
+| beta_g2 | 128 |
+| **total** | **758,560** |
 
 ## B. Response file
 
