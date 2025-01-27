@@ -1,3 +1,7 @@
+<script type="text/javascript" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
+</script>
+
 # Data format of MPC files
 This document defines the format for the representation of the binary files produced in the MPC ceremony for Groth16 zk-SNARK parameter generation.  
 
