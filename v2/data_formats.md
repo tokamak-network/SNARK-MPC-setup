@@ -37,6 +37,16 @@ $\text{beta\_tau\_powers\_g1} = \left\{ \beta \cdot \tau^i \cdot G_1 \mid i \in 
 
 $\text{beta\_g2} = \beta \cdot G_2$
 
+`tau_powers_g1 = { τ^i · G1 | i ∈ {0, 1, 2, ..., 2^(n+1) - 2} }`
+
+`tau_powers_g2 = { τ^i · G2 | i ∈ {0, 1, 2, ..., 2^n - 1} }`
+
+`alpha_tau_powers_g1 = { α · τ^i · G1 | i ∈ {0, 1, 2, ..., 2^n - 1} }`
+
+`beta_tau_powers_g1 = { β · τ^i · G1 | i ∈ {0, 1, 2, ..., 2^n - 1} }`
+
+`beta_g2 = β · G2`
+
 The point sizes of $G1$ and $G2$ are defined as follows:
 
 |  | **Compressed** | **Uncompressed** |
