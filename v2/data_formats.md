@@ -34,16 +34,23 @@ The challenge file structure is shown below in bytes for **compressed** form.
 where $n$ represents the required power for some circuit sizes, and the generated parameter are defined as following:
 
 ```math
-\text{tau_powers_g1} = \left\{ \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\} \right\}
+\text{tau\_powers\_g1} = \left\{ \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\} \right\}
+```
 
-\text{tau_powers_g2} = \left\{ \tau^i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} 
+```math
+\text{tau\_powers\_g2} = \left\{ \tau^i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\}
+```
 
-\text{alpha_tau_powers_g1} = \left\{ \alpha \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} 
+```math
+\text{alpha\_tau\_powers\_g1} = \left\{ \alpha \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\}
+```
 
-\text{beta_tau_powers_g1} = \left\{ \beta \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} 
+```math
+\text{beta\_tau\_powers\_g1} = \left\{ \beta \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\}
+```
 
-\text{beta_g2} = \beta \cdot G_2
-
+```math
+\text{beta\_g2} = \beta \cdot G_2
 ```
 
 The point sizes of $G1$ and $G2$ are defined as follows:
