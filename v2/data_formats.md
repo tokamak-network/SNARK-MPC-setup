@@ -1,9 +1,3 @@
-<!--
-<script type="text/javascript" id="MathJax-script" async
-  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js">
-</script>
--->
-
 # Data format of MPC files
 This document defines the format for the representation of the binary files produced in the MPC ceremony for Groth16 zk-SNARK parameter generation.  
 
@@ -35,15 +29,12 @@ where $n$ represents the required power for some circuit sizes, and the generate
 
 ```math
 
-\begin{align*}
-
 \text{tau\_powers\_g1} &= \left\{ \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\} \right\} \\
 \text{tau\_powers\_g2} &= \left\{ \tau^i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} \\
 \text{alpha\_tau\_powers\_g1} &= \left\{ \alpha \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} \\
 \text{beta\_tau\_powers\_g1} &= \left\{ \beta \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} \\
 \text{beta\_g2} &= \beta \cdot G_2
 
-\end{align*}
 ```
 
 
