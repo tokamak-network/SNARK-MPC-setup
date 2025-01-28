@@ -35,11 +35,11 @@ where $n$ represents the required power for some circuit sizes, and the generate
 
 ```math
 
-\text{tau\_powers\_g1} &= \left\{ \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\} \right\} \\
+$$\text{tau\_powers\_g1} &= \left\{ \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^{n+1} - 2\} \right\} \\
 \text{tau\_powers\_g2} &= \left\{ \tau^i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} \\
 \text{alpha\_tau\_powers\_g1} &= \left\{ \alpha \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} \\
 \text{beta\_tau\_powers\_g1} &= \left\{ \beta \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^n - 1\} \right\} \\
-\text{beta\_g2} &= \beta \cdot G_2
+\text{beta\_g2} &= \beta \cdot G_2$$
 
 ```
 
