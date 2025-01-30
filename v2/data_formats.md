@@ -233,7 +233,7 @@ The file structure is shown below in bytes for **compressed** form.
 \end{align*}
 
 ```
-Here is more details about the [H Query](D:\MPC_ceremony\SNARK-MPC-setup\v2\MPC_setup_H_query_explanation.pdf).
+Here is more details about the [H Query](SNARK-MPC-setup\v2\MPC_setup_H_query_explanation.pdf).
 
 ## E. `mimc.params` file
 
