@@ -233,7 +233,7 @@ The file structure is shown below in bytes for **compressed** form.
 \end{align*}
 
 ```
-Here is more details about the [H Query](v2/MPC_setup_H_query_explanation.pdf).
+Here is more details about the [H Query](MPC_setup_H_query_explanation.pdf).
 
 ## E. `mimc.params` file
 
