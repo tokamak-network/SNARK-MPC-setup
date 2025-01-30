@@ -11,6 +11,75 @@ use ark_mnt6_753::{Fr, G1Affine, G2Affine};
 use deneme::{check_pok, consistent, oracle_r, pok};
 use rand::thread_rng;
 
+// ---------------------------------------------------------------------------------
+fn compute5(
+    ykx_inv: Vec<Vec<G1Affine>>, // Now a matrix of size n × m
+    x_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+) -> (
+    Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
+    Vec<G1Affine>,      // [y^k]_j (size m)
+    Vec<G1Affine>,      // [x^i]_j (size n)
+    Vec<G2Affine>,      // Proofs y_kj
+) {
+    println!("\n compute5 is running");
+    let rng = &mut thread_rng();
+    let mut ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
+    let mut yk_j = Vec::new();
+    let mut x_j = Vec::new();
+    let mut y_kj_proofs = Vec::new();
+
+    for k in 0..ykx_inv[0].len() {
+        let y_k = Fr::rand(rng);
+        let y_k_g1 = (G1Affine::generator() * y_k).into_affine();
+        yk_j.push(y_k_g1);
+        let y_kj_proof = pok(y_k, v_rd_jm1);
+        y_kj_proofs.push(y_kj_proof);
+
+        for i in 0..ykx_inv.len() {
+            let x_i_j = (x_inv[i] * y_k).into_affine();
+            x_j.push(x_i_j);
+            ykx_j[i][k] = (ykx_inv[i][k] * y_k).into_affine();
+        }
+    }
+
+    (ykx_j, yk_j, x_j, y_kj_proofs)
+}
+
+fn verify5(
+    ykx_j: Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
+    yk_j: Vec<G1Affine>,       // [y^k]_j (size m)
+    x_j: Vec<G1Affine>,        // [x^i]_j (size n)
+    x_prev_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+    y_kj_proofs: Vec<G2Affine>,
+) -> bool {
+    println!("\n verify5 is running");
+
+    for k in 0..yk_j.len() {
+        let r_kj = oracle_r(yk_j[k], v_rd_jm1);
+
+        if check_pok(yk_j[k], v_rd_jm1, y_kj_proofs[k]) {
+            for i in 0..ykx_j.len() {
+                if !consistent((x_prev_inv[i], x_j[i]), (r_kj, y_kj_proofs[k])) {
+                    println!("First consistency check failed at index ({}, {})", i, k);
+                    return false;
+                }
+                if !consistent((x_j[i], ykx_j[i][k]), (r_kj, G2Affine::generator())) {
+                    println!("Second consistency check failed at index ({}, {})", i, k);
+                    return false;
+                }
+            }
+        } else {
+            println!("Proof of knowledge failed at index k = {}", k);
+            return false;
+        }
+    }
+
+    println!("\n All elements passed the verification.");
+    true
+}
+// ---------------------------------------------------------------------------------
 fn compute4(
     ax_prev_inv: Vec<G1Affine>,
     v_rd_jm1: &str,
@@ -308,4 +377,23 @@ fn main() {
     // Verify4
     let is_valid4 = verify4(ax_i_j, alpha_j_g1, x_j_g1, x_prev_inv, v, y_alpha);
     println!("\nVerification Result for compute4/verify4: {}", !is_valid4);
+
+    //  testing the type-5
+    let v_rd_jm1 = "example string";
+    let n = 5; // Number of x^i values
+    let m = 3; // Number of y^k values
+
+    // Create matrices for testing
+    let ykx_prev_inv = vec![vec![g1; m]; n]; // Example matrix of n × m elements
+    let x_prev_inv: Vec<G1Affine> = (0..n)
+        .map(|_| (g1 * Fr::rand(&mut thread_rng())).into_affine())
+        .collect();
+
+    // Compute5
+    let (ykx_j, yk_j, x_j, y_kj_proofs) =
+        compute5(ykx_prev_inv.clone(), x_prev_inv.clone(), v_rd_jm1);
+
+    // Verify5
+    let is_valid5 = verify5(ykx_j, yk_j, x_j, x_prev_inv, v_rd_jm1, y_kj_proofs);
+    println!("\nVerification Result for compute5/verify5: {}", !is_valid5);
 }

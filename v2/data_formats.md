@@ -195,6 +195,15 @@ The file is the combination of response_old and response files. Its size is doub
 The file structure is shown below in bytes for **compressed** form.
 ````
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * 2L          ┃ alpha_tau_powers_g1             ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ (2ⁿ) * 2L          ┃ beta_tau_powers_g1              ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
+┃ 2L                 ┃ beta_g2                         ┃
+┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
 ┃ (2ⁿ⁻¹) * 2L        ┃ G1 Lagrange Coefficients        ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓
@@ -210,6 +219,20 @@ The file structure is shown below in bytes for **compressed** form.
 ┃ (2ⁿ⁻¹ − 1) * L     ┃ H Query                         ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
+
+```math
+\begin{align*}
+    \text{alpha\_tau\_powers\_g1} &= \{ \alpha \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
+    \text{beta\_tau\_powers\_g1} &= \{ \beta \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
+    \text{beta\_g2} &= \beta \cdot G_2 \\
+    \text{g1\_coeffs} &= \{ c_i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
+    \text{g2\_coeffs} &= \{ c_i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
+    \text{g1\_alpha\_coeffs} &= \{ \alpha \cdot c_i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
+    \text{g1\_beta\_coeffs} &= \{ \beta \cdot c_i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
+    h &= \{ x^{i+m} - x^i \mid i \in \{0, 1, 2, \dots, m-2\} \}
+\end{align*}
+
+```
 
 ## E. `mimc.params` file
 
