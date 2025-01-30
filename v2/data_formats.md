@@ -229,10 +229,11 @@ The file structure is shown below in bytes for **compressed** form.
     \text{g2\_coeffs} &= \{ c_i \cdot G_2 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
     \text{g1\_alpha\_coeffs} &= \{ \alpha \cdot c_i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
     \text{g1\_beta\_coeffs} &= \{ \beta \cdot c_i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
-    h &= \{ x^{i+m} - x^i \mid i \in \{0, 1, 2, \dots, m-2\} \}
+    H &= \{ x^{i+m} - x^i \mid i \in \{0, 1, 2, \dots, m-2\} \}
 \end{align*}
 
 ```
+Here is more details about the [H Query](D:\MPC_ceremony\SNARK-MPC-setup\v2\MPC_setup_H_query_explanation.pdf).
 
 ## E. `mimc.params` file
 
