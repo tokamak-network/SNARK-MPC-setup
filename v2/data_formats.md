@@ -219,7 +219,8 @@ The file structure is shown below in bytes for **compressed** form.
 ┃ (2ⁿ⁻¹ − 1) * L     ┃ H Query                         ┃
 ┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛
 ````
-The parameter here are defined as follows:
+The parameters here are defined as follows:
+
 ```math
 \begin{align*}
     \text{alpha\_tau\_powers\_g1} &= \{ \alpha \cdot \tau^i \cdot G_1 \mid i \in \{0, 1, 2, \dots, 2^m - 1\} \} \\
