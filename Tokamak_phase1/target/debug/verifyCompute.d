@@ -1,0 +1,1 @@
+D:\MPC_ceremony\SNARK-MPC-setup\Tokamak_phase1\target\debug\verifyCompute.exe: D:\MPC_ceremony\SNARK-MPC-setup\Tokamak_phase1\src\bin\verifyCompute.rs D:\MPC_ceremony\SNARK-MPC-setup\Tokamak_phase1\src\lib.rs

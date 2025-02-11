@@ -38,7 +38,7 @@ pub fn verifyCompute() -> bool {
 }
 
 fn save_alpha_to_file<T: CanonicalSerialize>(data: &T) {
-    let file_path = "ccumulator.bin";
+    let file_path = "resp_accumulator.bin";
     let mut file = OpenOptions::new()
         .create(true)
         .append(true)
