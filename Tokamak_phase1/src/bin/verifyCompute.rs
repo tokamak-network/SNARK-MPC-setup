@@ -1,82 +1,138 @@
+// use ark_ec::AffineRepr;
+// use ark_mnt6_753::{G1Affine, G2Affine};
+// use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+// use deneme::{compute1, compute2, verify1, verify2};
+// use std::fs::OpenOptions;
+// use std::io::{BufWriter, Read, Write};
+
+use ark_bls12_381::{G1Affine, G2Affine};
 use ark_ec::AffineRepr;
-use ark_mnt6_753::{G1Affine, G2Affine};
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
-use deneme::{compute1, verify1};
-use std::fs::{File, OpenOptions};
-use std::io::{BufWriter, Read, Write};
+use deneme::{compute1, compute2, verify1, verify2};
 
-pub fn verifyCompute() -> bool {
-    println!("\nVerifying previous proof and generating new one...");
+
+use std::fs::OpenOptions;
+use std::io::BufWriter;
+use std::io::Read;
+use std::io::Write;
+
+pub fn verify_and_update() -> bool {
+    println!("Verifying previous proofs...");
+
     let rnd_string = "rndString";
-    // Read previous values from accumulator
-    match read_previous_values() {
-        Some((alpha_g1_pre, alpha_g1_out, alpha_j_g1, y)) => {
-            // Verify previous proof using stored y value
-            let is_valid = verify1(alpha_g1_pre, alpha_g1_out, alpha_j_g1, rnd_string, y);
 
-            if !is_valid {
-                println!("Previous proof verification failed. Aborting computation.");
-                return false;
-            }
+    // 1️⃣ Read Previous Accumulators
+    if let Some((g1_values, g2_values)) = read_combined_values("accumulator_all_types.bin", 7, 4) {
+        let [alpha_g1_pre, alpha_g1_out, alpha_j_g1,
+             alpha_beta_prev, alpha_beta_out, alpha_j_g1_2, beta_j_g1]: [G1Affine; 7] = 
+             g1_values.try_into().unwrap();
 
-            // Compute new proof
-            let (new_alpha_g1_out, new_alpha_j_g1, new_y) = compute1(alpha_g1_out, rnd_string);
-            // println!("New computed alpha: {:?}", new_alpha_g1_out);
+        let [y, alpha_beta_g2, y_alpha, y_beta]: [G2Affine; 4] = 
+            g2_values.try_into().unwrap();
 
-            // Save new values to accumulator
-            save_alpha_to_file(&new_alpha_g1_out);
-            save_alpha_to_file(&new_alpha_j_g1);
-            save_alpha_to_file(&new_y);
-
-            true
+        // 2️⃣ Verify Type-1 (α)
+        if !verify1(alpha_g1_pre, alpha_g1_out, alpha_j_g1, rnd_string, y) {
+            println!("❌ Type-1 (α) verification failed.");
+            return false;
         }
-        None => {
-            println!("Error: No previous proof found. Please run initialize.rs first.");
-            false
+
+        // 3️⃣ Verify Type-2 (α * β)
+        if !verify2(
+            alpha_beta_prev, alpha_beta_out, alpha_j_g1_2, beta_j_g1,
+            alpha_beta_g2, y_alpha, y_beta, rnd_string,
+        ) {
+            println!("❌ Type-2 (α * β) verification failed.");
+            return false;
         }
+
+        println!("✅ All verifications passed.");
+
+        // 4️⃣ Compute New Random Parameters
+        let (new_alpha_g1_out, new_alpha_j_g1, new_y) = compute1(alpha_g1_pre, rnd_string);
+        let (new_alpha_beta_out, new_alpha_j_g1_2, new_beta_j_g1, new_alpha_beta_g2, new_y_alpha, new_y_beta) =
+            compute2(alpha_beta_prev, rnd_string);
+
+        // 5️⃣ Update Combined File with New Parameters
+        save_to_combined_file(
+            "accumulator_all_types.bin",
+            &[
+                &alpha_g1_pre, &new_alpha_g1_out, &new_alpha_j_g1, // Type-1 (G1)
+                &alpha_beta_prev, &new_alpha_beta_out, &new_alpha_j_g1_2, &new_beta_j_g1, // Type-2 (G1)
+            ],
+            &[
+                &new_y, &new_alpha_beta_g2, &new_y_alpha, &new_y_beta, // All G2
+            ],
+        );
+
+        println!("✅ Accumulator file updated with new random parameters.");
+        true
+    } else {
+        println!("❌ Failed to read accumulator file.");
+        false
     }
 }
 
-fn save_alpha_to_file<T: CanonicalSerialize>(data: &T) {
-    let file_path = "resp_accumulator.bin";
-    let mut file = OpenOptions::new()
-        .create(true)
-        .append(true)
-        .open(file_path)
-        .expect("Unable to open or create accumulator.bin");
-
-    let mut writer = BufWriter::new(&mut file);
-    let mut serialized = Vec::new();
-    data.serialize_compressed(&mut serialized)
-        .expect("Failed to serialize data");
-
-    writer
-        .write_all(&serialized)
-        .expect("Unable to write data to file");
-    println!("Alpha saved to accumulator.");
-}
-
-fn read_previous_values() -> Option<(G1Affine, G1Affine, G1Affine, G2Affine)> {
-    let file_path = "accumulator.bin";
-
-    // Check if the file exists
-    let mut file = File::open(file_path).ok()?;
+fn read_combined_values(
+    file_path: &str,
+    g1_count: usize,
+    g2_count: usize,
+) -> Option<(Vec<G1Affine>, Vec<G2Affine>)> {
+    let mut file = std::fs::File::open(file_path).ok()?;
     let mut buffer = Vec::new();
-    if file.read_to_end(&mut buffer).is_err() || buffer.is_empty() {
-        println!("Error: Could not read from accumulator file or file is empty.");
-        return None;
-    }
+    file.read_to_end(&mut buffer).ok()?;
 
     let mut cursor = &buffer[..];
 
-    let alpha_g1_pre = G1Affine::deserialize_compressed(&mut cursor).ok()?;
-    let alpha_g1_out = G1Affine::deserialize_compressed(&mut cursor).ok()?;
-    let alpha_j_g1 = G1Affine::deserialize_compressed(&mut cursor).ok()?;
-    let y = G2Affine::deserialize_compressed(&mut cursor).ok()?;
+    let g1_values = (0..g1_count)
+        .filter_map(|_| G1Affine::deserialize_compressed(&mut cursor).ok())
+        .collect::<Vec<_>>();
 
-    Some((alpha_g1_pre, alpha_g1_out, alpha_j_g1, y))
+    let g2_values = (0..g2_count)
+        .filter_map(|_| G2Affine::deserialize_compressed(&mut cursor).ok())
+        .collect::<Vec<_>>();
+
+    if g1_values.len() == g1_count && g2_values.len() == g2_count {
+        Some((g1_values, g2_values))
+    } else {
+        None
+    }
+}
+
+fn save_to_combined_file<T: CanonicalSerialize, U: CanonicalSerialize>(
+    file_path: &str,
+    g1_data: &[&T],
+    g2_data: &[&U],
+) {
+    let mut file = OpenOptions::new()
+        .create(true)
+        .write(true)
+        .truncate(true)
+        .open(file_path)
+        .expect("Failed to open file");
+
+    let mut writer = BufWriter::new(&mut file);
+
+    // Save G1 Elements
+    for item in g1_data {
+        let mut serialized = Vec::new();
+        item.serialize_compressed(&mut serialized).expect("Serialization failed");
+        writer.write_all(&serialized).expect("Write failed");
+    }
+
+    // Save G2 Elements
+    for item in g2_data {
+        let mut serialized = Vec::new();
+        item.serialize_compressed(&mut serialized).expect("Serialization failed");
+        writer.write_all(&serialized).expect("Write failed");
+    }
+
+    println!("All values successfully written to {}", file_path);
 }
 
 fn main() {
-    let _ = verifyCompute();
+    if verify_and_update() {
+        println!("✅ Verification and update completed successfully!");
+    } else {
+        println!("❌ Verification or update failed.");
+    }
 }

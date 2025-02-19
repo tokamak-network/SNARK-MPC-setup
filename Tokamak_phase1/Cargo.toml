@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 ark-ec = "0.5.0"
 ark-ff = "0.5.0"
-ark-mnt6-753 = "0.5.0"
+ark-bls12-381 = "0.5.0"  # ✅ Added
 ark-serialize = "0.5.0"
 rand = "0.8"
 blake2 = "0.10"
@@ -17,5 +17,5 @@ name = "deneme"
 path = "src/lib.rs"
 
 [[bin]]
-name = "computeVerify"
-path = "src/bin/computeVerify.rs"
+name = "verifyCompute"
+path = "src/bin/verifyCompute.rs"

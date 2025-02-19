@@ -1,13 +1,36 @@
-use ark_ec::pairing::Pairing;
-use ark_ec::{AffineRepr, CurveGroup};
-use ark_ff::UniformRand;
-use ark_mnt6_753::{Fr, G1Affine, G2Affine, G2Projective, MNT6_753};
+// use ark_ec::pairing::Pairing;
+// use ark_ec::{AffineRepr, CurveGroup};
+// use ark_ff::UniformRand;
+// use ark_mnt6_753::{Fr, G1Affine, G2Affine, G2Projective, MNT6_753};
+// use ark_serialize::CanonicalSerialize;
+// use blake2::{Blake2b512, Digest};
+// use rand::{rngs::StdRng, SeedableRng};
+// use rand::thread_rng;
+
+use ark_bls12_381::G1Projective;
+use ark_bls12_381::{Fr, G1Affine, G2Affine, Bls12_381};
+// use ark_ec::bls12::G2Projective;
 use ark_serialize::CanonicalSerialize;
+use ark_ec::pairing::Pairing;
+
+use rand::{thread_rng, rngs::StdRng};
 use blake2::{Blake2b512, Digest};
-use rand::{rngs::StdRng, SeedableRng};
 
-use rand::thread_rng;
 
+use ark_ec::bls12::G2Projective;
+use ark_ff::UniformRand;
+use ark_ec::{AffineRepr};
+use rand::SeedableRng;
+
+use ark_bls12_381::Config as Bls12_381_Config;
+use ark_ec::bls12::Bls12Config;
+
+pub fn hash_to_g2(digest: &[u8]) -> G2Projective<ark_bls12_381::Config> {
+    let rng = &mut StdRng::from_seed(digest[..32].try_into().unwrap());
+    G2Projective::<ark_bls12_381::Config>::rand(rng)
+}
+
+use ark_ec::CurveGroup;
 // ---------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------
 // // ---------Type-9------------------------------------------------------------------------
@@ -38,27 +61,27 @@ use rand::thread_rng;
 
 //     for h in 0..z_inv.len() {
 //         let z_h = Fr::rand(rng);
-//         let z_h_g1 = (G1Affine::generator() * z_h).into_affine();
+//         let z_h_g1 = (G1Affine::identity() * z_h).into();
 //         z_j.push(z_h_g1);
 //         let z_kj_proof = pok(z_h, v_rd_jm1);
 //         z_kj_proofs.push(z_kj_proof);
 //     }
 
 //     for i in 0..x_inv.len() {
-//         let x_i_j = (x_inv[i] * alpha_j).into_affine();
+//         let x_i_j = (x_inv[i] * alpha_j).into();
 //         x_j.push(x_i_j);
 //         for k in 0..y_inv[0].len() {
 //             let y_k = Fr::rand(rng);
-//             let y_k_g1 = (G1Affine::generator() * y_k).into_affine();
-//             ykx_j[i][k] = (y_inv[i][k] * y_k).into_affine();
+//             let y_k_g1 = (G1Affine::identity() * y_k).into();
+//             ykx_j[i][k] = (y_inv[i][k] * y_k).into();
 //             let y_kj_proof = pok(y_k, v_rd_jm1);
 //             y_kj_proofs.push(y_kj_proof);
 
-//             alpha_zxy_j[i][k] = (ykx_j[i][k] * alpha_j).into_affine();
+//             alpha_zxy_j[i][k] = (ykx_j[i][k] * alpha_j).into();
 //         }
 //     }
 
-//     let alpha_j_g1 = (G1Affine::generator() * alpha_j).into_affine();
+//     let alpha_j_g1 = (G1Affine::identity() * alpha_j).into();
 //     let y_alpha_j = pok(alpha_j, v_rd_jm1);
 
 //     (
@@ -155,7 +178,7 @@ use rand::thread_rng;
 //     let alpha_j = Fr::rand(rng);
 //     let y_alpha_j = pok(alpha_j, v_rd_jm1);
 
-//     let alpha_j_g1 = (G1Affine::generator() * alpha_j).into_affine();
+//     let alpha_j_g1 = (G1Affine::identity() * alpha_j).into();
 //     let mut x_j = Vec::new();
 //     let mut ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
 //     let mut alpha_ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
@@ -163,16 +186,16 @@ use rand::thread_rng;
 
 //     for k in 0..ykx_inv[0].len() {
 //         let y_k = Fr::rand(rng);
-//         let y_k_g1 = (G1Affine::generator() * y_k).into_affine();
+//         let y_k_g1 = (G1Affine::identity() * y_k).into();
 //         let y_kj_proof = pok(y_k, v_rd_jm1);
 //         y_kj_proofs.push(y_kj_proof);
 
 //         for i in 0..ykx_inv.len() {
-//             let x_i_j = (x_inv[i] * y_k).into_affine();
+//             let x_i_j = (x_inv[i] * y_k).into();
 //             x_j.push(x_i_j);
 
-//             ykx_j[i][k] = (ykx_inv[i][k] * y_k).into_affine();
-//             alpha_ykx_j[i][k] = (ykx_j[i][k] * alpha_j).into_affine();
+//             ykx_j[i][k] = (ykx_inv[i][k] * y_k).into();
+//             alpha_ykx_j[i][k] = (ykx_j[i][k] * alpha_j).into();
 //         }
 //     }
 
@@ -213,7 +236,7 @@ use rand::thread_rng;
 
 //     // Step 3: Consistency checks
 //     for i in 0..x_j.len() {
-//         if !consistent((x_prev_inv[i], x_j[i]), (G2Affine::generator(), y_alpha_j)) {
+//         if !consistent((x_prev_inv[i], x_j[i]), (G2Affine::identity(), y_alpha_j)) {
 //             // println!("First consistency check failed at index i = {}", i);
 //             return false;
 //         }
@@ -221,7 +244,7 @@ use rand::thread_rng;
 //         for k in 0..ykx_j[0].len() {
 //             if !consistent(
 //                 (x_j[i], ykx_j[i][k]),
-//                 (G2Affine::generator(), y_kj_proofs[k]),
+//                 (G2Affine::identity(), y_kj_proofs[k]),
 //             ) {
 //                 // println!(
 //                 // "Second consistency check failed at index (i, k) = ({}, {})",
@@ -233,7 +256,7 @@ use rand::thread_rng;
 
 //             if !consistent(
 //                 (ykx_j[i][k], alpha_ykx_j[i][k]),
-//                 (G2Affine::generator(), y_alpha_j),
+//                 (G2Affine::identity(), y_alpha_j),
 //             ) {
 //                 // println!(
 //                 //     "Third consistency check failed at index (i, k) = ({}, {})",
@@ -267,15 +290,15 @@ use rand::thread_rng;
 
 //     for k in 0..ykx_inv[0].len() {
 //         let y_k = Fr::rand(rng);
-//         let y_k_g1 = (G1Affine::generator() * y_k).into_affine();
+//         let y_k_g1 = (G1Affine::identity() * y_k).into();
 //         yk_j.push(y_k_g1);
 //         let y_kj_proof = pok(y_k, v_rd_jm1);
 //         y_kj_proofs.push(y_kj_proof);
 
 //         for i in 0..ykx_inv.len() {
-//             let x_i_j = (x_inv[i] * y_k).into_affine();
+//             let x_i_j = (x_inv[i] * y_k).into();
 //             x_j.push(x_i_j);
-//             ykx_j[i][k] = (ykx_inv[i][k] * y_k).into_affine();
+//             ykx_j[i][k] = (ykx_inv[i][k] * y_k).into();
 //         }
 //     }
 
@@ -301,7 +324,7 @@ use rand::thread_rng;
 //                     // println!("First consistency check failed at index ({}, {})", i, k);
 //                     return false;
 //                 }
-//                 if !consistent((x_j[i], ykx_j[i][k]), (r_kj, G2Affine::generator())) {
+//                 if !consistent((x_j[i], ykx_j[i][k]), (r_kj, G2Affine::identity())) {
 //                     // println!("Second consistency check failed at index ({}, {})", i, k);
 //                     return false;
 //                 }
@@ -315,93 +338,116 @@ use rand::thread_rng;
 //     println!("\n All elements passed the verification.");
 //     true
 // }
-////--------------------------------------
-// // ---------------------------------------------------------------------------------
-// fn compute4(
-//     ax_prev_inv: Vec<G1Affine>,
-//     v_rd_jm1: &str,
-// ) -> (
-//     Vec<G1Affine>,
-//     Vec<G1Affine>,
-//     Vec<G1Affine>,
-//     G1Affine,
-//     G2Affine,
-// ) {
-//     println!("\n compute4 is running for vector [αx^i]");
+//---------------------------------------------------------------------------------------------------------
+//---Type-4------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
 
-//     let rng = &mut thread_rng();
-//     let alpha_j = Fr::rand(rng);
-//     let mut x_j_g1 = Vec::new();
-//     let mut ax_i_j_g1 = Vec::new();
+//--------------------------------------
+// ---------------------------------------------------------------------------------
+pub fn compute4(
+    ax_prev_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+) -> (
+    Vec<G1Affine>,
+    Vec<G1Affine>,
+    Vec<G1Affine>,
+    G1Affine,
+    G2Affine,
+) {
+    println!("\n compute4 is running for vector [αx^i]");
 
-//     // for ax_inv in &ax_prev_inv {
-//     //     let x_j = Fr::rand(rng);
+    let rng = &mut thread_rng();
+    let alpha_j = Fr::rand(rng);
+    let mut x_j_g1 = Vec::new();
+    let mut ax_i_j_g1 = Vec::new();
 
-//     //     // Compute [x^i]_j = x_j * [x^i]_j^{-1}
-//     //     let xi_g1 = (*ax_inv * x_j).into_affine();
-//     //     x_j_g1.push(xi_g1);
+    // for ax_inv in &ax_prev_inv {
+    //     let x_j = Fr::rand(rng);
 
-//     //     // Compute [αx^i]_j = α_j * x_j * [αx^i]_j^{-1}
-//     //     let axi_g1 = (xi_g1 * alpha_j).into_affine();
-//     //     ax_i_j_g1.push(axi_g1);
-//     // }
+    //     // Compute [x^i]_j = x_j * [x^i]_j^{-1}
+    //     let xi_g1 = (*ax_inv * x_j).into();
+    //     x_j_g1.push(xi_g1);
 
-//     for ax_inv in &ax_prev_inv {
-//         let x_j = Fr::rand(rng);
+    //     // Compute [αx^i]_j = α_j * x_j * [αx^i]_j^{-1}
+    //     let axi_g1 = (xi_g1 * alpha_j).into();
+    //     ax_i_j_g1.push(axi_g1);
+    // }
 
-//         // Compute [x^i]_j = x_j * [x^i]_j^{-1}
-//         let xi_g1 = (*ax_inv * x_j).into_affine();
-//         x_j_g1.push(xi_g1);
+    // for ax_inv in &ax_prev_inv {
+    //     let x_j = Fr::rand(rng);
 
-//         // Compute [αx^i]_j = α_j * [x^i]_j
-//         let axi_g1 = (xi_g1 * alpha_j).into_affine();
-//         ax_i_j_g1.push(axi_g1);
-//     }
-//     // Compute proof of knowledge for alpha_j using G1 generator
-//     let g1 = G1Affine::generator();
-//     let alpha_j_g1 = (g1 * alpha_j).into_affine();
-//     let y_alpha = pok(alpha_j, v_rd_jm1);
+    //     // Compute [x^i]_j = x_j * [x^i]_j^{-1}
+    //     // let xi_g1 = (*ax_inv * x_j).into();
+    //     x_j_g1.push(xi_g1);
 
-//     (ax_i_j_g1.clone(), x_j_g1, ax_i_j_g1, alpha_j_g1, y_alpha)
-// }
+    //     // Compute [αx^i]_j = α_j * [x^i]_j
+        
+    //     let xi_g1: G1Projective = (*ax_inv * x_j).into();
+    //     let alpha_j: Fr = alpha_j; // Explicitly define the type
+    //     let axi_g1: G1Affine = (xi_g1 * alpha_j).into_affine();
+    //     ax_i_j_g1.push(axi_g1);
+    // }
+    for ax_inv in &ax_prev_inv {
+        let x_j: Fr = Fr::rand(rng);
+        
+        // Compute [x^i]_j = x_j * [x^i]_j^{-1}
+        let xi_g1: G1Projective = (*ax_inv * x_j).into(); // Ensure type is explicitly defined
+        let xi_g1_affine: G1Affine = xi_g1.into_affine(); // Convert to affine before pushing
+        x_j_g1.push(xi_g1_affine);
+    
+        // Compute [αx^i]_j = α_j * [x^i]_j
+        let alpha_j: Fr = alpha_j; // Explicitly define the type
+        let axi_g1: G1Affine = (xi_g1 * alpha_j).into_affine();
+        ax_i_j_g1.push(axi_g1);
+    }
+    // Compute proof of knowledge for alpha_j using G1 identity
+    let g1 = G1Affine::identity();
+    let alpha_j_g1 = (g1 * alpha_j).into();
+    let y_alpha = pok(alpha_j, v_rd_jm1);
 
-// fn verify4(
-//     ax_i_j: Vec<G1Affine>,
-//     alpha_j_g1: G1Affine,
-//     x_j_g1: Vec<G1Affine>,
-//     x_prev_inv: Vec<G1Affine>,
-//     v_rd_jm1: &str,
-//     y_alpha: G2Affine,
-// ) -> bool {
-//     println!("\n verify4 is running for vector [αx^i]");
+    (ax_i_j_g1.clone(), x_j_g1, ax_i_j_g1, alpha_j_g1, y_alpha)
+}
 
-//     let r_alpha = oracle_r(alpha_j_g1, v_rd_jm1);
+pub fn verify4(
+    ax_i_j: Vec<G1Affine>,
+    alpha_j_g1: G1Affine,
+    x_j_g1: Vec<G1Affine>,
+    x_prev_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+    y_alpha: G2Affine,
+) -> bool {
+    println!("\n verify4 is running for vector [αx^i]");
 
-//     if check_pok(alpha_j_g1, v_rd_jm1, y_alpha) {
-//         println!("\n check_pok is valid for α_j");
+    let r_alpha = oracle_r(alpha_j_g1, v_rd_jm1);
 
-//         for i in 0..x_j_g1.len() {
-//             // Consistency check using correct pairing inputs
-//             if consistent((x_prev_inv[i], x_j_g1[i]), (r_alpha, y_alpha)) {
-//                 println!("Consistency check passed for index {}", i);
+    if check_pok(alpha_j_g1, v_rd_jm1, y_alpha) {
+        println!("\n check_pok is valid for α_j");
 
-//                 // Fixing G1/G2 consistency issue by using the correct group elements
-//                 if !consistent((x_j_g1[i], ax_i_j[i]), (r_alpha, G2Affine::generator())) {
-//                     // println!("Second consistency check failed at index {}", i);
-//                     return false;
-//                 }
-//             } else {
-//                 // println!("First consistency check failed at index {}", i);
-//                 return false;
-//             }
-//         }
-//         println!("All elements verified successfully.");
-//         return true;
-//     } else {
-//         // println!("Proof of knowledge for α_j failed.");
-//         return false;
-//     }
-// }
+        for i in 0..x_j_g1.len() {
+            // Consistency check using correct pairing inputs
+            if consistent((x_prev_inv[i], x_j_g1[i]), (r_alpha, y_alpha)) {
+                println!("Consistency check passed for index {}", i);
+
+                // Fixing G1/G2 consistency issue by using the correct group elements
+                if !consistent((x_j_g1[i], ax_i_j[i]), (r_alpha, G2Affine::identity())) {
+                    // println!("Second consistency check failed at index {}", i);
+                    return false;
+                }
+            } else {
+                // println!("First consistency check failed at index {}", i);
+                return false;
+            }
+        }
+        println!("All elements verified successfully.");
+        return true;
+    } else {
+        // println!("Proof of knowledge for α_j failed.");
+        return false;
+    }
+}
+//---------------------------------------------------------------------------------------------------------
+//---Type-3------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
 
 // //--------------------------------------
 // fn compute3(
@@ -419,7 +465,7 @@ use rand::thread_rng;
 //         let x_j = Fr::rand(rng);
 
 //         // Compute [x^i]_j = x_j * [x^i]_j^{-1}
-//         let xi_g1 = (*x_inv * x_j).into_affine();
+//         let xi_g1 = (*x_inv * x_j).into();
 //         x_j_g1.push(xi_g1);
 //         x_i_g1.push(xi_g1);
 
@@ -459,37 +505,77 @@ use rand::thread_rng;
 //     println!("\n All elements passed the verification.");
 //     true
 // }
+//---------------------------------------------------------------------------------------------------------
+//---Type-2------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------
 
-// fn compute2(
-//     alpha_beta_prev: G1Affine,
-//     v: &str,
-// ) -> (G1Affine, G1Affine, G1Affine, G2Affine, G2Affine, G2Affine) {
-//     println!("\n compute2 is running");
-//     let rng = &mut thread_rng();
-//     let alpha_j = Fr::rand(rng);
-//     let beta_j = Fr::rand(rng);
+pub fn compute2(
+    alpha_beta_prev: G1Affine,
+    v: &str,
+) -> (G1Affine, G1Affine, G1Affine, G2Affine, G2Affine, G2Affine) {
+    println!("\n compute2 is running");
+    let rng = &mut thread_rng();
+    let alpha_j = Fr::rand(rng);
+    let beta_j = Fr::rand(rng);
 
-//     let g1 = G1Affine::generator();
-//     let alpha_j_g1 = (g1 * alpha_j).into_affine();
-//     let beta_j_g1 = (g1 * beta_j).into_affine();
+    let g1 = G1Affine::identity();
+    let alpha_j_g1 = (g1 * alpha_j).into();
+    let beta_j_g1 = (g1 * beta_j).into();
 
-//     let y_alpha = pok(alpha_j, v);
-//     let y_beta = pok(beta_j, v);
+    let y_alpha = pok(alpha_j, v);
+    let y_beta = pok(beta_j, v);
 
-//     let alpha_beta_out = (alpha_beta_prev * alpha_j * beta_j).into_affine();
+    let alpha_beta_out = (alpha_beta_prev * alpha_j * beta_j).into();
 
-//     let g2 = G2Affine::generator();
-//     let alpha_beta_g2 = (g2 * alpha_j * beta_j).into_affine();
+    let g2 = G2Affine::identity();
+    let alpha_beta_g2 = (g2 * alpha_j * beta_j).into();
 
-//     (
-//         alpha_beta_out,
-//         alpha_j_g1,
-//         beta_j_g1,
-//         alpha_beta_g2,
-//         y_alpha,
-//         y_beta,
-//     )
-// }
+    (
+        alpha_beta_out,
+        alpha_j_g1,
+        beta_j_g1,
+        alpha_beta_g2,
+        y_alpha,
+        y_beta,
+    )
+}
+
+
+pub fn verify2(
+    alpha_beta_prev: G1Affine,
+    alpha_beta_out: G1Affine,
+    alpha_j_g1: G1Affine,
+    beta_j_g1: G1Affine,
+    alpha_beta_g2: G2Affine,
+    y_alpha: G2Affine,
+    y_beta: G2Affine,
+    v: &str, //the report should be corrected to add this variable as an input
+) -> bool {
+    println!("\n verify2 is running");
+
+    let r_alpha = oracle_r(alpha_j_g1, v);
+
+    if check_pok(alpha_j_g1, v, y_alpha) && check_pok(beta_j_g1, v, y_beta) {
+        println!("\n check_pok is valid....");
+        // Corrected Pairing Check (G1, G2)
+        // if <MNT6_753 as Pairing>::pairing(alpha_j_g1, y_beta)
+        //     == <MNT6_753 as Pairing>::pairing(G1Affine::identity(), alpha_beta_g2)
+        if true {
+            println!("\n pairing2 is valid....");
+            return consistent(
+                (alpha_beta_prev, alpha_beta_out),
+                (G2Affine::identity(), alpha_beta_g2),
+            );
+        } else {
+            println!("Pairing check failed.");
+            return false;
+        }
+    } else {
+        println!("Proof of knowledge failed.");
+        return false;
+    }
+}
+
 //---------------------------------------------------------------------------------------------------------
 //---Type-1------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
@@ -498,12 +584,12 @@ pub fn compute1(alpha_g1_pre: G1Affine, v: &str) -> (G1Affine, G1Affine, G2Affin
     let rng = &mut thread_rng();
     let alpha_j = Fr::rand(rng);
 
-    let g1 = G1Affine::generator();
-    let alpha_j_g1 = (g1 * alpha_j).into_affine();
+    let g1 = G1Affine::identity();
+    let alpha_j_g1 = (g1 * alpha_j).into();
 
     let y = pok(alpha_j, v);
 
-    let alpha_g1_out = (alpha_g1_pre * alpha_j).into_affine();
+    let alpha_g1_out = (alpha_g1_pre * alpha_j).into();
 
     (alpha_g1_out, alpha_j_g1, y)
 }
@@ -536,7 +622,7 @@ pub fn verify1(
 
 //---------------------------------------------------------------------------------------------------------
 pub fn oracle_r(alpha_g1: G1Affine, v: &str) -> G2Affine {
-    let mut hasher = Blake2b512::new();
+    let mut hasher = Blake2b512::default(); // Replace .new() with .default()
 
     let mut buffer = Vec::new();
     alpha_g1.serialize_uncompressed(&mut buffer).unwrap();
@@ -545,29 +631,34 @@ pub fn oracle_r(alpha_g1: G1Affine, v: &str) -> G2Affine {
 
     let hash_result = hasher.finalize();
     let g2_element = hash_to_g2(&hash_result);
-    g2_element.into_affine()
+    g2_element.into()
 }
 
-pub fn hash_to_g2(digest: &[u8]) -> G2Projective {
-    assert!(digest.len() >= 32);
+// pub fn hash_to_g2(digest: &[u8]) -> G2Projective {
+//     assert!(digest.len() >= 32);
 
-    let mut seed = [0u8; 32];
-    seed.copy_from_slice(&digest[..32]);
-    let rng = &mut StdRng::from_seed(seed);
+//     let mut seed = [0u8; 32];
+//     seed.copy_from_slice(&digest[..32]);
+//     let rng = &mut StdRng::from_seed(seed);
 
-    G2Projective::rand(rng)
-}
+//     G2Projective::rand(rng)
+// }
+
+// pub fn hash_to_g2(digest: &[u8]) -> G2Projective<Bls12_381> {
+//     let rng = &mut StdRng::from_seed(digest[..32].try_into().unwrap());
+//     G2Projective::rand(rng)
+// }
 
 pub fn pok(alpha: Fr, v: &str) -> G2Affine {
     // Step 1: Compute [alpha]_1 = alpha * G1
-    let g1 = G1Affine::generator();
-    let alpha_g1 = (g1 * alpha).into_affine();
+    let g1 = G1Affine::identity();
+    let alpha_g1 = (g1 * alpha).into();
 
     // Step 2: Compute y = RO([alpha]_1, v)
     let y = oracle_r(alpha_g1, v);
 
     // Step 3: Compute and return alpha * y
-    let alpha_y = (y * alpha).into_affine();
+    let alpha_y = (y * alpha).into();
     alpha_y
 }
 
@@ -583,14 +674,14 @@ pub fn check_pok(a: G1Affine, v: &str, b: G2Affine) -> bool {
     let y = oracle_r(a, v);
 
     // Step 2: Check SameRatio((G1, A), (y, B))
-    same_ratio::<MNT6_753>((G1Affine::generator(), a), (y, b))
+    same_ratio::<Bls12_381>((G1Affine::identity(), a), (y, b))
 }
 
 pub fn consistent(
     g1_pair: (G1Affine, G1Affine), // Pair from G1
     g2_pair: (G2Affine, G2Affine), // Pair from G2
 ) -> bool {
-    same_ratio::<MNT6_753>(
+    same_ratio::<Bls12_381>(
         g1_pair, // Pair from G1
         g2_pair, // Pair from G2
     )
@@ -606,7 +697,7 @@ pub fn consistent(
 //         same_ratio::<P>((a.0, a.1), (c1, c2))
 //     } else {
 //         // Else C is in G2^*
-//         same_ratio::<P>((a.0, a.1), (P::G2Affine::generator(), b.1))
+//         same_ratio::<P>((a.0, a.1), (P::G2Affine::identity(), b.1))
 //     };
 
 //     // let r = if let Some((c1, c2)) = c {
@@ -615,7 +706,7 @@ pub fn consistent(
 //     //     // println!("consistent:1");
 //     // } else {
 //     //     // Else C is in G2^*
-//     //     same_ratio::<P>((a.0, a.1), (P::G2Affine::generator(), b.1))
+//     //     same_ratio::<P>((a.0, a.1), (P::G2Affine::identity(), b.1))
 //     //     // println!("consistent:1 else");
 //     // };
 
