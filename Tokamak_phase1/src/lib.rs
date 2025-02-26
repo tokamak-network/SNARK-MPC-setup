@@ -8,18 +8,17 @@
 // use rand::thread_rng;
 
 use ark_bls12_381::G1Projective;
-use ark_bls12_381::{Fr, G1Affine, G2Affine, Bls12_381};
+use ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine};
 // use ark_ec::bls12::G2Projective;
-use ark_serialize::CanonicalSerialize;
 use ark_ec::pairing::Pairing;
+use ark_serialize::CanonicalSerialize;
 
-use rand::{thread_rng, rngs::StdRng};
 use blake2::{Blake2b512, Digest};
-
+use rand::{rngs::StdRng, thread_rng};
 
 use ark_ec::bls12::G2Projective;
+use ark_ec::AffineRepr;
 use ark_ff::UniformRand;
-use ark_ec::{AffineRepr};
 use rand::SeedableRng;
 
 use ark_bls12_381::Config as Bls12_381_Config;
@@ -34,310 +33,316 @@ use ark_ec::CurveGroup;
 // ---------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------
 // // ---------Type-9------------------------------------------------------------------------
-// pub fn compute9(
-//     z_inv: Vec<G1Affine>,      // [z^h]_j^{-1} (size h)
-//     x_inv: Vec<G1Affine>,      // [x^i]_j^{-1} (size n)
-//     y_inv: Vec<Vec<G1Affine>>, // [y^k x^i]_j^{-1} (size n × m)
-//     v_rd_jm1: &str,            // Random transcript
-// ) -> (
-//     G1Affine,           // [α]_j
-//     Vec<G1Affine>,      // [z^h]_j (size h)
-//     Vec<G1Affine>,      // [x^i]_j (size n)
-//     Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
-//     Vec<Vec<G1Affine>>, // [α z^h x^i y^k]_j (size n × m)
-//     G2Affine,           // Proof for α_j
-//     Vec<G2Affine>,      // Proofs for z_kj (size h)
-//     Vec<G2Affine>,      // Proofs for y_kj (size m)
-// ) {
-//     let rng = &mut thread_rng();
+pub fn compute9(
+    z_inv: Vec<G1Affine>,      // [z^h]_j^{-1} (size h)
+    x_inv: Vec<G1Affine>,      // [x^i]_j^{-1} (size n)
+    y_inv: Vec<Vec<G1Affine>>, // [y^k x^i]_j^{-1} (size n × m)
+    v_rd_jm1: &str,            // Random transcript
+) -> (
+    G1Affine,           // [α]_j
+    Vec<G1Affine>,      // [z^h]_j (size h)
+    Vec<G1Affine>,      // [x^i]_j (size n)
+    Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
+    Vec<Vec<G1Affine>>, // [α z^h x^i y^k]_j (size n × m)
+    G2Affine,           // Proof for α_j
+    Vec<G2Affine>,      // Proofs for z_kj (size h)
+    Vec<G2Affine>,      // Proofs for y_kj (size m)
+) {
+    println!("\n compute9 is running");
+    let rng = &mut thread_rng();
 
-//     let alpha_j = Fr::rand(rng);
-//     let mut z_j = Vec::new();
-//     let mut x_j = Vec::new();
-//     let mut ykx_j = vec![vec![G1Affine::default(); y_inv[0].len()]; y_inv.len()];
-//     let mut alpha_zxy_j = vec![vec![G1Affine::default(); y_inv[0].len()]; y_inv.len()];
-//     let mut z_kj_proofs = Vec::new();
-//     let mut y_kj_proofs = Vec::new();
+    let alpha_j = Fr::rand(rng);
+    let mut z_j = Vec::new();
+    let mut x_j = Vec::new();
+    let mut ykx_j = vec![vec![G1Affine::default(); y_inv[0].len()]; y_inv.len()];
+    let mut alpha_zxy_j = vec![vec![G1Affine::default(); y_inv[0].len()]; y_inv.len()];
+    let mut z_kj_proofs = Vec::new();
+    let mut y_kj_proofs = Vec::new();
 
-//     for h in 0..z_inv.len() {
-//         let z_h = Fr::rand(rng);
-//         let z_h_g1 = (G1Affine::identity() * z_h).into();
-//         z_j.push(z_h_g1);
-//         let z_kj_proof = pok(z_h, v_rd_jm1);
-//         z_kj_proofs.push(z_kj_proof);
-//     }
+    for h in 0..z_inv.len() {
+        let z_h = Fr::rand(rng);
+        let z_h_g1 = (G1Affine::identity() * z_h).into();
+        z_j.push(z_h_g1);
+        let z_kj_proof = pok(z_h, v_rd_jm1);
+        z_kj_proofs.push(z_kj_proof);
+    }
 
-//     for i in 0..x_inv.len() {
-//         let x_i_j = (x_inv[i] * alpha_j).into();
-//         x_j.push(x_i_j);
-//         for k in 0..y_inv[0].len() {
-//             let y_k = Fr::rand(rng);
-//             let y_k_g1 = (G1Affine::identity() * y_k).into();
-//             ykx_j[i][k] = (y_inv[i][k] * y_k).into();
-//             let y_kj_proof = pok(y_k, v_rd_jm1);
-//             y_kj_proofs.push(y_kj_proof);
+    for i in 0..x_inv.len() {
+        let x_i_j = (x_inv[i] * alpha_j).into();
+        x_j.push(x_i_j);
+        for k in 0..y_inv[0].len() {
+            let y_k = Fr::rand(rng);
+            // let y_k_g1 = (G1Affine::identity() * y_k).into();
+            let g1_generator: G1Projective = G1Affine::generator().into();
+            let y_k_g1 = (g1_generator * y_k).into_affine();
+            ykx_j[i][k] = (y_inv[i][k] * y_k).into();
+            let y_kj_proof = pok(y_k, v_rd_jm1);
+            y_kj_proofs.push(y_kj_proof);
 
-//             alpha_zxy_j[i][k] = (ykx_j[i][k] * alpha_j).into();
-//         }
-//     }
+            alpha_zxy_j[i][k] = (ykx_j[i][k] * alpha_j).into();
+        }
+    }
 
-//     let alpha_j_g1 = (G1Affine::identity() * alpha_j).into();
-//     let y_alpha_j = pok(alpha_j, v_rd_jm1);
+    let alpha_j_g1 = (G1Affine::identity() * alpha_j).into();
+    let y_alpha_j = pok(alpha_j, v_rd_jm1);
 
-//     (
-//         alpha_j_g1,
-//         z_j,
-//         x_j,
-//         ykx_j,
-//         alpha_zxy_j,
-//         y_alpha_j,
-//         z_kj_proofs,
-//         y_kj_proofs,
-//     )
-// }
+    (
+        alpha_j_g1,
+        z_j,
+        x_j,
+        ykx_j,
+        alpha_zxy_j,
+        y_alpha_j,
+        z_kj_proofs,
+        y_kj_proofs,
+    )
+}
 
-// pub fn verify9(
-//     alpha_j: G1Affine,               // [α]_j
-//     z_j: Vec<G1Affine>,              // [z^h]_j (size h)
-//     x_j: Vec<G1Affine>,              // [x^i]_j (size n)
-//     ykx_j: Vec<Vec<G1Affine>>,       // [y^k x^i]_j (size n × m)
-//     alpha_zxy_j: Vec<Vec<G1Affine>>, // [α z^h x^i y^k]_j (size n × m)
-//     y_alpha_j: G2Affine,             // Proof for α_j
-//     z_kj_proofs: Vec<G2Affine>,      // Proofs for z_kj (size h)
-//     y_kj_proofs: Vec<G2Affine>,      // Proofs for y_kj (size m)
-//     x_inv: Vec<G1Affine>,            // ✅ Add this to pass the inverse of x^i
-//     v_rd_jm1: &str,                  // Random transcript
-// ) -> bool {
-//     let r_alpha = oracle_r(alpha_j, v_rd_jm1);
+pub fn verify9(
+    alpha_j: G1Affine,               // [α]_j
+    z_j: Vec<G1Affine>,              // [z^h]_j (size h)
+    x_j: Vec<G1Affine>,              // [x^i]_j (size n)
+    ykx_j: Vec<Vec<G1Affine>>,       // [y^k x^i]_j (size n × m)
+    alpha_zxy_j: Vec<Vec<G1Affine>>, // [α z^h x^i y^k]_j (size n × m)
+    y_alpha_j: G2Affine,             // Proof for α_j
+    z_kj_proofs: Vec<G2Affine>,      // Proofs for z_kj (size h)
+    y_kj_proofs: Vec<G2Affine>,      // Proofs for y_kj (size m)
+    x_inv: Vec<G1Affine>,            // ✅ Add this to pass the inverse of x^i
+    v_rd_jm1: &str,                  // Random transcript
+) -> bool {
+    println!("\n verify9 is running");
+    let r_alpha = oracle_r(alpha_j, v_rd_jm1);
 
-//     if !check_pok(alpha_j, v_rd_jm1, y_alpha_j) {
-//         // println!("Proof of knowledge for α_j failed.");
-//         return false;
-//     }
+    if !check_pok(alpha_j, v_rd_jm1, y_alpha_j) {
+        // println!("Proof of knowledge for α_j failed.");
+        return false;
+    }
 
-//     for h in 0..z_j.len() {
-//         let r_z = oracle_r(z_j[h], v_rd_jm1);
-//         if !check_pok(z_j[h], v_rd_jm1, z_kj_proofs[h]) {
-//             // println!("Proof of knowledge for z_j[{}] failed.", h);
-//             return false;
-//         }
-//     }
+    for h in 0..z_j.len() {
+        let r_z = oracle_r(z_j[h], v_rd_jm1);
+        if !check_pok(z_j[h], v_rd_jm1, z_kj_proofs[h]) {
+            // println!("Proof of knowledge for z_j[{}] failed.", h);
+            return false;
+        }
+    }
 
-//     for i in 0..x_j.len() {
-//         let r_x = oracle_r(x_j[i], v_rd_jm1);
+    for i in 0..x_j.len() {
+        let r_x = oracle_r(x_j[i], v_rd_jm1);
 
-//         // ✅ FIX: Added x_inv[i] as input
-//         if !consistent((x_inv[i], x_j[i]), (r_alpha, y_alpha_j)) {
-//             println!("Consistency check for [x^i] failed at index {}", i);
-//             return false;
-//         }
+        // ✅ FIX: Added x_inv[i] as input
+        if !consistent((x_inv[i], x_j[i]), (r_alpha, y_alpha_j)) {
+            println!("Consistency check for [x^i] failed at index {}", i);
+            return false;
+        }
 
-//         for k in 0..ykx_j[0].len() {
-//             let r_y = oracle_r(ykx_j[i][k], v_rd_jm1);
-//             if !check_pok(ykx_j[i][k], v_rd_jm1, y_kj_proofs[k]) {
-//                 // println!("Proof of knowledge for y_kj[{}] failed.", k);
-//                 return false;
-//             }
+        for k in 0..ykx_j[0].len() {
+            let r_y = oracle_r(ykx_j[i][k], v_rd_jm1);
+            if !check_pok(ykx_j[i][k], v_rd_jm1, y_kj_proofs[k]) {
+                // println!("Proof of knowledge for y_kj[{}] failed.", k);
+                return false;
+            }
 
-//             if !consistent((x_j[i], ykx_j[i][k]), (r_x, r_y)) {
-//                 // println!(
-//                 //     "Consistency check for [y^k x^i] failed at index ({}, {})",
-//                 //     i, k
-//                 // );
-//                 return false;
-//             }
+            if !consistent((x_j[i], ykx_j[i][k]), (r_x, r_y)) {
+                // println!(
+                //     "Consistency check for [y^k x^i] failed at index ({}, {})",
+                //     i, k
+                // );
+                return false;
+            }
 
-//             if !consistent((ykx_j[i][k], alpha_zxy_j[i][k]), (r_y, r_alpha)) {
-//                 // println!("Final consistency check failed at index ({}, {})", i, k);
-//                 return false;
-//             }
-//         }
-//     }
+            if !consistent((ykx_j[i][k], alpha_zxy_j[i][k]), (r_y, r_alpha)) {
+                // println!("Final consistency check failed at index ({}, {})", i, k);
+                return false;
+            }
+        }
+    }
 
-//     println!("All elements verified successfully.");
-//     true
-// }
+    println!("All elements verified successfully.");
+    true
+}
 
 // // ---------------------------------------------------------------------------------
-// pub fn compute7(
-//     ax_inv: Vec<G1Affine>,
-//     ykx_inv: Vec<Vec<G1Affine>>,
-//     x_inv: Vec<G1Affine>,
-//     v_rd_jm1: &str,
-// ) -> (
-//     Vec<G1Affine>,      // [α]_j
-//     Vec<G1Affine>,      // [x^i]_j
-//     Vec<Vec<G1Affine>>, // [y^k x^i]_j
-//     Vec<Vec<G1Affine>>, // [α y^k x^i]_j
-//     G2Affine,           // Proof for α_j
-//     Vec<G2Affine>,      // Proofs for y_kj
-// ) {
-//     println!("\n compute7 is running");
-//     let rng = &mut thread_rng();
+pub fn compute7(
+    ax_inv: Vec<G1Affine>,
+    ykx_inv: Vec<Vec<G1Affine>>,
+    x_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+) -> (
+    Vec<G1Affine>,      // [α]_j
+    Vec<G1Affine>,      // [x^i]_j
+    Vec<Vec<G1Affine>>, // [y^k x^i]_j
+    Vec<Vec<G1Affine>>, // [α y^k x^i]_j
+    G2Affine,           // Proof for α_j
+    Vec<G2Affine>,      // Proofs for y_kj
+) {
+    println!("\n compute7 is running");
+    let rng = &mut thread_rng();
 
-//     let alpha_j = Fr::rand(rng);
-//     let y_alpha_j = pok(alpha_j, v_rd_jm1);
+    let alpha_j = Fr::rand(rng);
+    let y_alpha_j = pok(alpha_j, v_rd_jm1);
 
-//     let alpha_j_g1 = (G1Affine::identity() * alpha_j).into();
-//     let mut x_j = Vec::new();
-//     let mut ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
-//     let mut alpha_ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
-//     let mut y_kj_proofs = Vec::new();
+    let alpha_j_g1 = (G1Affine::identity() * alpha_j).into();
+    let mut x_j = Vec::new();
+    let mut ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
+    let mut alpha_ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
+    let mut y_kj_proofs = Vec::new();
 
-//     for k in 0..ykx_inv[0].len() {
-//         let y_k = Fr::rand(rng);
-//         let y_k_g1 = (G1Affine::identity() * y_k).into();
-//         let y_kj_proof = pok(y_k, v_rd_jm1);
-//         y_kj_proofs.push(y_kj_proof);
+    for k in 0..ykx_inv[0].len() {
+        let y_k = Fr::rand(rng);
+        // let y_k_g1 = (G1Affine::identity() * y_k).into();
+        let g1_generator: G1Projective = G1Affine::generator().into();
+        let y_k_g1 = (g1_generator * y_k).into_affine();
+        let y_kj_proof = pok(y_k, v_rd_jm1);
+        y_kj_proofs.push(y_kj_proof);
 
-//         for i in 0..ykx_inv.len() {
-//             let x_i_j = (x_inv[i] * y_k).into();
-//             x_j.push(x_i_j);
+        for i in 0..ykx_inv.len() {
+            let x_i_j = (x_inv[i] * y_k).into();
+            x_j.push(x_i_j);
 
-//             ykx_j[i][k] = (ykx_inv[i][k] * y_k).into();
-//             alpha_ykx_j[i][k] = (ykx_j[i][k] * alpha_j).into();
-//         }
-//     }
+            ykx_j[i][k] = (ykx_inv[i][k] * y_k).into();
+            alpha_ykx_j[i][k] = (ykx_j[i][k] * alpha_j).into();
+        }
+    }
 
-//     (
-//         vec![alpha_j_g1],
-//         x_j,
-//         ykx_j,
-//         alpha_ykx_j,
-//         y_alpha_j,
-//         y_kj_proofs,
-//     )
-// }
-// pub fn verify7(
-//     alpha_j: G1Affine,
-//     x_j: Vec<G1Affine>,
-//     ykx_j: Vec<Vec<G1Affine>>,
-//     alpha_ykx_j: Vec<Vec<G1Affine>>,
-//     y_alpha_j: G2Affine,
-//     y_kj_proofs: Vec<G2Affine>,
-//     x_prev_inv: Vec<G1Affine>,
-//     v_rd_jm1: &str,
-// ) -> bool {
-//     println!("\n verify7 is running");
+    (
+        vec![alpha_j_g1],
+        x_j,
+        ykx_j,
+        alpha_ykx_j,
+        y_alpha_j,
+        y_kj_proofs,
+    )
+}
+pub fn verify7(
+    alpha_j: G1Affine,
+    x_j: Vec<G1Affine>,
+    ykx_j: Vec<Vec<G1Affine>>,
+    alpha_ykx_j: Vec<Vec<G1Affine>>,
+    y_alpha_j: G2Affine,
+    y_kj_proofs: Vec<G2Affine>,
+    x_prev_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+) -> bool {
+    println!("\n verify7 is running");
 
-//     // Step 1: Check proof of knowledge for α_j
-//     if !check_pok(alpha_j, v_rd_jm1, y_alpha_j) {
-//         println!("Proof of knowledge for α_j failed.");
-//         return false;
-//     }
+    // Step 1: Check proof of knowledge for α_j
+    if !check_pok(alpha_j, v_rd_jm1, y_alpha_j) {
+        println!("Proof of knowledge for α_j failed.");
+        return false;
+    }
 
-//     // Step 2: Check proof of knowledge for each y_kj
-//     for (k, y_kj_proof) in y_kj_proofs.iter().enumerate() {
-//         if !check_pok(ykx_j[0][k], v_rd_jm1, *y_kj_proof) {
-//             println!("Proof of knowledge for y_kj failed at index k = {}", k);
-//             return false;
-//         }
-//     }
+    // Step 2: Check proof of knowledge for each y_kj
+    for (k, y_kj_proof) in y_kj_proofs.iter().enumerate() {
+        if !check_pok(ykx_j[0][k], v_rd_jm1, *y_kj_proof) {
+            println!("Proof of knowledge for y_kj failed at index k = {}", k);
+            return false;
+        }
+    }
 
-//     // Step 3: Consistency checks
-//     for i in 0..x_j.len() {
-//         if !consistent((x_prev_inv[i], x_j[i]), (G2Affine::identity(), y_alpha_j)) {
-//             // println!("First consistency check failed at index i = {}", i);
-//             return false;
-//         }
+    // Step 3: Consistency checks
+    for i in 0..x_j.len() {
+        if !consistent((x_prev_inv[i], x_j[i]), (G2Affine::identity(), y_alpha_j)) {
+            // println!("First consistency check failed at index i = {}", i);
+            return false;
+        }
 
-//         for k in 0..ykx_j[0].len() {
-//             if !consistent(
-//                 (x_j[i], ykx_j[i][k]),
-//                 (G2Affine::identity(), y_kj_proofs[k]),
-//             ) {
-//                 // println!(
-//                 // "Second consistency check failed at index (i, k) = ({}, {})",
-//                 //     i,
-//                 //     k
-//                 // );
-//                 return false;
-//             }
+        for k in 0..ykx_j[0].len() {
+            if !consistent(
+                (x_j[i], ykx_j[i][k]),
+                (G2Affine::identity(), y_kj_proofs[k]),
+            ) {
+                // println!(
+                // "Second consistency check failed at index (i, k) = ({}, {})",
+                //     i,
+                //     k
+                // );
+                return false;
+            }
 
-//             if !consistent(
-//                 (ykx_j[i][k], alpha_ykx_j[i][k]),
-//                 (G2Affine::identity(), y_alpha_j),
-//             ) {
-//                 // println!(
-//                 //     "Third consistency check failed at index (i, k) = ({}, {})",
-//                 //     i, k
-//                 // );
-//                 return false;
-//             }
-//         }
-//     }
+            if !consistent(
+                (ykx_j[i][k], alpha_ykx_j[i][k]),
+                (G2Affine::identity(), y_alpha_j),
+            ) {
+                // println!(
+                //     "Third consistency check failed at index (i, k) = ({}, {})",
+                //     i, k
+                // );
+                return false;
+            }
+        }
+    }
 
-//     println!("\n All elements passed the verification.");
-//     true
-// }
+    println!("\n All elements passed the verification.");
+    true
+}
 // // ---------------------------------------------------------------------------------
-// fn compute5(
-//     ykx_inv: Vec<Vec<G1Affine>>, // Now a matrix of size n × m
-//     x_inv: Vec<G1Affine>,
-//     v_rd_jm1: &str,
-// ) -> (
-//     Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
-//     Vec<G1Affine>,      // [y^k]_j (size m)
-//     Vec<G1Affine>,      // [x^i]_j (size n)
-//     Vec<G2Affine>,      // Proofs y_kj
-// ) {
-//     println!("\n compute5 is running");
-//     let rng = &mut thread_rng();
-//     let mut ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
-//     let mut yk_j = Vec::new();
-//     let mut x_j = Vec::new();
-//     let mut y_kj_proofs = Vec::new();
+pub fn compute5(
+    ykx_inv: Vec<Vec<G1Affine>>, // Now a matrix of size n × m
+    x_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+) -> (
+    Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
+    Vec<G1Affine>,      // [y^k]_j (size m)
+    Vec<G1Affine>,      // [x^i]_j (size n)
+    Vec<G2Affine>,      // Proofs y_kj
+) {
+    println!("\n compute5 is running");
+    let rng = &mut thread_rng();
+    let mut ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
+    let mut yk_j = Vec::new();
+    let mut x_j = Vec::new();
+    let mut y_kj_proofs = Vec::new();
 
-//     for k in 0..ykx_inv[0].len() {
-//         let y_k = Fr::rand(rng);
-//         let y_k_g1 = (G1Affine::identity() * y_k).into();
-//         yk_j.push(y_k_g1);
-//         let y_kj_proof = pok(y_k, v_rd_jm1);
-//         y_kj_proofs.push(y_kj_proof);
+    for k in 0..ykx_inv[0].len() {
+        let y_k = Fr::rand(rng);
+        let y_k_g1 = (G1Affine::identity() * y_k).into();
+        yk_j.push(y_k_g1);
+        let y_kj_proof = pok(y_k, v_rd_jm1);
+        y_kj_proofs.push(y_kj_proof);
 
-//         for i in 0..ykx_inv.len() {
-//             let x_i_j = (x_inv[i] * y_k).into();
-//             x_j.push(x_i_j);
-//             ykx_j[i][k] = (ykx_inv[i][k] * y_k).into();
-//         }
-//     }
+        for i in 0..ykx_inv.len() {
+            let x_i_j = (x_inv[i] * y_k).into();
+            x_j.push(x_i_j);
+            ykx_j[i][k] = (ykx_inv[i][k] * y_k).into();
+        }
+    }
 
-//     (ykx_j, yk_j, x_j, y_kj_proofs)
-// }
+    (ykx_j, yk_j, x_j, y_kj_proofs)
+}
 
-// fn verify5(
-//     ykx_j: Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
-//     yk_j: Vec<G1Affine>,       // [y^k]_j (size m)
-//     x_j: Vec<G1Affine>,        // [x^i]_j (size n)
-//     x_prev_inv: Vec<G1Affine>,
-//     v_rd_jm1: &str,
-//     y_kj_proofs: Vec<G2Affine>,
-// ) -> bool {
-//     println!("\n verify5 is running");
+pub fn verify5(
+    ykx_j: Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
+    yk_j: Vec<G1Affine>,       // [y^k]_j (size m)
+    x_j: Vec<G1Affine>,        // [x^i]_j (size n)
+    x_prev_inv: Vec<G1Affine>,
+    v_rd_jm1: &str,
+    y_kj_proofs: Vec<G2Affine>,
+) -> bool {
+    println!("\n verify5 is running");
 
-//     for k in 0..yk_j.len() {
-//         let r_kj = oracle_r(yk_j[k], v_rd_jm1);
+    for k in 0..yk_j.len() {
+        let r_kj = oracle_r(yk_j[k], v_rd_jm1);
 
-//         if check_pok(yk_j[k], v_rd_jm1, y_kj_proofs[k]) {
-//             for i in 0..ykx_j.len() {
-//                 if !consistent((x_prev_inv[i], x_j[i]), (r_kj, y_kj_proofs[k])) {
-//                     // println!("First consistency check failed at index ({}, {})", i, k);
-//                     return false;
-//                 }
-//                 if !consistent((x_j[i], ykx_j[i][k]), (r_kj, G2Affine::identity())) {
-//                     // println!("Second consistency check failed at index ({}, {})", i, k);
-//                     return false;
-//                 }
-//             }
-//         } else {
-//             println!("Proof of knowledge failed at index k = {}", k);
-//             return false;
-//         }
-//     }
+        if check_pok(yk_j[k], v_rd_jm1, y_kj_proofs[k]) {
+            for i in 0..ykx_j.len() {
+                if !consistent((x_prev_inv[i], x_j[i]), (r_kj, y_kj_proofs[k])) {
+                    // println!("First consistency check failed at index ({}, {})", i, k);
+                    return false;
+                }
+                if !consistent((x_j[i], ykx_j[i][k]), (r_kj, G2Affine::identity())) {
+                    // println!("Second consistency check failed at index ({}, {})", i, k);
+                    return false;
+                }
+            }
+        } else {
+            println!("Proof of knowledge failed at index k = {}", k);
+            return false;
+        }
+    }
 
-//     println!("\n All elements passed the verification.");
-//     true
-// }
+    println!("\n All elements passed the verification.");
+    true
+}
 //---------------------------------------------------------------------------------------------------------
 //---Type-4------------------------------------------------------------------------------------------------
 //---------------------------------------------------------------------------------------------------------
@@ -361,40 +366,14 @@ pub fn compute4(
     let mut x_j_g1 = Vec::new();
     let mut ax_i_j_g1 = Vec::new();
 
-    // for ax_inv in &ax_prev_inv {
-    //     let x_j = Fr::rand(rng);
-
-    //     // Compute [x^i]_j = x_j * [x^i]_j^{-1}
-    //     let xi_g1 = (*ax_inv * x_j).into();
-    //     x_j_g1.push(xi_g1);
-
-    //     // Compute [αx^i]_j = α_j * x_j * [αx^i]_j^{-1}
-    //     let axi_g1 = (xi_g1 * alpha_j).into();
-    //     ax_i_j_g1.push(axi_g1);
-    // }
-
-    // for ax_inv in &ax_prev_inv {
-    //     let x_j = Fr::rand(rng);
-
-    //     // Compute [x^i]_j = x_j * [x^i]_j^{-1}
-    //     // let xi_g1 = (*ax_inv * x_j).into();
-    //     x_j_g1.push(xi_g1);
-
-    //     // Compute [αx^i]_j = α_j * [x^i]_j
-        
-    //     let xi_g1: G1Projective = (*ax_inv * x_j).into();
-    //     let alpha_j: Fr = alpha_j; // Explicitly define the type
-    //     let axi_g1: G1Affine = (xi_g1 * alpha_j).into_affine();
-    //     ax_i_j_g1.push(axi_g1);
-    // }
     for ax_inv in &ax_prev_inv {
         let x_j: Fr = Fr::rand(rng);
-        
+
         // Compute [x^i]_j = x_j * [x^i]_j^{-1}
         let xi_g1: G1Projective = (*ax_inv * x_j).into(); // Ensure type is explicitly defined
         let xi_g1_affine: G1Affine = xi_g1.into_affine(); // Convert to affine before pushing
         x_j_g1.push(xi_g1_affine);
-    
+
         // Compute [αx^i]_j = α_j * [x^i]_j
         let alpha_j: Fr = alpha_j; // Explicitly define the type
         let axi_g1: G1Affine = (xi_g1 * alpha_j).into_affine();
@@ -539,7 +518,6 @@ pub fn compute2(
         y_beta,
     )
 }
-
 
 pub fn verify2(
     alpha_beta_prev: G1Affine,

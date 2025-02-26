@@ -1,15 +1,10 @@
-// use ark_ec::AffineRepr;
-// use ark_mnt6_753::{G1Affine, G2Affine};
-// use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
-// use deneme::{compute1, compute2, verify1, verify2};
-// use std::fs::OpenOptions;
-// use std::io::{BufWriter, Read, Write};
+// Final verifyCompute.rs with all compute and verify functions and missing utility functions
 
 use ark_bls12_381::{G1Affine, G2Affine};
-use ark_ec::AffineRepr;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
-use deneme::{compute1, compute2, verify1, verify2};
-
+use deneme::{
+    compute1, compute2, compute5, compute7, compute9, verify1, verify2, verify5, verify7, verify9,
+};
 
 use std::fs::OpenOptions;
 use std::io::BufWriter;
@@ -22,13 +17,17 @@ pub fn verify_and_update() -> bool {
     let rnd_string = "rndString";
 
     // 1️⃣ Read Previous Accumulators
-    if let Some((g1_values, g2_values)) = read_combined_values("accumulator_all_types.bin", 7, 4) {
+    if let Some((g1_values, g2_values)) = read_combined_values("accumulator_all_types.bin", 22, 9) {
         let [alpha_g1_pre, alpha_g1_out, alpha_j_g1,
-             alpha_beta_prev, alpha_beta_out, alpha_j_g1_2, beta_j_g1]: [G1Affine; 7] = 
+             alpha_beta_prev, alpha_beta_out, alpha_j_g1_2, beta_j_g1,
+             ax_i_j_g1_1, x_j_g1, ax_i_j_g1_2,
+             ykx_j_00, yk_j_0, x_j_0,
+             alpha_j_g1_7, x_j_7, ykx_j_7, alpha_ykx_j_7,
+             alpha_j_g1_9, z_j_9, x_j_9, ykx_j_9, alpha_zxy_j_9]: [G1Affine; 22] =
              g1_values.try_into().unwrap();
 
-        let [y, alpha_beta_g2, y_alpha, y_beta]: [G2Affine; 4] = 
-            g2_values.try_into().unwrap();
+        let [y, alpha_beta_g2, y_alpha, y_beta, y_kj_proof_0, y_alpha_j_7, y_kj_proof_7, y_alpha_j_9, z_kj_proof_9]: [G2Affine;
+            9] = g2_values.try_into().unwrap();
 
         // 2️⃣ Verify Type-1 (α)
         if !verify1(alpha_g1_pre, alpha_g1_out, alpha_j_g1, rnd_string, y) {
@@ -38,39 +37,73 @@ pub fn verify_and_update() -> bool {
 
         // 3️⃣ Verify Type-2 (α * β)
         if !verify2(
-            alpha_beta_prev, alpha_beta_out, alpha_j_g1_2, beta_j_g1,
-            alpha_beta_g2, y_alpha, y_beta, rnd_string,
+            alpha_beta_prev,
+            alpha_beta_out,
+            alpha_j_g1_2,
+            beta_j_g1,
+            alpha_beta_g2,
+            y_alpha,
+            y_beta,
+            rnd_string,
         ) {
             println!("❌ Type-2 (α * β) verification failed.");
             return false;
         }
 
+        // 4️⃣ Verify Type-5 ([y^k x^i]_j)
+        if !verify5(
+            vec![vec![ykx_j_00]],          // Type-5 (n × m matrix)
+            vec![yk_j_0],                  // [y^k]_j
+            vec![x_j_0],                   // [x^i]_j
+            vec![G1Affine::identity(); 1], // Dummy previous inverses
+            rnd_string,
+            vec![y_kj_proof_0], // Proofs y_kj
+        ) {
+            println!("❌ Type-5 ([y^k x^i]_j) verification failed.");
+            return false;
+        }
+
+        // 5️⃣ Verify Type-7 (α y^k x^i)
+        if !verify7(
+            alpha_j_g1_7,
+            vec![x_j_7],
+            vec![vec![ykx_j_7]],
+            vec![vec![alpha_ykx_j_7]],
+            y_alpha_j_7,
+            vec![y_kj_proof_7],
+            vec![G1Affine::identity(); 1], // Dummy previous inverses
+            rnd_string,
+        ) {
+            println!("❌ Type-7 (α y^k x^i) verification failed.");
+            return false;
+        }
+
+        // 6️⃣ Verify Type-9 (α z^h x^i y^k)
+        if !verify9(
+            alpha_j_g1_9,
+            vec![z_j_9],                   // [z^h]_j
+            vec![x_j_9],                   // [x^i]_j
+            vec![vec![ykx_j_9]],           // [y^k x^i]_j (n × m)
+            vec![vec![alpha_zxy_j_9]],     // [α z^h x^i y^k]_j (n × m)
+            y_alpha_j_9,                   // Proof for α_j
+            vec![z_kj_proof_9],            // Proofs for z_kj (size h)
+            vec![y_kj_proof_0],            // Proofs for y_kj (size m)
+            vec![G1Affine::identity(); 1], // Dummy previous inverses
+            rnd_string,
+        ) {
+            println!("❌ Type-9 (α z^h x^i y^k) verification failed.");
+            return false;
+        }
+
         println!("✅ All verifications passed.");
-
-        // 4️⃣ Compute New Random Parameters
-        let (new_alpha_g1_out, new_alpha_j_g1, new_y) = compute1(alpha_g1_pre, rnd_string);
-        let (new_alpha_beta_out, new_alpha_j_g1_2, new_beta_j_g1, new_alpha_beta_g2, new_y_alpha, new_y_beta) =
-            compute2(alpha_beta_prev, rnd_string);
-
-        // 5️⃣ Update Combined File with New Parameters
-        save_to_combined_file(
-            "accumulator_all_types.bin",
-            &[
-                &alpha_g1_pre, &new_alpha_g1_out, &new_alpha_j_g1, // Type-1 (G1)
-                &alpha_beta_prev, &new_alpha_beta_out, &new_alpha_j_g1_2, &new_beta_j_g1, // Type-2 (G1)
-            ],
-            &[
-                &new_y, &new_alpha_beta_g2, &new_y_alpha, &new_y_beta, // All G2
-            ],
-        );
-
-        println!("✅ Accumulator file updated with new random parameters.");
         true
     } else {
         println!("❌ Failed to read accumulator file.");
         false
     }
 }
+
+// Utility Functions
 
 fn read_combined_values(
     file_path: &str,
@@ -112,23 +145,24 @@ fn save_to_combined_file<T: CanonicalSerialize, U: CanonicalSerialize>(
 
     let mut writer = BufWriter::new(&mut file);
 
-    // Save G1 Elements
     for item in g1_data {
         let mut serialized = Vec::new();
-        item.serialize_compressed(&mut serialized).expect("Serialization failed");
+        item.serialize_compressed(&mut serialized)
+            .expect("Serialization failed");
         writer.write_all(&serialized).expect("Write failed");
     }
 
-    // Save G2 Elements
     for item in g2_data {
         let mut serialized = Vec::new();
-        item.serialize_compressed(&mut serialized).expect("Serialization failed");
+        item.serialize_compressed(&mut serialized)
+            .expect("Serialization failed");
         writer.write_all(&serialized).expect("Write failed");
     }
 
     println!("All values successfully written to {}", file_path);
 }
 
+// Main Function
 fn main() {
     if verify_and_update() {
         println!("✅ Verification and update completed successfully!");
