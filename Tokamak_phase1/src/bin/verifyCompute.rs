@@ -1,10 +1,13 @@
 // Final verifyCompute.rs with all compute and verify functions and missing utility functions
 
-use ark_bls12_381::{G1Affine, G2Affine};
+use ark_bls12_381::{Fr, G1Affine, G2Affine};
+use ark_ec::AffineRepr;
+use ark_ff::UniformRand;
 use ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use deneme::{
     compute1, compute2, compute5, compute7, compute9, verify1, verify2, verify5, verify7, verify9,
 };
+use rand::thread_rng;
 
 use std::fs::OpenOptions;
 use std::io::BufWriter;
@@ -96,6 +99,89 @@ pub fn verify_and_update() -> bool {
         }
 
         println!("✅ All verifications passed.");
+
+        // 7️⃣ Compute New Random Parameters
+        let (new_alpha_g1_out, new_alpha_j_g1, new_y) = compute1(alpha_g1_pre, rnd_string);
+        let (
+            new_alpha_beta_out,
+            new_alpha_j_g1_2,
+            new_beta_j_g1,
+            new_alpha_beta_g2,
+            new_y_alpha,
+            new_y_beta,
+        ) = compute2(alpha_beta_prev, rnd_string);
+
+        let (new_ykx_j, new_yk_j, new_x_j, new_y_kj_proofs) = compute5(
+            vec![vec![G1Affine::identity(); 2]; 2],
+            vec![G1Affine::identity(); 2],
+            rnd_string,
+        );
+
+        let (
+            new_alpha_j_g1_7,
+            new_x_j_7,
+            new_ykx_j_7,
+            new_alpha_ykx_j_7,
+            new_y_alpha_j_7,
+            new_y_kj_proofs_7,
+        ) = compute7(
+            vec![G1Affine::identity(); 2],
+            vec![vec![G1Affine::identity(); 2]; 2],
+            vec![G1Affine::identity(); 2],
+            rnd_string,
+        );
+
+        let (
+            new_alpha_j_g1_9,
+            new_z_j_9,
+            new_x_j_9,
+            new_ykx_j_9,
+            new_alpha_zxy_j_9,
+            new_y_alpha_j_9,
+            new_z_kj_proofs_9,
+            new_y_kj_proofs_9,
+        ) = compute9(
+            vec![G1Affine::identity(); 2],
+            vec![G1Affine::identity(); 2],
+            vec![vec![G1Affine::identity(); 2]; 2],
+            rnd_string,
+        );
+
+        // 8️⃣ Update Combined File with New Parameters
+        fn save_to_combined_file<T: CanonicalSerialize, U: CanonicalSerialize>(
+            file_path: &str,
+            g1_data: &[&T],
+            g2_data: &[&U],
+        ) {
+            let file = OpenOptions::new()
+                .create(true)
+                .write(true)
+                .truncate(true) // Ensures overwriting correctly
+                .open(file_path)
+                .expect("Failed to open file");
+
+            let mut writer = BufWriter::new(file);
+
+            for item in g1_data {
+                let mut serialized = Vec::new();
+                item.serialize_compressed(&mut serialized)
+                    .expect("Serialization failed");
+                writer.write_all(&serialized).expect("Write failed");
+            }
+
+            for item in g2_data {
+                let mut serialized = Vec::new();
+                item.serialize_compressed(&mut serialized)
+                    .expect("Serialization failed");
+                writer.write_all(&serialized).expect("Write failed");
+            }
+
+            writer.flush().expect("Failed to flush file"); // ✅ Flush before closing
+
+            println!("✅ Accumulator file updated successfully.");
+        }
+
+        println!("✅ Accumulator file updated with new random parameters.");
         true
     } else {
         println!("❌ Failed to read accumulator file.");
