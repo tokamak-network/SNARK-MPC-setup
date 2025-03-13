@@ -29,7 +29,116 @@ pub fn hash_to_g2(digest: &[u8]) -> G2Projective<ark_bls12_381::Config> {
     G2Projective::<ark_bls12_381::Config>::rand(rng)
 }
 
-use ark_ec::CurveGroup;
+// ---------------------------------------------------------------------------------
+// ---------------------------------------------------------------------------------
+// // ---------Type-8------------------------------------------------------------------------
+use ark_ec::CurveGroup; // ✅ Required for `G1Affine::generator()`
+use ark_ff::PrimeField; // ✅ Required for `Fr::from()` // ✅ Explicitly import G1Projective
+
+pub fn compute8(
+    ykx_inv: Vec<Vec<G1Affine>>, // [y^k x^i]_j^{-1} (size n × m)
+    y_inv: Vec<G1Affine>,        // [y^k]_j^{-1} (size m)
+    x_inv: Vec<G1Affine>,        // [x^i]_j^{-1} (size n)
+    v_rd_jm1: &str,              // Random transcript
+) -> (
+    Vec<Vec<G1Affine>>, // [y^k x^i]_j (size n × m)
+    Vec<G1Affine>,      // [y^k]_j (size m)
+    Vec<G1Affine>,      // [x^i]_j (size n)
+    Vec<Vec<G1Affine>>, // [α y^k x^i f(x)]_j (size n × m)
+    G1Affine,           // [α]_j
+    G2Affine,           // Proof for α_j
+    Vec<G2Affine>,      // Proofs for y_kj
+) {
+    println!("\n compute8 is running");
+    let rng = &mut thread_rng();
+
+    let alpha_j = Fr::rand(rng);
+    let y_alpha_j = pok(alpha_j, v_rd_jm1);
+
+    let alpha_j_g1 = (G1Projective::from(G1Affine::generator()) * alpha_j).into_affine(); // ✅ Fixed type annotation
+    let mut ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
+    let mut alpha_ykx_j = vec![vec![G1Affine::default(); ykx_inv[0].len()]; ykx_inv.len()];
+    let mut y_kj_proofs = Vec::new();
+
+    for k in 0..ykx_inv[0].len() {
+        let y_k = Fr::rand(rng);
+        let g1_generator: G1Projective = G1Projective::from(G1Affine::generator()); // ✅ Corrected
+        let y_k_g1 = (g1_generator * y_k).into_affine();
+        let y_kj_proof = pok(y_k, v_rd_jm1);
+        y_kj_proofs.push(y_kj_proof);
+
+        for i in 0..ykx_inv.len() {
+            let x_i_j = (G1Projective::from(x_inv[i]) * y_k).into_affine(); // ✅ Fixed scalar multiplication
+            ykx_j[i][k] = (G1Projective::from(ykx_inv[i][k]) * y_k).into_affine(); // ✅ Fixed
+            alpha_ykx_j[i][k] = (G1Projective::from(ykx_j[i][k]) * alpha_j).into_affine();
+            // ✅ Fixed
+        }
+    }
+
+    (
+        ykx_j,
+        y_inv.clone(),
+        x_inv.clone(),
+        alpha_ykx_j,
+        alpha_j_g1,
+        y_alpha_j,
+        y_kj_proofs,
+    )
+}
+
+pub fn verify8(
+    ykx_j: Vec<Vec<G1Affine>>,       // [y^k x^i]_j (size n × m)
+    y_j: Vec<G1Affine>,              // [y^k]_j (size m)
+    x_j: Vec<G1Affine>,              // [x^i]_j (size n)
+    alpha_ykx_j: Vec<Vec<G1Affine>>, // [α y^k x^i f(x)]_j (size n × m)
+    alpha_j_g1: G1Affine,            // [α]_j
+    y_alpha_j: G2Affine,             // Proof for α_j
+    y_kj_proofs: Vec<G2Affine>,      // Proofs for y_kj
+    x_prev_inv: Vec<G1Affine>,       // Previous inverses [x^i]_{j-1}
+    v_rd_jm1: &str,                  // Random transcript
+) -> bool {
+    println!("\n verify8 is running");
+
+    let r_alpha = oracle_r(alpha_j_g1, v_rd_jm1);
+
+    if !check_pok(alpha_j_g1, v_rd_jm1, y_alpha_j) {
+        println!("Proof of knowledge for α_j failed.");
+        return false;
+    }
+
+    for k in 0..y_j.len() {
+        let r_kj = oracle_r(y_j[k], v_rd_jm1);
+
+        if !check_pok(y_j[k], v_rd_jm1, y_kj_proofs[k]) {
+            println!("Proof of knowledge for y_kj failed at index k = {}", k);
+            return false;
+        }
+
+        for i in 0..ykx_j.len() {
+            if !consistent((x_prev_inv[i], x_j[i]), (r_kj, y_kj_proofs[k])) {
+                println!("First consistency check failed at index ({}, {})", i, k);
+                return false;
+            }
+
+            if !consistent((x_j[i], ykx_j[i][k]), (r_kj, G2Affine::identity())) {
+                println!("Second consistency check failed at index ({}, {})", i, k);
+                return false;
+            }
+
+            if !consistent(
+                (ykx_j[i][k], alpha_ykx_j[i][k]),
+                (r_alpha, G2Affine::identity()),
+            ) {
+                println!("Final consistency check failed at index ({}, {})", i, k);
+                return false;
+            }
+        }
+    }
+
+    println!("\n All elements passed the verification.");
+    true
+}
+
 // ---------------------------------------------------------------------------------
 // ---------------------------------------------------------------------------------
 // // ---------Type-9------------------------------------------------------------------------

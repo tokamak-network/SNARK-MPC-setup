@@ -148,38 +148,11 @@ pub fn verify_and_update() -> bool {
         );
 
         // 8️⃣ Update Combined File with New Parameters
-        fn save_to_combined_file<T: CanonicalSerialize, U: CanonicalSerialize>(
-            file_path: &str,
-            g1_data: &[&T],
-            g2_data: &[&U],
-        ) {
-            let file = OpenOptions::new()
-                .create(true)
-                .write(true)
-                .truncate(true) // Ensures overwriting correctly
-                .open(file_path)
-                .expect("Failed to open file");
-
-            let mut writer = BufWriter::new(file);
-
-            for item in g1_data {
-                let mut serialized = Vec::new();
-                item.serialize_compressed(&mut serialized)
-                    .expect("Serialization failed");
-                writer.write_all(&serialized).expect("Write failed");
-            }
-
-            for item in g2_data {
-                let mut serialized = Vec::new();
-                item.serialize_compressed(&mut serialized)
-                    .expect("Serialization failed");
-                writer.write_all(&serialized).expect("Write failed");
-            }
-
-            writer.flush().expect("Failed to flush file"); // ✅ Flush before closing
-
-            println!("✅ Accumulator file updated successfully.");
-        }
+        save_to_combined_file(
+            "accumulator_all_types.bin",
+            &[&new_alpha_g1_out, &new_alpha_j_g1],
+            &[&new_y],
+        );
 
         println!("✅ Accumulator file updated with new random parameters.");
         true

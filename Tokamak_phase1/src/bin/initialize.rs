@@ -1,18 +1,16 @@
-// Final version of initialize.rs for Type-9
-
 use ark_bls12_381::{Fr, G1Affine, G2Affine};
 use ark_ec::{AffineRepr, CurveGroup};
 use ark_ff::PrimeField;
 use ark_ff::UniformRand;
 use ark_serialize::CanonicalSerialize;
-use deneme::{compute1, compute2, compute4, compute5, compute7, compute9};
+use deneme::{compute1, compute2, compute4, compute5, compute7, compute8, compute9}; // ✅ Added compute8
 use rand::thread_rng;
 use std::fs::OpenOptions;
 use std::io::BufWriter;
 use std::io::Write;
 
 pub fn initialize_all() {
-    println!("Initializing Type-1 (α), Type-2 (α * β), Type-4 (μ * x^i), Type-5 ([y^k x^i]_j), Type-7 (α y^k x^i), and Type-9 (α z^h x^i y^k) parameters...");
+    println!("Initializing Type-1 (α), Type-2 (α * β), Type-4 (μ * x^i), Type-5 ([y^k x^i]_j), Type-7 (α y^k x^i), Type-8 (α y^k x^i f(x)), and Type-9 (α z^h x^i y^k) parameters...");
     let rnd_string = "rndString";
 
     // Type-1 (α)
@@ -38,6 +36,10 @@ pub fn initialize_all() {
     let ax_inv = vec![G1Affine::identity(); 2];
     let (alpha_j_g1_7, x_j_7, ykx_j_7, alpha_ykx_j, y_alpha_j_7, y_kj_proofs_7) =
         compute7(ax_inv.clone(), ykx_inv.clone(), x_inv.clone(), rnd_string);
+
+    // Type-8 (α y^k x^i f(x)) ✅ Added
+    let (ykx_j_8, y_j_8, x_j_8, alpha_ykx_j_8, alpha_j_g1_8, y_alpha_j_8, y_kj_proofs_8) =
+        compute8(ykx_inv.clone(), yk_j.clone(), x_inv.clone(), rnd_string);
 
     // Type-9 (α z^h x^i y^k)
     let z_inv = vec![G1Affine::identity(); 2]; // Dummy inverses for testing
@@ -73,6 +75,11 @@ pub fn initialize_all() {
             &x_j_7[0],
             &ykx_j_7[0][0],
             &alpha_ykx_j[0][0], // Type-7 (G1)
+            &alpha_j_g1_8,
+            &ykx_j_8[0][0],
+            &y_j_8[0],
+            &x_j_8[0],
+            &alpha_ykx_j_8[0][0], // Type-8 (G1)
             &alpha_j_g1_9,
             &z_j[0],
             &x_j_9[0],
@@ -88,6 +95,8 @@ pub fn initialize_all() {
             &y_kj_proofs[0],
             &y_alpha_j_7,
             &y_kj_proofs_7[0], // Type-5 and Type-7 (G2)
+            &y_alpha_j_8,
+            &y_kj_proofs_8[0], // Type-8 (G2)
             &y_alpha_j_9,
             &z_kj_proofs_9[0],
             &y_kj_proofs_9[0], // Type-9 (G2)

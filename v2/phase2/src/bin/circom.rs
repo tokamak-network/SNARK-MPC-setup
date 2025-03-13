@@ -162,7 +162,7 @@ fn main() {
 
     let should_filter_points_at_infinity = false;
 
-    let file_name = "corrected_subcircuit13.json";
+    let file_name = "combined_subcircuit012_constrained.json";
     // Create parameters for our circuit
     let mut params = {
         let c = CircomCircuit { file_name };

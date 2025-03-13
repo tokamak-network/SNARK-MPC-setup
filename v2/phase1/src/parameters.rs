@@ -57,7 +57,7 @@ pub trait PowersOfTauParameters: Clone {
     // const HASH_SIZE: usize = 8;
 
     // const EMPIRICAL_BATCH_SIZE: usize = 1 << 21;
-    const EMPIRICAL_BATCH_SIZE: usize = 1 << 10; //Change the circuit size
+    const EMPIRICAL_BATCH_SIZE: usize = 1 << 14; //Change the circuit size
 }
 
 /// Determines if point compression should be used.
