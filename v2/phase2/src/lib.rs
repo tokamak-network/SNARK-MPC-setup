@@ -195,6 +195,9 @@
 //! `params.params()`, so that you can interact with the bellman APIs
 //! just as before.
 
+pub mod tools;
+
+
 extern crate bellman_ce;
 extern crate rand;
 extern crate byteorder;
