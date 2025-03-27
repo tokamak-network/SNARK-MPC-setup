@@ -1,0 +1,58 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\keccak.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\blake2s.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\blake3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\merkle_tree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\hash_c_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\merkle_c_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\pow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\cpu_keccak.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\cpu_blake2s.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\cpu_blake3.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\blake3.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\blake3_dispatch.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\blake3_portable.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\cpu_merkle_tree.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\cpu_pow.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{715024F9-8E6E-364C-90FE-22DD07B16A5E}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

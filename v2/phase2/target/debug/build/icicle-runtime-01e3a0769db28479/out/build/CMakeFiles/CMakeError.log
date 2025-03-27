@@ -1,0 +1,26 @@
+Performing C++ SOURCE FILE Test HAVE_CXX_ATOMICS_WITHOUT_LIB failed with the following output:
+Change Dir: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-runtime-01e3a0769db28479/out/build/CMakeFiles/CMakeTmp
+
+Run Build Command(s):/usr/bin/gmake -f Makefile cmTC_4c857/fast && /usr/bin/gmake  -f CMakeFiles/cmTC_4c857.dir/build.make CMakeFiles/cmTC_4c857.dir/build
+gmake[1]: Entering directory '/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-runtime-01e3a0769db28479/out/build/CMakeFiles/CMakeTmp'
+Building CXX object CMakeFiles/cmTC_4c857.dir/src.cxx.o
+/usr/bin/clang++ -DHAVE_CXX_ATOMICS_WITHOUT_LIB  -ffunction-sections -fdata-sections -fPIC -m64  -std=c++11 -fPIE -std=gnu++17 -MD -MT CMakeFiles/cmTC_4c857.dir/src.cxx.o -MF CMakeFiles/cmTC_4c857.dir/src.cxx.o.d -o CMakeFiles/cmTC_4c857.dir/src.cxx.o -c /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-runtime-01e3a0769db28479/out/build/CMakeFiles/CMakeTmp/src.cxx
+Linking CXX executable cmTC_4c857
+/usr/bin/cmake -E cmake_link_script CMakeFiles/cmTC_4c857.dir/link.txt --verbose=1
+/usr/bin/clang++  -ffunction-sections -fdata-sections -fPIC -m64  -std=c++11 CMakeFiles/cmTC_4c857.dir/src.cxx.o -o cmTC_4c857 
+/usr/bin/ld: CMakeFiles/cmTC_4c857.dir/src.cxx.o: in function `std::__atomic_base<long long>::is_lock_free() const':
+src.cxx:(.text._ZNKSt13__atomic_baseIxE12is_lock_freeEv[_ZNKSt13__atomic_baseIxE12is_lock_freeEv]+0x19): undefined reference to `__atomic_is_lock_free'
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+gmake[1]: *** [CMakeFiles/cmTC_4c857.dir/build.make:100: cmTC_4c857] Error 1
+gmake[1]: Leaving directory '/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-runtime-01e3a0769db28479/out/build/CMakeFiles/CMakeTmp'
+gmake: *** [Makefile:127: cmTC_4c857/fast] Error 2
+
+
+Source file was:
+
+#include <atomic>
+std::atomic<long long> x;
+int main() {
+  return std::atomic_is_lock_free(&x);
+}
+

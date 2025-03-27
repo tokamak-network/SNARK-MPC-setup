@@ -1,0 +1,10 @@
+^D:\MPC_CEREMONY\SNARK-MPC-SETUP\V2\PHASE2\TARGET\DEBUG\BUILD\ICICLE-HASH-46CBBA57ED534388\OUT\BUILD\CMAKEFILES\D004AC2A649677ADB9E490AFE54BE07A\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SC:/Users/Albtrs/.cargo/git/checkouts/icicle-9b25725c9b5d6dd2/9d1ad1c/icicle -BD:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/icicle.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd
