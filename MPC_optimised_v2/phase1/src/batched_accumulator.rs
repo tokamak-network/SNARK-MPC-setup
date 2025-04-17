@@ -40,7 +40,7 @@ pub enum AccumulatorState{
 /// The `Accumulator` is an object that participants of the ceremony contribute
 /// randomness to. This object contains powers of trapdoor `tau` in G1 and in G2 over
 /// fixed generators, and additionally in G1 over two other generators of exponents
-/// `alpha` and `beta` over those fixed generators. In other words:
+/// `alpha` and `delta` over those fixed generators. In other words:
 ///
 /// * (τ, τ<sup>2</sup>, ..., τ<sup>2<sup>22</sup> - 2</sup>, α, ατ, ατ<sup>2</sup>, ..., ατ<sup>2<sup>21</sup> - 1</sup>, β, βτ, βτ<sup>2</sup>, ..., βτ<sup>2<sup>21</sup> - 1</sup>)<sub>1</sub>
 /// * (β, τ, τ<sup>2</sup>, ..., τ<sup>2<sup>21</sup> - 1</sup>)<sub>2</sub>
@@ -51,10 +51,10 @@ pub struct BachedAccumulator<E: Engine, P: PowersOfTauParameters> {
     pub tau_powers_g2: Vec<E::G2Affine>,
     /// alpha * tau^0, alpha * tau^1, alpha * tau^2, ..., alpha * tau^{TAU_POWERS_LENGTH - 1}
     pub alpha_tau_powers_g1: Vec<E::G1Affine>,
-    /// beta * tau^0, beta * tau^1, beta * tau^2, ..., beta * tau^{TAU_POWERS_LENGTH - 1}
-    pub beta_tau_powers_g1: Vec<E::G1Affine>,
-    /// beta
-    pub beta_g2: E::G2Affine,
+    /// delta * tau^0, delta * tau^1, delta * tau^2, ..., delta * tau^{TAU_POWERS_LENGTH - 1}
+    pub delta_tau_powers_g1: Vec<E::G1Affine>,
+    /// delta
+    pub delta_g2: E::G2Affine,
     /// Hash chain hash
     pub hash: GenericArray<u8, U64>,
     /// Keep parameters here as a marker
@@ -84,8 +84,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
             tau_powers_g1: vec![],
             tau_powers_g2: vec![],
             alpha_tau_powers_g1: vec![],
-            beta_tau_powers_g1: vec![],
-            beta_g2: E::G2Affine::zero(),
+            delta_tau_powers_g1: vec![],
+            delta_g2: E::G2Affine::zero(),
             hash: blank_hash(),
             marker: std::marker::PhantomData::<P>{}
         }
@@ -117,8 +117,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
 
     fn get_size(element_type: ElementType, compression: UseCompression) -> usize {
         let size = match element_type {
-            ElementType::AlphaG1 | ElementType::BetaG1 | ElementType::TauG1 => { Self::g1_size(compression) },
-            ElementType::BetaG2 | ElementType::TauG2 => { Self::g2_size(compression) }
+            ElementType::AlphaG1 | ElementType::DeltaG1 | ElementType::TauG1 => { Self::g1_size(compression) },
+            ElementType::DeltaG2 | ElementType::TauG2 => { Self::g2_size(compression) }
         };
 
         size
@@ -129,8 +129,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
     /// TAU_POWERS_G1_LENGTH of G1 points
     /// TAU_POWERS_LENGTH of G2 points
     /// TAU_POWERS_LENGTH of G1 points for alpha
-    /// TAU_POWERS_LENGTH of G1 points for beta
-    /// One G2 point for beta
+    /// TAU_POWERS_LENGTH of G1 points for delta
+    /// One G2 point for delta
     /// Public key appended to the end of file, but it's irrelevant for an accumulator itself
 
     fn calculate_mmap_position(index: usize, element_type: ElementType, compression: UseCompression) -> usize {
@@ -158,22 +158,22 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                 let mut position = 0;
                 position += g1_size * required_tau_g1_power;
                 position += g2_size * required_power;
-                assert!(index < P::TAU_POWERS_LENGTH, format!("Index of AlphaG1 element written must not exceed {}, while it's {}", P::TAU_POWERS_LENGTH, index));
+                assert!(index < P::TAU_POWERS_LENGTH, format!("Index of Alpha element written must not exceed {}, while it's {}", P::TAU_POWERS_LENGTH, index));
                 position += g1_size * index;
 
                 position
             },
-            ElementType::BetaG1 => {
+            ElementType::DeltaG1 => {
                 let mut position = 0;
                 position += g1_size * required_tau_g1_power;
                 position += g2_size * required_power;
                 position += g1_size * required_power;
-                assert!(index < P::TAU_POWERS_LENGTH, format!("Index of BetaG1 element written must not exceed {}, while it's {}", P::TAU_POWERS_LENGTH, index));
+                assert!(index < P::TAU_POWERS_LENGTH, format!("Index of DeltaG1 element written must not exceed {}, while it's {}", P::TAU_POWERS_LENGTH, index));
                 position += g1_size * index;
 
                 position
             },
-            ElementType::BetaG2 => {
+            ElementType::DeltaG2 => {
                 let mut position = 0;
                 position += g1_size * required_tau_g1_power;
                 position += g2_size * required_power;
@@ -195,9 +195,9 @@ pub fn verify_transform<E: Engine, P: PowersOfTauParameters>(before: &BachedAccu
 
     let tau_g2_s = compute_g2_s::<E>(&digest, &key.tau_g1.0, &key.tau_g1.1, 0);
     let alpha_g2_s = compute_g2_s::<E>(&digest, &key.alpha_g1.0, &key.alpha_g1.1, 1);
-    let beta_g2_s = compute_g2_s::<E>(&digest, &key.beta_g1.0, &key.beta_g1.1, 2);
+    let delta_g2_s = compute_g2_s::<E>(&digest, &key.delta_g1.0, &key.delta_g1.1, 2);
 
-    // Check the proofs-of-knowledge for tau/alpha/beta
+    // Check the proofs-of-knowledge for tau/alpha/delta
 
     // g1^s / g1^(s*x) = g2^s / g2^(s*x)
     if !same_ratio(key.tau_g1, (tau_g2_s, key.tau_g2)) {
@@ -206,7 +206,7 @@ pub fn verify_transform<E: Engine, P: PowersOfTauParameters>(before: &BachedAccu
     if !same_ratio(key.alpha_g1, (alpha_g2_s, key.alpha_g2)) {
         return false;
     }
-    if !same_ratio(key.beta_g1, (beta_g2_s, key.beta_g2)) {
+    if !same_ratio(key.delta_g1, (delta_g2_s, key.delta_g2)) {
         return false;
     }
 
@@ -228,11 +228,11 @@ pub fn verify_transform<E: Engine, P: PowersOfTauParameters>(before: &BachedAccu
         return false;
     }
 
-    // Did the participant multiply the previous beta by the new one?
-    if !same_ratio((before.beta_tau_powers_g1[0], after.beta_tau_powers_g1[0]), (beta_g2_s, key.beta_g2)) {
+    // Did the participant multiply the previous delta by the new one?
+    if !same_ratio((before.delta_tau_powers_g1[0], after.delta_tau_powers_g1[0]), (delta_g2_s, key.delta_g2)) {
         return false;
     }
-    if !same_ratio((before.beta_tau_powers_g1[0], after.beta_tau_powers_g1[0]), (before.beta_g2, after.beta_g2)) {
+    if !same_ratio((before.delta_tau_powers_g1[0], after.delta_tau_powers_g1[0]), (before.delta_g2, after.delta_g2)) {
         return false;
     }
 
@@ -246,7 +246,7 @@ pub fn verify_transform<E: Engine, P: PowersOfTauParameters>(before: &BachedAccu
     if !same_ratio(power_pairs(&after.alpha_tau_powers_g1), (after.tau_powers_g2[0], after.tau_powers_g2[1])) {
         return false;
     }
-    if !same_ratio(power_pairs(&after.beta_tau_powers_g1), (after.tau_powers_g2[0], after.tau_powers_g2[1])) {
+    if !same_ratio(power_pairs(&after.delta_tau_powers_g1), (after.tau_powers_g2[0], after.tau_powers_g2[1])) {
         return false;
     }
 
@@ -271,9 +271,9 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
 
         let tau_g2_s = compute_g2_s::<E>(&digest, &key.tau_g1.0, &key.tau_g1.1, 0);
         let alpha_g2_s = compute_g2_s::<E>(&digest, &key.alpha_g1.0, &key.alpha_g1.1, 1);
-        let beta_g2_s = compute_g2_s::<E>(&digest, &key.beta_g1.0, &key.beta_g1.1, 2);
+        let delta_g2_s = compute_g2_s::<E>(&digest, &key.delta_g1.0, &key.delta_g1.1, 2);
 
-        // Check the proofs-of-knowledge for tau/alpha/beta
+        // Check the proofs-of-knowledge for tau/alpha/delta
 
         // g1^s / g1^(s*x) = g2^s / g2^(s*x)
         if !same_ratio(key.tau_g1, (tau_g2_s, key.tau_g2)) {
@@ -284,8 +284,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
             println!("Invalid ratio key.alpha_g1, (alpha_g2_s, key.alpha_g2)");
             return false;
         }
-        if !same_ratio(key.beta_g1, (beta_g2_s, key.beta_g2)) {
-            println!("Invalid ratio key.beta_g1, (beta_g2_s, key.beta_g2)");
+        if !same_ratio(key.delta_g1, (delta_g2_s, key.delta_g2)) {
+            println!("Invalid ratio key.delta_g1, (delta_g2_s, key.delta_g2)");
             return false;
         }
 
@@ -323,13 +323,13 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                 return false;
             }
 
-            // Did the participant multiply the previous beta by the new one?
-            if !same_ratio((before.beta_tau_powers_g1[0], after.beta_tau_powers_g1[0]), (beta_g2_s, key.beta_g2)) {
-                println!("Invalid ratio (before.beta_tau_powers_g1[0], after.beta_tau_powers_g1[0]), (beta_g2_s, key.beta_g2)");
+            // Did the participant multiply the previous delta by the new one?
+            if !same_ratio((before.delta_tau_powers_g1[0], after.delta_tau_powers_g1[0]), (delta_g2_s, key.delta_g2)) {
+                println!("Invalid ratio (before.delta_tau_powers_g1[0], after.delta_tau_powers_g1[0]), (delta_g2_s, key.delta_g2)");
                 return false;
             }
-            if !same_ratio((before.beta_tau_powers_g1[0], after.beta_tau_powers_g1[0]), (before.beta_g2, after.beta_g2)) {
-                println!("Invalid ratio (before.beta_tau_powers_g1[0], after.beta_tau_powers_g1[0]), (before.beta_g2, after.beta_g2)");
+            if !same_ratio((before.delta_tau_powers_g1[0], after.delta_tau_powers_g1[0]), (before.delta_g2, after.delta_g2)) {
+                println!("Invalid ratio (before.delta_tau_powers_g1[0], after.delta_tau_powers_g1[0]), (before.delta_g2, after.delta_g2)");
                 return false;
             }
 
@@ -344,13 +344,21 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
         // one does not need to care about some overlapping
 
         let mut tau_powers_last_first_chunks = vec![E::G1Affine::zero(); 2];
-        for chunk in &(0..P::TAU_POWERS_LENGTH).into_iter().chunks(P::EMPIRICAL_BATCH_SIZE) {
-            if let MinMax(start, end) = chunk.minmax() {
-                // extra 1 to ensure intersection between chunks and ensure we don't overflow
-                let size = end - start + 1 + if end == P::TAU_POWERS_LENGTH - 1 { 0 } else { 1 };
-                before.read_chunk(start, size, input_is_compressed, check_input_for_correctness, &input_map).expect(&format!("must read a chunk from {} to {} from `challenge`", start, end));
-                after.read_chunk(start, size, output_is_compressed, check_output_for_correctness, &output_map).expect(&format!("must read a chunk from {} to {} from `response`", start, end));
-
+        for chunk in &(P::TAU_POWERS_LENGTH..P::TAU_POWERS_G1_LENGTH)
+        .into_iter()
+        .chunks(P::EMPIRICAL_BATCH_SIZE)
+    {
+        if let MinMax(start, end) = chunk.minmax() {
+            let mut size = end - start + 1;
+            if end < P::TAU_POWERS_G1_LENGTH - 1 {
+                size += 1;
+            }
+            size = std::cmp::min(size, P::TAU_POWERS_G1_LENGTH - start);
+            
+            before.read_chunk(
+                start, size, input_is_compressed, 
+                check_input_for_correctness, &input_map
+            ).expect(&format!("must read a chunk from {} to {} from `challenge`", start, end));
                 // Are the powers of tau correct?
                 if !same_ratio(power_pairs(&after.tau_powers_g1), (tau_powers_g2_0, tau_powers_g2_1)) {
                     println!("Invalid ratio power_pairs(&after.tau_powers_g1), (tau_powers_g2_0, tau_powers_g2_1)");
@@ -364,8 +372,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                     println!("Invalid ratio power_pairs(&after.alpha_tau_powers_g1), (tau_powers_g2_0, tau_powers_g2_1)");
                     return false;
                 }
-                if !same_ratio(power_pairs(&after.beta_tau_powers_g1), (tau_powers_g2_0, tau_powers_g2_1)) {
-                    println!("Invalid ratio power_pairs(&after.beta_tau_powers_g1), (tau_powers_g2_0, tau_powers_g2_1)");
+                if !same_ratio(power_pairs(&after.delta_tau_powers_g1), (tau_powers_g2_0, tau_powers_g2_1)) {
+                    println!("Invalid ratio power_pairs(&after.delta_tau_powers_g1), (tau_powers_g2_0, tau_powers_g2_1)");
                     return false;
                 }
                 if end == P::TAU_POWERS_LENGTH - 1 {
@@ -433,7 +441,7 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                 accumulator.read_chunk(start, size, UseCompression::Yes, check_input_for_correctness, &input_map).expect(&format!("must read a chunk from {} to {} from source of decompression", start, end));
                 assert_eq!(accumulator.tau_powers_g2.len(), 0, "during rest of tau g1 generation tau g2 must be empty");
                 assert_eq!(accumulator.alpha_tau_powers_g1.len(), 0, "during rest of tau g1 generation alpha*tau in g1 must be empty");
-                assert_eq!(accumulator.beta_tau_powers_g1.len(), 0, "during rest of tau g1 generation beta*tau in g1 must be empty");
+                assert_eq!(accumulator.delta_tau_powers_g1.len(), 0, "during rest of tau g1 generation delta*tau in g1 must be empty");
 
                 accumulator.write_chunk(start, UseCompression::No, output_map)?;
 
@@ -458,8 +466,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
         let mut tau_powers_g1 = vec![];
         let mut tau_powers_g2 = vec![];
         let mut alpha_tau_powers_g1 = vec![];
-        let mut beta_tau_powers_g1 = vec![];
-        let mut beta_g2 = vec![];
+        let mut delta_tau_powers_g1 = vec![];
+        let mut delta_g2 = vec![];
 
         for chunk in &(0..P::TAU_POWERS_LENGTH).into_iter().chunks(P::EMPIRICAL_BATCH_SIZE) {
             if let MinMax(start, end) = chunk.minmax() {
@@ -468,9 +476,9 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                 tau_powers_g1.extend_from_slice(&accumulator.tau_powers_g1);
                 tau_powers_g2.extend_from_slice(&accumulator.tau_powers_g2);
                 alpha_tau_powers_g1.extend_from_slice(&accumulator.alpha_tau_powers_g1);
-                beta_tau_powers_g1.extend_from_slice(&accumulator.beta_tau_powers_g1);
+                delta_tau_powers_g1.extend_from_slice(&accumulator.delta_tau_powers_g1);
                 if start == 0 {
-                    beta_g2.extend_from_slice(&[accumulator.beta_g2]);
+                    delta_g2.extend_from_slice(&[accumulator.delta_g2]);
                 }
             } else {
                 panic!("Chunk does not have a min and max");
@@ -483,12 +491,12 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                 accumulator.read_chunk(start, size, compression, check_input_for_correctness, &input_map).expect(&format!("must read a chunk from {} to {} from source of decompression", start, end));
                 assert_eq!(accumulator.tau_powers_g2.len(), 0, "during rest of tau g1 generation tau g2 must be empty");
                 assert_eq!(accumulator.alpha_tau_powers_g1.len(), 0, "during rest of tau g1 generation alpha*tau in g1 must be empty");
-                assert_eq!(accumulator.beta_tau_powers_g1.len(), 0, "during rest of tau g1 generation beta*tau in g1 must be empty");
+                assert_eq!(accumulator.delta_tau_powers_g1.len(), 0, "during rest of tau g1 generation delta*tau in g1 must be empty");
 
                 tau_powers_g1.extend_from_slice(&accumulator.tau_powers_g1);
                 tau_powers_g2.extend_from_slice(&accumulator.tau_powers_g2);
                 alpha_tau_powers_g1.extend_from_slice(&accumulator.alpha_tau_powers_g1);
-                beta_tau_powers_g1.extend_from_slice(&accumulator.beta_tau_powers_g1);
+                delta_tau_powers_g1.extend_from_slice(&accumulator.delta_tau_powers_g1);
             } else {
                 panic!("Chunk does not have a min and max");
             }
@@ -498,8 +506,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
             tau_powers_g1: tau_powers_g1,
             tau_powers_g2: tau_powers_g2,
             alpha_tau_powers_g1: alpha_tau_powers_g1,
-            beta_tau_powers_g1: beta_tau_powers_g1,
-            beta_g2: beta_g2[0],
+            delta_tau_powers_g1: delta_tau_powers_g1,
+            delta_g2: delta_g2[0],
             hash: blank_hash(),
             marker: std::marker::PhantomData::<P>{}
         })
@@ -519,8 +527,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                     tau_powers_g1: (&self.tau_powers_g1[start..end+1]).to_vec(),
                     tau_powers_g2: (&self.tau_powers_g2[start..end+1]).to_vec(),
                     alpha_tau_powers_g1: (&self.alpha_tau_powers_g1[start..end+1]).to_vec(),
-                    beta_tau_powers_g1: (&self.beta_tau_powers_g1[start..end+1]).to_vec(),
-                    beta_g2: self.beta_g2.clone(),
+                    delta_tau_powers_g1: (&self.delta_tau_powers_g1[start..end+1]).to_vec(),
+                    delta_g2: self.delta_g2.clone(),
                     hash: self.hash.clone(),
                     marker: std::marker::PhantomData::<P>{}
                 };
@@ -536,8 +544,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                     tau_powers_g1: (&self.tau_powers_g1[start..end+1]).to_vec(),
                     tau_powers_g2: vec![],
                     alpha_tau_powers_g1: vec![],
-                    beta_tau_powers_g1: vec![],
-                    beta_g2: self.beta_g2.clone(),
+                    delta_tau_powers_g1: vec![],
+                    delta_g2: self.delta_g2.clone(),
                     hash: self.hash.clone(),
                     marker: std::marker::PhantomData::<P>{}
                 };
@@ -592,23 +600,23 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
 
         };
 
-        self.beta_tau_powers_g1 = match compression {
+        self.delta_tau_powers_g1 = match compression {
             UseCompression::Yes => {
-                self.read_points_chunk::<<E::G1Affine as CurveAffine>::Compressed>(from, size, ElementType::BetaG1, compression, checked, &input_map)?
+                self.read_points_chunk::<<E::G1Affine as CurveAffine>::Compressed>(from, size, ElementType::DeltaG1, compression, checked, &input_map)?
             },
             UseCompression::No => {
-                self.read_points_chunk::<<E::G1Affine as CurveAffine>::Uncompressed>(from, size, ElementType::BetaG1, compression, checked, &input_map)?
+                self.read_points_chunk::<<E::G1Affine as CurveAffine>::Uncompressed>(from, size, ElementType::DeltaG1, compression, checked, &input_map)?
             },
         };
 
-        self.beta_g2 = match compression {
+        self.delta_g2 = match compression {
             UseCompression::Yes => {
-                let points = self.read_points_chunk::<<E::G2Affine as CurveAffine>::Compressed>(0, 1, ElementType::BetaG2, compression, checked, &input_map)?;
+                let points = self.read_points_chunk::<<E::G2Affine as CurveAffine>::Compressed>(0, 1, ElementType::DeltaG2, compression, checked, &input_map)?;
 
                 points[0]
             },
             UseCompression::No => {
-                let points = self.read_points_chunk::<<E::G2Affine as CurveAffine>::Uncompressed>(0, 1, ElementType::BetaG2, compression, checked, &input_map)?;
+                let points = self.read_points_chunk::<<E::G2Affine as CurveAffine>::Uncompressed>(0, 1, ElementType::DeltaG2, compression, checked, &input_map)?;
 
                 points[0]
             },
@@ -638,7 +646,7 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                         return Ok(vec![]);
                     }
                 },
-                ElementType::AlphaG1 | ElementType::BetaG1 | ElementType::BetaG2 | ElementType::TauG2 => {
+                ElementType::AlphaG1 | ElementType::DeltaG1 | ElementType::DeltaG2 | ElementType::TauG2 => {
                     if index >= P::TAU_POWERS_LENGTH {
                         return Ok(vec![]);
                     }
@@ -749,15 +757,15 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                     self.write_point(index, c, compression, element_type.clone(), output_map)?;
                 }
             },
-            ElementType::BetaG1 => {
-                for (i, c) in self.beta_tau_powers_g1.clone().iter().enumerate() {
+            ElementType::DeltaG1 => {
+                for (i, c) in self.delta_tau_powers_g1.clone().iter().enumerate() {
                     let index = chunk_start + i;
                     self.write_point(index, c, compression, element_type.clone(), output_map)?;
                 }
             },
-            ElementType::BetaG2 => {
+            ElementType::DeltaG2 => {
                 let index = chunk_start;
-                self.write_point(index, &self.beta_g2.clone(), compression, element_type.clone(), output_map)?
+                self.write_point(index, &self.delta_g2.clone(), compression, element_type.clone(), output_map)?
             }
         };
 
@@ -782,7 +790,7 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                     return Ok(());
                 }
             },
-            ElementType::AlphaG1 | ElementType::BetaG1 | ElementType::BetaG2 | ElementType::TauG2 => {
+            ElementType::AlphaG1 | ElementType::DeltaG1 | ElementType::DeltaG2 | ElementType::TauG2 => {
                 if index >= P::TAU_POWERS_LENGTH {
                     return Ok(());
                 }
@@ -817,8 +825,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
         if chunk_start < P::TAU_POWERS_LENGTH {
             self.write_all(chunk_start, compression, ElementType::TauG2, output_map)?;
             self.write_all(chunk_start, compression, ElementType::AlphaG1, output_map)?;
-            self.write_all(chunk_start, compression, ElementType::BetaG1, output_map)?;
-            self.write_all(chunk_start, compression, ElementType::BetaG2, output_map)?;
+            self.write_all(chunk_start, compression, ElementType::DeltaG1, output_map)?;
+            self.write_all(chunk_start, compression, ElementType::DeltaG2, output_map)?;
         }
 
         Ok(())
@@ -921,9 +929,9 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                 batch_exp::<E, _>(&mut accumulator.tau_powers_g1, &taupowers[0..], None);
                 batch_exp::<E, _>(&mut accumulator.tau_powers_g2, &taupowers[0..], None);
                 batch_exp::<E, _>(&mut accumulator.alpha_tau_powers_g1, &taupowers[0..], Some(&key.alpha));
-                batch_exp::<E, _>(&mut accumulator.beta_tau_powers_g1, &taupowers[0..], Some(&key.beta));
-                accumulator.beta_g2 = accumulator.beta_g2.mul(key.beta).into_affine();
-                assert!(!accumulator.beta_g2.is_zero(), "your contribution happed to produce a point at infinity, please re-run");
+                batch_exp::<E, _>(&mut accumulator.delta_tau_powers_g1, &taupowers[0..], Some(&key.delta));
+                accumulator.delta_g2 = accumulator.delta_g2.mul(key.delta).into_affine();
+                assert!(!accumulator.delta_g2.is_zero(), "your contribution happed to produce a point at infinity, please re-run");
                 accumulator.write_chunk(start, compress_the_output, output_map)?;
                 println!("Done processing {} powers of tau", end);
             } else {
@@ -956,8 +964,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                 });
 
                 batch_exp::<E, _>(&mut accumulator.tau_powers_g1, &taupowers[0..], None);
-                //accumulator.beta_g2 = accumulator.beta_g2.mul(key.beta).into_affine();
-                //assert!(!accumulator.beta_g2.is_zero(), "your contribution happed to produce a point at infinity, please re-run");
+                //accumulator.delta_g2 = accumulator.delta_g2.mul(key.delta).into_affine();
+                //assert!(!accumulator.delta_g2.is_zero(), "your contribution happed to produce a point at infinity, please re-run");
                 accumulator.write_chunk(start, compress_the_output, output_map)?;
 
                 println!("Done processing {} powers of tau", end);
@@ -986,8 +994,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                     tau_powers_g1: vec![E::G1Affine::one(); size],
                     tau_powers_g2: vec![E::G2Affine::one(); size],
                     alpha_tau_powers_g1: vec![E::G1Affine::one(); size],
-                    beta_tau_powers_g1: vec![E::G1Affine::one(); size],
-                    beta_g2: E::G2Affine::one(),
+                    delta_tau_powers_g1: vec![E::G1Affine::one(); size],
+                    delta_g2: E::G2Affine::one(),
                     hash: blank_hash(),
                     marker: std::marker::PhantomData::<P>{}
                 };
@@ -1006,8 +1014,8 @@ impl<E:Engine, P: PowersOfTauParameters> BachedAccumulator<E, P> {
                     tau_powers_g1: vec![E::G1Affine::one(); size],
                     tau_powers_g2: vec![],
                     alpha_tau_powers_g1: vec![],
-                    beta_tau_powers_g1: vec![],
-                    beta_g2: E::G2Affine::one(),
+                    delta_tau_powers_g1: vec![],
+                    delta_g2: E::G2Affine::one(),
                     hash: blank_hash(),
                     marker: std::marker::PhantomData::<P>{}
                 };

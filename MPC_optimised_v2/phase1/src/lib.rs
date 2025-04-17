@@ -13,5 +13,5 @@ pub mod bls12_381;
 pub mod parameters;
 pub mod utils;
 pub mod keypair;
-pub mod accumulator;
+// pub mod accumulator;
 pub mod batched_accumulator;
