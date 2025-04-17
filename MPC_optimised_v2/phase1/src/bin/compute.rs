@@ -31,9 +31,9 @@ fn main() {
     // println!("Will contribute to accumulator for 2^{} powers of tau", Bn256CeremonyParameters::REQUIRED_POWER);
     // println!("In total will generate up to {} powers", Bn256CeremonyParameters::TAU_POWERS_G1_LENGTH);
 
-    println!("Will contribute to accumulator for 2^{} powers of tau", Bls12CeremonyParameters::REQUIRED_POWER);
-println!("In total will generate up to {} powers", Bls12CeremonyParameters::TAU_POWERS_G1_LENGTH);
-
+    println!("Will contribute to accumulator for 2^{} powers of tau in BLS12_381", Bls12CeremonyParameters::REQUIRED_POWER);
+println!("In total will generate up to {} powers in BLS12_381", Bls12CeremonyParameters::TAU_POWERS_G1_LENGTH);
+println!("-----------------------------------------------------------------\n");
     
     // Create an RNG based on a mixture of system randomness and user provided randomness
     let mut rng = {
@@ -95,10 +95,21 @@ println!("In total will generate up to {} powers", Bls12CeremonyParameters::TAU_
         //     panic!("The size of `./challenge` should be {}, but it's {}, so something isn't right.", expected_challenge_length, metadata.len());
         // }
 
-        // if metadata.len() != Bls12CeremonyParameters::COMPRESSED_CHALLENGE_LENGTH {
-        if metadata.len() != Bls12CeremonyParameters::COMPRESSED_CHALLENGE_LENGTH as u64 {
+        // // if metadata.len() != Bls12CeremonyParameters::COMPRESSED_CHALLENGE_LENGTH {
+        // if metadata.len() != Bls12CeremonyParameters::COMPRESSED_CHALLENGE_LENGTH as u64 {
+        //     panic!("The size of `./challenge` should be {}, but it's {}, so something isn't right.",
+        //         Bls12CeremonyParameters::COMPRESSED_CHALLENGE_LENGTH, metadata.len());
+        // }
+
+
+        let expected_challenge_length = match INPUT_IS_COMPRESSED {
+            UseCompression::Yes => Bls12CeremonyParameters::CONTRIBUTION_BYTE_SIZE,
+            UseCompression::No => Bls12CeremonyParameters::ACCUMULATOR_BYTE_SIZE,
+        };
+        
+        if metadata.len() != expected_challenge_length as u64 {
             panic!("The size of `./challenge` should be {}, but it's {}, so something isn't right.",
-                Bls12CeremonyParameters::COMPRESSED_CHALLENGE_LENGTH, metadata.len());
+                expected_challenge_length, metadata.len());
         }
     }
 
@@ -212,6 +223,7 @@ println!("In total will generate up to {} powers", Bls12CeremonyParameters::TAU_
         }
         println!("");
     }
-
+    println!("-----------------------------------------------------------------");
     println!("Thank you for your participation, much appreciated! :)");
+    println!("-----------------------------------------------------------------\n");
 }

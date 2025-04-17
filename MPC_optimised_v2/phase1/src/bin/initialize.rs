@@ -27,13 +27,14 @@ fn main() {
     // println!("In total will generate up to {} powers", Bn256CeremonyParameters::TAU_POWERS_G1_LENGTH);
 
     println!(
-        "Will generate an empty accumulator for 2^{} powers of tau",
+        "Will generate an empty accumulator for 2^{} powers of tau in BLS12_381",
         Bls12CeremonyParameters::REQUIRED_POWER
     );
     println!(
-        "In total will generate up to {} powers",
+        "In total will generate up to {} powers in BLS12_381",
         Bls12CeremonyParameters::TAU_POWERS_G1_LENGTH
     );
+    println!("-----------------------------------------------------------------\n");
 
     
     let file = OpenOptions::new()
@@ -103,6 +104,7 @@ fn main() {
         }
         println!("");
     }
-
+    println!("-----------------------------------------------------------------");
     println!("Wrote a fresh accumulator to `./challenge`");
+    println!("----------------------------------------------------------------\n\n");
 }
