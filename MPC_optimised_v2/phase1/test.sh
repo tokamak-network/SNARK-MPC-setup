@@ -29,7 +29,21 @@ cargo run --release --bin verify_transform
 # make transcript file
 # cat response_old response > transcript
 Get-Content response_old, response | Add-Content transcript
+# cat response_old response >> transcript
 
 
 cargo run --release --bin prepare_phase2
 
+
+
+# go to phase2 
+rm pk.json
+rm vk.json
+rm qap.params
+rm circom.params
+rm mimc.params
+
+cargo run --release --bin qapMPC
+
+cargo run --release --bin mimc
+cargo run --release --bin circom

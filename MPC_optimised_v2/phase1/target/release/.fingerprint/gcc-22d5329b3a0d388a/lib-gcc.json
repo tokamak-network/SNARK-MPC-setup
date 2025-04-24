@@ -1,1 +1,0 @@
-{"rustc":16073551614293250696,"features":"[]","declared_features":"[\"parallel\", \"rayon\"]","target":2477304164235704174,"profile":15621230377962148654,"path":4698232205233481247,"deps":[],"local":[{"CheckDepInfo":{"dep_info":"release\\.fingerprint\\gcc-22d5329b3a0d388a\\dep-lib-gcc"}}],"rustflags":[],"metadata":2731207886905600157,"config":2202906307356721367,"compile_kind":0}

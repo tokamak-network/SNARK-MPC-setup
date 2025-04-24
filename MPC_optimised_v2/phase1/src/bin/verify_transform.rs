@@ -28,8 +28,8 @@ const COMPRESS_NEW_CHALLENGE: UseCompression = UseCompression::No;
 
 fn main() {
     // println!("Will verify and decompress a contribution to accumulator for 2^{} powers of tau", Bn256CeremonyParameters::REQUIRED_POWER);
-    println!("Will verify and decompress a contribution to accumulator for 2^{} powers of tau", Bls12CeremonyParameters::REQUIRED_POWER);
-
+    println!("Will verify and decompress a contribution to accumulator for 2^{} powers of tau in BLS12_381", Bls12CeremonyParameters::REQUIRED_POWER);
+    println!("----------------------------------------------------------------\n");
     // Try to load `./challenge` from disk.
     let challenge_reader = OpenOptions::new()
                             .read(true)
@@ -62,13 +62,22 @@ fn main() {
 
     {
         let metadata = response_reader.metadata().expect("unable to get filesystem metadata for `./response`");
+        // let expected_response_length = match CONTRIBUTION_IS_COMPRESSED {
+        //     UseCompression::Yes => {
+        //         // Bn256CeremonyParameters::CONTRIBUTION_BYTE_SIZE
+        //         Bls12CeremonyParameters::ACCUMULATOR_BYTE_SIZE
+        //     },
+        //     UseCompression::No => {
+        //         // Bn256CeremonyParameters::ACCUMULATOR_BYTE_SIZE + Bn256CeremonyParameters::PUBLIC_KEY_SIZE
+        //         Bls12CeremonyParameters::ACCUMULATOR_BYTE_SIZE + Bls12CeremonyParameters::PUBLIC_KEY_SIZE
+        //     }
+        // };
+
         let expected_response_length = match CONTRIBUTION_IS_COMPRESSED {
             UseCompression::Yes => {
-                // Bn256CeremonyParameters::CONTRIBUTION_BYTE_SIZE
-                Bls12CeremonyParameters::ACCUMULATOR_BYTE_SIZE
+                Bls12CeremonyParameters::CONTRIBUTION_BYTE_SIZE
             },
             UseCompression::No => {
-                // Bn256CeremonyParameters::ACCUMULATOR_BYTE_SIZE + Bn256CeremonyParameters::PUBLIC_KEY_SIZE
                 Bls12CeremonyParameters::ACCUMULATOR_BYTE_SIZE + Bls12CeremonyParameters::PUBLIC_KEY_SIZE
             }
         };
@@ -218,7 +227,9 @@ fn main() {
             println!("");
         }
 
+        println!("----------------------------------------------------------------");
         println!("Done! `./new_challenge` contains the new challenge file. The other files");
         println!("were left alone.");
+        println!("----------------------------------------------------------------\n");
     }
 }

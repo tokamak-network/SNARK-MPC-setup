@@ -7,7 +7,6 @@ extern crate num_cpus;
 extern crate rand;
 extern crate typenum;
 
-// use bellman_ce::pairing::bn256::Bn256;
 use bellman_ce::pairing::ff::{Field, PrimeField};
 use bellman_ce::pairing::*;
 use blake2::{Blake2b, Digest};
@@ -22,50 +21,8 @@ use typenum::consts::U64;
 
 use super::keypair::*;
 
-// pub struct Bls12CeremonyParameters;
-#[derive(Clone)]
-pub struct Bls12CeremonyParameters;
-
-impl PowersOfTauParameters for Bls12CeremonyParameters {
-    const REQUIRED_POWER: usize = 5;
-
-    const G1_UNCOMPRESSED_BYTE_SIZE: usize = 96;
-    const G2_UNCOMPRESSED_BYTE_SIZE: usize = 192;
-    const G1_COMPRESSED_BYTE_SIZE: usize = 48;
-    const G2_COMPRESSED_BYTE_SIZE: usize = 96;
-
-    const COMPRESSED_CHALLENGE_LENGTH: usize = 64;
-    const NEW_CHALLENGE_LENGTH: usize = 64;
-
-    const TAU_POWERS_LENGTH: usize = (1 << Self::REQUIRED_POWER);             // 8192
-    const TAU_POWERS_G1_LENGTH: usize = (1 << Self::REQUIRED_POWER) * 2 - 1;  // 16383
-
-    // const EMPIRICAL_BATCH_SIZE: usize = 8;  // Bu değer güvenli bir değer!
-    const EMPIRICAL_BATCH_SIZE: usize = 1 << 5; //Change the circuit size
-
-    const ACCUMULATOR_BYTE_SIZE: usize =
-          Self::G1_UNCOMPRESSED_BYTE_SIZE * Self::TAU_POWERS_G1_LENGTH        
-        + Self::G2_UNCOMPRESSED_BYTE_SIZE * Self::TAU_POWERS_LENGTH           
-        + Self::G1_UNCOMPRESSED_BYTE_SIZE * Self::TAU_POWERS_LENGTH * 2       
-        + Self::G2_UNCOMPRESSED_BYTE_SIZE * 2;                                
-    
-    const PUBLIC_KEY_SIZE: usize = 3 * Self::G2_UNCOMPRESSED_BYTE_SIZE
-                                    + 6 * Self::G1_UNCOMPRESSED_BYTE_SIZE;
-
-    const CONTRIBUTION_BYTE_SIZE: usize = (Self::TAU_POWERS_G1_LENGTH * Self::G1_COMPRESSED_BYTE_SIZE) 
-        + (Self::TAU_POWERS_LENGTH * Self::G2_COMPRESSED_BYTE_SIZE) 
-        + (Self::TAU_POWERS_LENGTH * Self::G1_COMPRESSED_BYTE_SIZE)
-        + (Self::TAU_POWERS_LENGTH * Self::G1_COMPRESSED_BYTE_SIZE)
-        + Self::G2_COMPRESSED_BYTE_SIZE
-        + Self::HASH_SIZE
-        + Self::PUBLIC_KEY_SIZE;
-
-    const HASH_SIZE: usize = 64;
-}
-
 pub trait PowersOfTauParameters: Clone {
     const REQUIRED_POWER: usize;
-
     const G1_UNCOMPRESSED_BYTE_SIZE: usize;
     const G2_UNCOMPRESSED_BYTE_SIZE: usize;
     const G1_COMPRESSED_BYTE_SIZE: usize;

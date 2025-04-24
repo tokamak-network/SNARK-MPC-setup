@@ -11,7 +11,8 @@ use bellman_ce::pairing::ff::{Field, PrimeField, PrimeFieldRepr};
 use byteorder::{ReadBytesExt, BigEndian};
 use rand::{SeedableRng, Rng, Rand};
 use rand::chacha::ChaChaRng;
-use bellman_ce::pairing::bn256::{Bn256};
+// use bellman_ce::pairing::bn256::{Bn256};
+use bellman_ce::pairing::bls12_381::{Bls12};
 use bellman_ce::pairing::*;
 use std::io::{self, Read, Write};
 use std::sync::{Arc, Mutex};
@@ -24,8 +25,7 @@ use super::parameters::*;
 
 /// Hashes to G2 using the first 32 bytes of `digest`. Panics if `digest` is less
 /// than 32 bytes.
-pub fn hash_to_g2<E:Engine>(mut digest: &[u8]) -> E::G2
-{
+pub fn hash_to_g2<E:Engine>(mut digest: &[u8]) -> E::G2{
     assert!(digest.len() >= 32);
 
     let mut seed = Vec::with_capacity(8);

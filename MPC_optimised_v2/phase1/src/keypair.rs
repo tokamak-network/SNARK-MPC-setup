@@ -9,13 +9,13 @@ extern crate bellman_ce;
 extern crate memmap;
 extern crate itertools;
 
-use itertools::Itertools;
 use memmap::{Mmap, MmapMut};
 use self::bellman_ce::pairing::ff::{Field, PrimeField};
 use self::byteorder::{ReadBytesExt, BigEndian};
 use self::rand::{SeedableRng, Rng, Rand};
 use self::rand::chacha::ChaChaRng;
-use self::bellman_ce::pairing::bn256::{Bn256};
+// use self::bellman_ce::pairing::bn256::{Bn256};
+use bellman_ce::pairing::bls12_381::{Bls12};
 use self::bellman_ce::pairing::*;
 use std::io::{self, Read, Write};
 use std::sync::{Arc, Mutex};

@@ -16,7 +16,7 @@ use powersoftau::keypair::{keypair};
 use powersoftau::parameters::{UseCompression, CheckForCorrectness};
 
 use std::fs::OpenOptions;
-use bellman_ce::pairing::bn256::Bn256;
+// use bellman_ce::pairing::bn256::Bn256;
 use memmap::*;
 
 use std::io::{Read, Write};
