@@ -16,6 +16,15 @@ use std::ops::Mul;
 use ark_bls12_381::{Config, Fr, G1Affine as ArkG1Affine,G1Projective as ArkG1Projective, G2Affine as ArkG2Affine, G2Projective as ArkG2Projective};
 use ark_ec::{AffineRepr, CurveGroup, PrimeGroup};
 use rand::Rng;
+//A = [A1 B1], B = [A2, B2], C = [C1, C2]
+pub fn consistent(A : &[G1serde], B : &[G2serde], C : &[G2serde]) -> bool {
+    let G2 = icicle_g2_generator();
+    if C.len() == 2 {
+        same_ratio(A[0],A[1],C[0],C[1]) && same_ratio(A[0],A[1],B[0],B[1])
+    } else {
+        same_ratio(A[0],A[1],G2serde(G2),C[1])
+    }
+}
 
 pub fn check_pok(A : G1serde, G1 : G1serde, B: G2serde, v: &[u8])-> bool {
     let y = ro(&G1serde(A.0),v);
@@ -85,9 +94,7 @@ pub fn ro(a: &G1serde, v: &[u8]) -> Projective<G2CurveCfg> {
     hash_to_g2(h.result().as_ref())
 }
 
-
-
-pub fn IcicleG1Generator() -> IcicleG1Affine {
+pub fn icicle_g1_generator() -> IcicleG1Affine {
     let x_limbs: [u32; 12] = [0xdb22c6bb,
         0xfb3af00a,
         0xf97a1aef,
@@ -177,7 +184,7 @@ pub fn icicle_g2_generator() -> IcicleG2Affine {
 
 #[test]
 pub fn test_ro() {
-    let g1_gen = CurveCfg::generate_random_affine_points(1)[0];
+    let g1_gen = icicle_g1_generator();
     let v = [99u8; 64];
     let out1 = ro(&G1serde(g1_gen), &v);
     let out2 = ro(&G1serde(g1_gen), &v);
@@ -193,7 +200,7 @@ fn testG2Generator() {
 #[test]
 fn testG1Generator() {
     // Build the G1Affine point from limbs
-    let g1Ice = IcicleG1Generator();
+    let g1Ice = icicle_g1_generator();
     let res = icicle_g1_affine_to_ark(&g1Ice);
     let arcG1 = ArkG1Affine::generator();
     assert_eq!(res, arcG1);
@@ -237,7 +244,7 @@ pub fn test_same_ratio() {
 }
 #[test]
 pub fn test_pok() {
-    let G1 = CurveCfg::generate_random_affine_points(1)[0];
+    let G1 = icicle_g1_generator();
 
     let tau = Tau::gen();
     let v = [72u8; 64];

@@ -14,6 +14,7 @@ use libs::iotools::{from_coef_vec_to_g1serde_vec, SetupParams};
 use rand_chacha::rand_core::SeedableRng;
 use std::ops::Mul;
 use std::time::Instant;
+use crate::utils::{icicle_g1_generator, icicle_g2_generator};
 
 pub mod utils;
 
@@ -24,8 +25,8 @@ fn main() {
 
     // Generate random affine points on the elliptic curve (G1 and G2)
     println!("Generating random generator points...");
-    let g1_gen = CurveCfg::generate_random_affine_points(1)[0];
-    let g2_gen = G2CurveCfg::generate_random_affine_points(1)[0];
+    let g1_gen = icicle_g1_generator();
+    let g2_gen = icicle_g2_generator();
 
     // Generate a random secret parameter tau (x and y only, no z as per the paper)
     println!("Generating random tau parameter...");
