@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\curves\ffi_extern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\curves\montgomery_conversion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\msm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\ecntt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\curve\cpu_mont_conversion.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\curve\cpu_msm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\curve\cpu_ecntt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{09DF14A5-7A66-3E37-B2C3-E7A9FDBD3650}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

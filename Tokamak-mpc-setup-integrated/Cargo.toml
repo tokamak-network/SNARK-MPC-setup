@@ -1,0 +1,24 @@
+[package]
+name = "mpc-setup"
+version = { workspace = true }
+edition = { workspace = true }
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+icicle-runtime = { workspace = true }
+icicle-core = { workspace = true }
+icicle-bls12-381 = { workspace = true }
+libs = { workspace = true }
+rayon = { workspace = true }
+ark-bls12-381 = { workspace = true }
+ark-ec = { workspace = true }
+ark-ff = { workspace = true }
+ark-serialize = "0.5.0"
+ rand = "0.8.5"
+blake2 = "0.8.1"
+sha2 = "0.11.0-pre.5"
+rand_chacha = "0.3.1"
+[features]
+default = []
+testing-mode = ["libs/testing-mode"]
