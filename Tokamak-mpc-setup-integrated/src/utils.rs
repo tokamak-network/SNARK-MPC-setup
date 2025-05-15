@@ -62,7 +62,7 @@ impl SerialSerde {
 
 #[derive(Clone, Debug, Copy, PartialEq, Serialize, Deserialize)]
 pub struct PairSerde {
-    g1: G1serde, //xG1
+    pub(crate) g1: G1serde, //xG1
     g2: G2serde, //xG2
 }
 

@@ -24,18 +24,105 @@ impl Accumulator {
     pub fn new(power_alpha_length: usize, power_x_length: usize, power_y_length: usize) -> Self {
         let g1 = icicle_g1_generator();
         let g2 = icicle_g2_generator();
-        let mut acc = Accumulator {
+        let acc = Accumulator {
+            // [alpha^1,alpha^2,...,alpha^power_alpha_length]
             alpha: vec![PairSerde::new(g1, g2); power_alpha_length],
+            // [x^1,x^2,...,x^power_x_length]
             x: vec![PairSerde::new(g1, g2); power_x_length],
+            // [y^1,y^2,...,y^power_y_length]
             y: SerialSerde::new(power_y_length),
-            alpha_x: vec![g1; power_alpha_length * power_x_length], 
+            // [alpha^1 * x^1...alpha^i * x^j,...,alpha^power_alpha_length * x^power_x_length]
+            alpha_x: vec![g1; power_alpha_length * power_x_length],
+            // [alpha^1 * y^1...alpha^i * y^j,...,alpha^power_alpha_length * y^power_y_length]
             alpha_y: vec![g1; power_alpha_length * power_y_length],
+            // [x^1 * y^1...x^i * y^j,...,x^power_x_length * y^power_y_length]
             xy: vec![g1; power_x_length * power_y_length],
             alpha_xy: vec![g1; power_alpha_length * power_x_length * power_y_length],
             contributor_count: 0,
             marker: Default::default(),
         };
         acc
+    }
+    //x^exp * G1
+    pub fn get_x_g1(&self, exp : usize) -> G1serde {
+        if exp == 0 {
+            return icicle_g1_generator();
+        }
+        let result = self.x.get(exp-1).unwrap();
+        result.g1
+    }
+    //y^exp * G1
+    pub fn get_y_g1(&self, exp: usize) -> G1serde {
+        if exp == 0 {
+            return icicle_g1_generator();
+        }
+        self.y.get_g1(exp -1)
+    }
+    //alpha^exp * G1
+    pub fn get_alpha_g1(&self, exp: usize) -> G1serde {
+        if exp == 0 {
+            return icicle_g1_generator();
+        }
+        let result = self.alpha.get(exp -1).unwrap();
+        result.g1
+    }
+    
+    //alpha^exp_alpha * y^exp_y * G1
+    pub fn get_alphay_g1(&self, exp_alpha: usize, exp_y: usize) -> G1serde {
+        if exp_alpha == 0 && exp_y == 0 {
+            return icicle_g1_generator();
+        } else if exp_alpha == 0 {
+            return self.get_y_g1(exp_y);
+        } else if exp_y == 0 {
+            return self.get_alpha_g1(exp_alpha);
+        }
+        //TODO check if this is correct
+        let idx = (exp_alpha -1) * self.y.len_g1() + exp_y -1;
+        *self.alpha_y.get(idx).unwrap()
+    }
+
+    //alpha^exp_alpha * x^exp_x * G1
+    pub fn get_alphax_g1(&self, exp_alpha: usize, exp_x: usize) -> G1serde {
+        if exp_alpha == 0 && exp_x == 0 {
+            return icicle_g1_generator();
+        } else if exp_alpha == 0 {
+            return self.get_x_g1(exp_x);
+        } else if exp_x == 0 {
+            return self.get_alpha_g1(exp_alpha);
+        }
+        //TODO check if this is correct
+        let idx = (exp_alpha -1) * self.x.len() + exp_x -1;
+        *self.alpha_x.get(idx).unwrap()
+    }
+
+    //x^exp_x * y^exp_y * G1
+    pub fn get_xy_g1(&self, exp_x: usize, exp_y: usize) -> G1serde {
+        if exp_x == 0 && exp_y == 0 {
+            return icicle_g1_generator();
+        } else if exp_x == 0 {
+            return self.get_y_g1(exp_y);
+        } else if exp_y == 0 {
+            return self.get_x_g1(exp_x);
+        }
+        //TODO check if this is correct
+        let idx = (exp_x -1) * self.y.len_g1() + exp_y -1;
+        *self.xy.get(idx).unwrap()
+    }
+
+    //alpha^exp_alpha * x^exp_x * y^exp_y * G1
+    pub fn get_alphaxy_g1(&self, exp_alpha: usize, exp_x: usize, exp_y: usize) -> G1serde {
+        if exp_alpha == 0 && exp_x == 0 && exp_y == 0 {
+            return icicle_g1_generator();
+        } else if exp_alpha == 0 {
+            return self.get_xy_g1(exp_x,exp_y);
+        } else if exp_x == 0 {
+            return self.get_alphay_g1(exp_alpha,exp_y);
+        } else if exp_y == 0 {
+            return self.get_alphax_g1(exp_alpha,exp_x);
+        }
+        //TODO check if this is correct
+        let idx = (exp_alpha - 1)*(self.x.len() * self.y.len_g1()) + (exp_x - 1)*self.y.len_g1() +exp_y -1;
+        *self.alpha_xy.get(idx).unwrap()
     }
 
     pub fn compute(&self) -> (Accumulator, Proof5) {

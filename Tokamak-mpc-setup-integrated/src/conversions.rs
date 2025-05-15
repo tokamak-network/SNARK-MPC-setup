@@ -13,6 +13,10 @@ use rand_chacha::rand_core::SeedableRng;
 use rand_chacha::ChaCha20Rng;
 use rayon::prelude::*;
 use std::ops::Mul;
+use serde::{Serialize, Deserialize};
+use bincode;
+use icicle_bls12_381::polynomials::DensePolynomial;
+use libs::bivariate_polynomial::DensePolynomialExt;
 
 fn ark_to_icicle_g1_affine_points(ark_affine: &[ArkG1Affine]) -> Vec<IcicleG1Affine> {
     ark_affine
