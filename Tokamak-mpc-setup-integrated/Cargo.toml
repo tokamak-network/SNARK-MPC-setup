@@ -27,6 +27,7 @@ digest = "0.10.7"
 hex = "0.4.3"
 ark-poly = "0.3"
 ark-std = "0.3"
+lazy_static = "1.5.0"
 [features]
 default = []
 testing-mode = ["libs/testing-mode"]
