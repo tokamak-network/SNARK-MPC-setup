@@ -15,9 +15,11 @@ use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Read, Write};
 use std::ops::Mul;
+use std::sync::Mutex;
 use std::time::Instant;
 use ark_bls12_381::Bls12_381;
 use ark_ec::pairing::PairingOutput;
+use lazy_static::lazy_static;
 // Import rayon prelude
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
@@ -62,8 +64,8 @@ impl SerialSerde {
 
 #[derive(Clone, Debug, Copy, PartialEq, Serialize, Deserialize)]
 pub struct PairSerde {
-    pub(crate) g1: G1serde, //xG1
-    g2: G2serde, //xG2
+    pub g1: G1serde, //xG1
+    pub g2: G2serde, //xG2
 }
 
 impl PairSerde {
@@ -116,7 +118,7 @@ impl Proof5 {
 }
 //type 1: compute1
 pub fn compute1(prev_alpha: PairSerde, v: &[u8]) -> (PairSerde, G1serde, G2serde) {
-    let alpha_r = ScalarCfg::generate_random(1)[0];
+    let alpha_r = next_random();
     let pok_alpha = pok(alpha_r, v);
     let alpha_rG1 = icicle_g1_generator().mul(alpha_r);
     let cur_alpha = prev_alpha.mul(alpha_r);
@@ -208,7 +210,7 @@ fn compute2_temp(
     prev_x: &SerialSerde,
     v: &[u8; 32],
 ) -> (SerialSerde, Proof2, Vec<ScalarField>) {
-    let x_r = ScalarCfg::generate_random(1)[0];
+    let x_r = next_random();
     let pok_x = pok(x_r, v);
     let x_rG1 = icicle_g1_generator().mul(x_r);
     let len_x = prev_x.len_g1();
@@ -222,7 +224,7 @@ fn compute2_tempi(
     prev_x: &Vec<PairSerde>,
     v: &[u8; 32],
 ) -> (Vec<PairSerde>, Proof2, Vec<ScalarField>) {
-    let x_r = ScalarCfg::generate_random(1)[0];
+    let x_r = next_random();
     let pok_x = pok(x_r, v);
     let x_rG1 = icicle_g1_generator().mul(x_r);
     let len_x = prev_x.len();
@@ -238,14 +240,26 @@ fn compute2_tempi(
     (cur_x, Proof2 { x_rG1, pok_x, v: *v }, x_powers)
 }
 
+lazy_static! {
+    static ref INDEX: Mutex<usize> = Mutex::new(0);
+}
+pub fn next_random() -> ScalarField {
+    let scalars = [ScalarField::from_u32(3),ScalarField::from_u32(5),ScalarField::from_u32(7)];
+    //ScalarCfg::generate_random(1)[0]
+    let mut idx = INDEX.lock().unwrap();
+    let next = *idx;
+    *idx = (*idx + 1) % scalars.len(); // Wrap around to avoid panic
+    
+    println!("next random: {:?}", scalars[next]);
+    scalars[next]
+}
 
 //type 3: compute3
 //Let [x^i*y^k]
 pub fn compute3(prev_xy: &Vec<G1serde>, prev_x: &Vec<PairSerde>, prev_y: &SerialSerde, v: &[u8; 32]) -> (Vec<G1serde>, Vec<PairSerde>, SerialSerde, Proof2, Proof2, Vec<ScalarField>, Vec<ScalarField>, Vec<ScalarField>) {
     let len_x = prev_x.len();
-    let len_y = prev_y.len_g1();
 
-    let x_r = ScalarCfg::generate_random(1)[0];
+    let x_r = next_random();
     let proof2_x = Proof2 { x_rG1: icicle_g1_generator().mul(x_r), pok_x: pok(x_r, v), v: *v };
 
     // Precompute the powers of x_r efficiently
@@ -538,9 +552,9 @@ pub fn test_consistent_case1() {
     // a1*c2 == b1*c1
     let g1_gen = icicle_g1_generator();
     let g2_gen = icicle_g2_generator();
-    let a1 = ScalarCfg::generate_random(1)[0];
-    let b1 = ScalarCfg::generate_random(1)[0];
-    let c1 = ScalarCfg::generate_random(1)[0];
+    let a1 = next_random();
+    let b1 = next_random();
+    let c1 = next_random();
     let c2 = b1 * c1 * a1.inv();
 
     let a1G = g1_gen.mul(a1);
@@ -557,7 +571,7 @@ pub fn test_consistent_case3() {
     let g1_gen = icicle_g1_generator();
     let g2_gen = icicle_g2_generator();
 
-    let a = ScalarCfg::generate_random(1)[0];
+    let a = next_random();
 
     let two = ScalarField::one() + ScalarField::one();
     let three = two + ScalarField::one();
@@ -639,8 +653,8 @@ pub fn test_consistent_case4() {
     //same_ratio(A1, B1, A2, B2) && same_ratio(A1, B1, G2serde(g2), C2)
     // a1*b2 == b1*a2
     // a1 * c2 == b1 * 1
-    let a1 = ScalarCfg::generate_random(1)[0];
-    let a2 = ScalarCfg::generate_random(1)[0];
+    let a1 = next_random();
+    let a2 = next_random();
 
     let b1 = a1 * two;
     let b2 = a2 * two;

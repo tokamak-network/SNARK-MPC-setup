@@ -12,24 +12,26 @@ fn main() {
 
     let args: Vec<String> = env::args().collect();
     // Check if the correct number of arguments is provided
-    if args.len() != 2 {
-        eprintln!("Usage: {} <smax1>", args[0]);
+    if args.len() != 3 {
+        eprintln!("Usage: {} <smax_x> {} <smax_y>", args[0], args[1]);
         std::process::exit(1);
     }
 
     // Parse the argument into usize
     let power_x_length: usize = args[1].parse().expect("Invalid number provided for power_x_length");
-
     println!("Got power_x_length = {}", power_x_length);
+
+    let power_y_length: usize = args[2].parse().expect("Invalid number provided for power_y_length");
+    println!("Got power_y_length = {}", power_y_length);
+
 
     let start = Instant::now();
 
     let power_alpha_length: usize = 4;
-    let power_y_length: usize = 2*power_x_length;
-
+ 
     let acc = Accumulator::new(power_alpha_length, power_x_length, power_y_length);
 
-    acc.save_to_json("output/new_challenge.json").expect("cannot write to file");
+    acc.save_to_json("setup/mpc-setup/output/new_challenge.json").expect("cannot write to file");
 
     let duration = start.elapsed();
     println!("Time elapsed: {:?}", duration.as_secs());

@@ -4,6 +4,7 @@ use libs::group_structures::{G1serde, G2serde};
 use serde::{Deserialize, Serialize};
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Read, Write};
+use icicle_bls12_381::curve::{G1Affine, G1Projective};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Accumulator {
@@ -43,6 +44,14 @@ impl Accumulator {
         };
         acc
     }
+    pub fn get_x_g1_range(&self, exp_min : usize,exp_max : usize) -> Vec<G1Affine> {
+        let mut out = vec![G1Affine::zero();exp_max-exp_min+1];
+        for i in exp_min..exp_max+1 {
+            out[i] = self.get_x_g1(i).0;
+        }
+        out
+    }
+    
     //x^exp * G1
     pub fn get_x_g1(&self, exp : usize) -> G1serde {
         if exp == 0 {
@@ -92,6 +101,7 @@ impl Accumulator {
         }
         //TODO check if this is correct
         let idx = (exp_alpha -1) * self.x.len() + exp_x -1;
+     //   println!("alpha: {} x: {} idx: {} len_alpha_x {}", exp_alpha, exp_x, idx, self.alpha_x.len());
         *self.alpha_x.get(idx).unwrap()
     }
 
@@ -109,6 +119,15 @@ impl Accumulator {
         *self.xy.get(idx).unwrap()
     }
 
+    pub fn get_alphaxy_g1_range(&self, exp_alpha: usize, exp_x_max: usize, exp_y_max: usize) -> Vec<G1Affine> {
+        let mut out = vec![G1Affine::zero();exp_x_max*exp_y_max];
+        for i in 0..exp_x_max {
+            for k in 0..exp_y_max {
+                out[i*exp_y_max+k] = self.get_alphaxy_g1(exp_alpha,i,k).0;
+            }
+        }
+        out
+    }
     //alpha^exp_alpha * x^exp_x * y^exp_y * G1
     pub fn get_alphaxy_g1(&self, exp_alpha: usize, exp_x: usize, exp_y: usize) -> G1serde {
         if exp_alpha == 0 && exp_x == 0 && exp_y == 0 {
