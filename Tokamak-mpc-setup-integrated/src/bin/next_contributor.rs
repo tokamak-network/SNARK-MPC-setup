@@ -2,6 +2,7 @@ use mpc_setup::accumulator::Accumulator;
 use mpc_setup::utils::Proof5;
 use std::fs;
 use std::time::Instant;
+use mpc_setup::conversions::{icicle_g1_generator, icicle_g2_generator};
 
 fn main() {
     let start = Instant::now();
@@ -21,7 +22,9 @@ fn main() {
     } else {
         //first contributor
         println!("previous contributor is genesis");
-        let acc_check = Accumulator::new(cur_acc.alpha.len(), cur_acc.x.len(), cur_acc.y.len_g1());
+        let g1 = icicle_g1_generator();
+        let g2 = icicle_g2_generator();
+        let acc_check = Accumulator::new(g1,g2,cur_acc.alpha.len(), cur_acc.x.len(), cur_acc.y.len_g1());
         assert_eq!(cur_acc.hash(), acc_check.hash(), "genesis hash is not correct");
     }
     fs::rename("setup/mpc-setup/output/new_challenge.json", "setup/mpc-setup/output/old_challenge.json").expect("cannot rename new_challenge.json");

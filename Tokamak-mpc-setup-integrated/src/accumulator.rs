@@ -8,6 +8,8 @@ use icicle_bls12_381::curve::{G1Affine, G1Projective};
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Accumulator {
+    pub g1: G1serde,
+    pub g2: G2serde,
     pub contributor_count: usize,
     pub alpha: Vec<PairSerde>,
     pub x: Vec<PairSerde>,
@@ -22,10 +24,23 @@ pub struct Accumulator {
 }
 
 impl Accumulator {
-    pub fn new(power_alpha_length: usize, power_x_length: usize, power_y_length: usize) -> Self {
-        let g1 = icicle_g1_generator();
-        let g2 = icicle_g2_generator();
+    pub fn get_boxed_xypower(&self) -> Box<[G1serde]> {
+        let y_len = self.y.len_g1();
+        let mut out = vec![G1serde::zero(); self.x.len() * y_len];
+        for i in 0..self.x.len() {
+            for j in 0..y_len {
+                out[i * y_len + j] = self.get_xy_g1(i, j);
+            }
+        }
+        out.into_boxed_slice()
+    }
+}
+
+impl Accumulator {
+    pub fn new(g1 : G1serde, g2: G2serde, power_alpha_length: usize, power_x_length: usize, power_y_length: usize) -> Self {
         let acc = Accumulator {
+            g1,
+            g2,
             // [alpha^1,alpha^2,...,alpha^power_alpha_length]
             alpha: vec![PairSerde::new(g1, g2); power_alpha_length],
             // [x^1,x^2,...,x^power_x_length]
@@ -78,6 +93,8 @@ impl Accumulator {
     
     //alpha^exp_alpha * y^exp_y * G1
     pub fn get_alphay_g1(&self, exp_alpha: usize, exp_y: usize) -> G1serde {
+        assert_eq!(exp_y <= self.y.len_g1(), true);
+        assert_eq!(exp_alpha <= 4, true);
         if exp_alpha == 0 && exp_y == 0 {
             return icicle_g1_generator();
         } else if exp_alpha == 0 {
@@ -92,6 +109,8 @@ impl Accumulator {
 
     //alpha^exp_alpha * x^exp_x * G1
     pub fn get_alphax_g1(&self, exp_alpha: usize, exp_x: usize) -> G1serde {
+        assert_eq!(exp_alpha <= 4, true);
+        assert_eq!(exp_x <= self.x.len(), true);
         if exp_alpha == 0 && exp_x == 0 {
             return icicle_g1_generator();
         } else if exp_alpha == 0 {
@@ -107,6 +126,8 @@ impl Accumulator {
 
     //x^exp_x * y^exp_y * G1
     pub fn get_xy_g1(&self, exp_x: usize, exp_y: usize) -> G1serde {
+        assert_eq!(exp_y <= self.y.len_g1(), true);
+        assert_eq!(exp_x <= self.x.len(), true);
         if exp_x == 0 && exp_y == 0 {
             return icicle_g1_generator();
         } else if exp_x == 0 {
@@ -130,6 +151,8 @@ impl Accumulator {
     }
     //alpha^exp_alpha * x^exp_x * y^exp_y * G1
     pub fn get_alphaxy_g1(&self, exp_alpha: usize, exp_x: usize, exp_y: usize) -> G1serde {
+        assert_eq!(exp_y <= self.y.len_g1(), true);
+        assert_eq!(exp_x <= self.x.len(), true);
         if exp_alpha == 0 && exp_x == 0 && exp_y == 0 {
             return icicle_g1_generator();
         } else if exp_alpha == 0 {
@@ -148,7 +171,9 @@ impl Accumulator {
         let (cur_alphaxy, cur_xy, cur_alphax, cur_alphay, cur_alpha, cur_x, cur_y, proof_5) =
             compute5(&self.alpha_xy, &self.xy, &self.alpha_x, &self.alpha_y, &self.alpha, &self.x, &self.y, &self.hash());
 
-        let mut acc = Accumulator {
+        let acc = Accumulator {
+            g1:self.g1,
+            g2:self.g2,
             alpha: cur_alpha,
             x: cur_x,
             y: cur_y,
@@ -206,8 +231,12 @@ mod tests {
 
     #[test]
     fn test_accumulator_serialization_roundtrip() {
+        let g1 = icicle_g1_generator();
+        let g2 = icicle_g2_generator();
         // Construct dummy data for the Accumulator struct
         let accumulator = Accumulator {
+            g1,
+            g2,
             alpha: vec![PairSerde::new(icicle_g1_generator(), icicle_g2_generator())],
             x: vec![PairSerde::new(icicle_g1_generator(), icicle_g2_generator())],
             y: SerialSerde::new(2),
@@ -241,7 +270,9 @@ mod tests {
     }
     #[test]
     fn test_save_load_accumulator() {
-        let accumulator = Accumulator::new(2, 4, 8);
+        let g1 = icicle_g1_generator();
+        let g2 = icicle_g2_generator();
+        let accumulator = Accumulator::new(g1,g2,2, 4, 8);
         accumulator.save_to_json("accumulator.json").expect("Failed to save");
 
         let loaded_accumulator = Accumulator::load_from_json("accumulator.json").expect("Failed to load");

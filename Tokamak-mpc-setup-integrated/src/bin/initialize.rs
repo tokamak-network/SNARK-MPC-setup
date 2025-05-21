@@ -28,8 +28,10 @@ fn main() {
     let start = Instant::now();
 
     let power_alpha_length: usize = 4;
- 
-    let acc = Accumulator::new(power_alpha_length, power_x_length, power_y_length);
+    let g1 = icicle_g1_generator();
+    let g2 = icicle_g2_generator();
+    
+    let acc = Accumulator::new(g1,g2,power_alpha_length, power_x_length, power_y_length);
 
     acc.save_to_json("setup/mpc-setup/output/new_challenge.json").expect("cannot write to file");
 

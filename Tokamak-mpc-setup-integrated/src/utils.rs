@@ -24,8 +24,8 @@ use lazy_static::lazy_static;
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SerialSerde {
-    g1: Vec<G1serde>, //[xG1, x^2G1, x^3G1, ..., x^s_maxG1]
-    g2: G2serde,      //xG2
+    pub g1: Vec<G1serde>, //[xG1, x^2G1, x^3G1, ..., x^s_maxG1]
+    pub g2: G2serde,      //xG2
 }
 impl SerialSerde {
     //xr, xr^2, xr^3...xr^n where n is the length of xr vector
