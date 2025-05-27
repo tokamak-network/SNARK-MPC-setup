@@ -2,6 +2,7 @@ use ark_bls12_381::{G1Affine as ArkG1Affine, G1Projective as ArkG1Projective, G2
 use ark_ec::AffineRepr;
 use ark_ff::{BigInteger, Field, PrimeField};
 use ark_serialize::{CanonicalSerialize, Compress};
+use bincode;
 use blake2::crypto_mac::generic_array::typenum::U64;
 use blake2::crypto_mac::generic_array::GenericArray;
 use blake2::{Blake2b, Digest};
@@ -13,10 +14,6 @@ use rand_chacha::rand_core::SeedableRng;
 use rand_chacha::ChaCha20Rng;
 use rayon::prelude::*;
 use std::ops::Mul;
-use serde::{Serialize, Deserialize};
-use bincode;
-use icicle_bls12_381::polynomials::DensePolynomial;
-use libs::bivariate_polynomial::DensePolynomialExt;
 
 fn ark_to_icicle_g1_affine_points(ark_affine: &[ArkG1Affine]) -> Vec<IcicleG1Affine> {
     ark_affine

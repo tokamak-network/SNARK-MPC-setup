@@ -6,20 +6,18 @@ use lazy_static::lazy_static;
 use libs::bivariate_polynomial::{BivariatePolynomial, DensePolynomialExt};
 use libs::field_structures::Tau;
 use libs::group_structures::G1serde;
-use libs::iotools::{from_coef_vec_to_g1serde_vec, read_global_wire_list_as_boxed_boxed_numbers, SetupParams, SubcircuitInfo};
+use libs::iotools::from_coef_vec_to_g1serde_vec;
 use libs::vector_operations::gen_evaled_lagrange_bases;
 use rayon::prelude::*;
 use std::ops::{Add, Mul};
 use std::sync::Mutex;
-use std::time::Instant;
-use crate::prepare::QAP;
 
 lazy_static! {
     static ref FFT_MUTEX: Mutex<()> = Mutex::new(());
         static ref POLY_MUTEX: Mutex<()> = Mutex::new(());
 
 }
- 
+
 #[test]
 fn test_eval_lagrange_bases() {
     let g1_gen = CurveCfg::generate_random_affine_points(1)[0];
@@ -46,30 +44,30 @@ fn test_eval_lagrange_bases() {
 
     assert_eq!(result.into_boxed_slice(), x_evaledCommit);
 }
-pub fn thread_safe_compute_langrange_i_poly(i: usize, max_x: usize, max_y: usize) -> DensePolynomialExt{
+pub fn thread_safe_compute_langrange_i_poly(i: usize, max_x: usize, max_y: usize) -> DensePolynomialExt {
     let _guard = FFT_MUTEX.lock().unwrap(); // Lock before unsafe call
 
-    let mut lag_coeffs = vec![ScalarField::zero(); max_x*max_y];
+    let mut lag_coeffs = vec![ScalarField::zero(); max_x * max_y];
     compute_langrange_i_coeffs(i, max_x, max_y, &mut lag_coeffs);
     // Mutex guard dropped here
-     DensePolynomialExt::from_coeffs(HostSlice::from_slice(&lag_coeffs), max_x, max_y)
- }
+    DensePolynomialExt::from_coeffs(HostSlice::from_slice(&lag_coeffs), max_x, max_y)
+}
 pub fn poly_mult(poly1: &DensePolynomialExt, poly2: &DensePolynomialExt, multpxy_coeffs: &mut Vec<ScalarField>) {
     let multpxy = poly1.mul(poly2);
     let cached_val_pows = HostSlice::from_mut_slice(multpxy_coeffs);
     multpxy.copy_coeffs(0, cached_val_pows);
-     // Mutex guard dropped here
+    // Mutex guard dropped here
 }
 pub fn thread_safe_compute_langrange_i_coeffs(i: usize, max_x: usize, max_y: usize, res: &mut [ScalarField]) {
     let _guard = FFT_MUTEX.lock().unwrap(); // Lock before unsafe call
     compute_langrange_i_coeffs(i, max_x, max_y, res);
     // Mutex guard dropped here
 }
-// given xG1 = [x^i*G1, x^i*G1, ..., x_max^i*G1]
+// given x_g1 = [x^i*G1, x^i*G1, ..., x_max^i*G1]
 // it evaluates the lagrange bases foreach i = 0, ..., s_max-1
 // return x_evaled_vec = [x_0^i, x_1^i, ..., x_s_max^i]
-pub fn eval_langrange_bases(xG1: &Vec<G1serde>, x_evaled_vec: &mut Vec<G1serde>) {
-    let s_max = xG1.len();
+pub fn eval_langrange_bases(x_g1: &Vec<G1serde>, x_evaled_vec: &mut Vec<G1serde>) {
+    let s_max = x_g1.len();
     assert_eq!(x_evaled_vec.len(), s_max);
 
     x_evaled_vec
@@ -80,7 +78,7 @@ pub fn eval_langrange_bases(xG1: &Vec<G1serde>, x_evaled_vec: &mut Vec<G1serde>)
 
             thread_safe_compute_langrange_i_coeffs(i, s_max, 1, &mut lag_coeffs);
             // evaluate lagrange base for i
-            let result = xG1
+            let result = x_g1
                 .iter()
                 .zip(lag_coeffs.iter())
                 .fold(G1serde::zero(), |acc, (x_g1, coeff_i)| {

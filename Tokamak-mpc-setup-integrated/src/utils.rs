@@ -1,26 +1,94 @@
 pub(crate) use crate::conversions::{
     hash_to_g2, icicle_g1_generator, icicle_g2_generator, serialize_g1_affine_compressed,
 };
+use ark_bls12_381::Bls12_381;
+use ark_ec::pairing::PairingOutput;
 use ark_ec::{AffineRepr, PrimeGroup};
+use ark_ff::One;
 use blake2::{Blake2b, Digest};
+use blake3::Hasher;
 use icicle_bls12_381::curve::{ScalarCfg, ScalarField};
 use icicle_core::curve::Curve;
 use icicle_core::traits::{Arithmetic, FieldImpl, GenerateRandom};
 use libs::field_structures::Tau;
-use libs::group_structures::{pairing, G1serde, G2serde};
+use libs::group_structures::{pairing, G1serde, G2serde, Sigma};
 use rand::Rng;
 use rayon::join;
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::fs::File;
+use std::fs::{File, OpenOptions};
 use std::io::{BufReader, BufWriter, Read, Write};
-use std::ops::Mul;
-use std::sync::Mutex;
+use std::ops::{Add, Mul, Sub};
+use std::path::Path;
 use std::time::Instant;
-use ark_bls12_381::Bls12_381;
-use ark_ec::pairing::PairingOutput;
-use lazy_static::lazy_static;
+use std::{fs, io};
+use clap::ValueEnum;
 // Import rayon prelude
+
+
+
+
+pub fn check_outfile_writable(path: &str) -> std::io::Result<()> {
+    let path = Path::new(path);
+    // Try opening the file in write or create mode
+    let mut file = OpenOptions::new().create(true).write(true).append(true).open(path)?;
+    // Attempt a no-op write
+    writeln!(file, "")?;
+    Ok(())
+}
+pub fn check_outfolder_writable(path: &str) -> std::io::Result<()> {
+    let path = Path::new(path);
+
+    if !path.exists() {
+        return Err(std::io::Error::new(std::io::ErrorKind::NotFound, "Folder does not exist"));
+    }
+    if !path.is_dir() {
+        return Err(std::io::Error::new(std::io::ErrorKind::InvalidInput, "Path is not a directory"));
+    }
+
+    // Try writing a temp file
+    let test_file_path = path.join(".test_write_permission");
+    let result = File::create(&test_file_path)
+        .and_then(|mut f| f.write_all(b"test"));
+    // Clean up if it worked
+    if test_file_path.exists() {
+        let _ = fs::remove_file(test_file_path);
+    }
+
+    result
+}
+#[macro_export]
+macro_rules! impl_read_from_json {
+    ($t:ty) => {
+        impl $t {
+            pub fn read_from_json(path: &str) -> io::Result<Self> {
+                let abs_path = env::current_dir()?.join(path);
+                let file = File::open(abs_path)?;
+                let reader = BufReader::new(file);
+                let res: Self = from_reader(reader)?;
+                Ok(res)
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! impl_write_into_json {
+    ($t:ty) => {
+        impl $t {
+            pub fn write_into_json(&self, path: &str) -> io::Result<()> {
+                let abs_path = env::current_dir()?.join(path);
+                if let Some(parent) = abs_path.parent() {
+                    fs::create_dir_all(parent)?;
+                }
+                let file = File::create(&abs_path)?;
+                let writer = BufWriter::new(file);
+                to_writer_pretty(writer, self)?;
+                Ok(())
+            }
+        }
+    };
+}
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct SerialSerde {
@@ -52,9 +120,7 @@ impl SerialSerde {
         self.g1.len()
     }
 
-    pub fn new(s_max: usize) -> SerialSerde {
-        let g1 = icicle_g1_generator();
-        let g2 = icicle_g2_generator();
+    pub fn new(g1: G1serde, g2: G2serde, s_max: usize) -> SerialSerde {
         SerialSerde {
             g1: vec![g1; s_max],
             g2,
@@ -84,23 +150,23 @@ impl PairSerde {
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Proof2 {
-    x_rG1: G1serde, //latest x_r contribution
-    pok_x: G2serde,
-    v: [u8; 32],
+    pub x_rG1: G1serde, //latest x_r contribution
+    pub pok_x: G2serde,
+    pub v: [u8; 32],
 }
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Proof5 {
-    proof2_alpha: Proof2,
-    proof2_x: Proof2,
-    proof2_y: Proof2,
+pub struct Phase1Proof {
+    pub contributor_index: usize,
+    pub proof2_alpha: Proof2,
+    pub proof2_x: Proof2,
+    pub proof2_y: Proof2,
 }
-impl Proof5 {
+impl Phase1Proof {
     /// Save the Proof5 to a JSON file
     pub fn save_to_json(&self, path: &str) -> std::io::Result<()> {
         let file = File::create(path)?;
         let mut writer = BufWriter::new(file);
-        let json_str = serde_json::to_string_pretty(&self)
-            .expect("JSON serialization failed");
+        let json_str = serde_json::to_string_pretty(&self).expect("JSON serialization failed");
         writer.write_all(json_str.as_bytes())?;
         Ok(())
     }
@@ -111,29 +177,29 @@ impl Proof5 {
         let mut reader = BufReader::new(file);
         let mut json_str = String::new();
         reader.read_to_string(&mut json_str)?;
-        let proof: Proof5 = serde_json::from_str(&json_str)
-            .expect("JSON deserialization failed");
+        let proof: Phase1Proof =
+            serde_json::from_str(&json_str).expect("JSON deserialization failed");
         Ok(proof)
     }
 }
 //type 1: compute1
-pub fn compute1(prev_alpha: PairSerde, v: &[u8]) -> (PairSerde, G1serde, G2serde) {
-    let alpha_r = next_random();
-    let pok_alpha = pok(alpha_r, v);
-    let alpha_rG1 = icicle_g1_generator().mul(alpha_r);
+pub fn compute1(rng: &mut RandomGenerator, g1: &G1serde, prev_alpha: PairSerde, v: &[u8]) -> (PairSerde, G1serde, G2serde) {
+    let alpha_r = rng.next_random();
+    let pok_alpha = pok(g1, alpha_r, v);
+    let alpha_rG1 = g1.mul(alpha_r);
     let cur_alpha = prev_alpha.mul(alpha_r);
     (cur_alpha, alpha_rG1, pok_alpha)
 }
 //type 1: verify1
 pub fn verify1(
+    g1: &G1serde,
     prev_alpha: PairSerde,
     cur_alpha: PairSerde,
-    alpha_rG1: G1serde,
+    alpha_rG1: &G1serde,
     alpha_pok: G2serde,
     v: &[u8],
 ) -> bool {
-    let G1 = icicle_g1_generator();
-    if check_pok(alpha_rG1, G1, alpha_pok, v) {
+    if check_pok(alpha_rG1, g1, alpha_pok, v) {
         let r_alpha = ro(&alpha_rG1, v);
         return consistent(
             &[prev_alpha.g1, cur_alpha.g1],
@@ -144,19 +210,22 @@ pub fn verify1(
     false
 }
 
-
 //type 2: compute2
 //Let [x^i]^0 = G_1 or [x^i]^0 = G
-pub fn compute2(prev_x: &SerialSerde, v: &[u8; 32]) -> (SerialSerde, Proof2) {
-    let (cur_x, proof2, _) = compute2_temp(prev_x, v);
+pub fn compute2(rng: &mut RandomGenerator, g1: &G1serde, prev_x: &SerialSerde, v: &[u8; 32]) -> (SerialSerde, Proof2) {
+    let (cur_x, proof2, _) = compute2_temp(rng, &g1, prev_x, v);
     (cur_x, proof2)
 }
 
 //type 2: verify2
-pub fn verify2(prev_x: &SerialSerde, cur_x: &SerialSerde, proof2: &Proof2) -> bool {
-    let g1 = icicle_g1_generator();
-
-    if !check_pok(proof2.x_rG1, g1, proof2.pok_x, proof2.v.as_ref()) {
+pub fn verify2(
+    g1: &G1serde,
+    g2: &G2serde,
+    prev_x: &SerialSerde,
+    cur_x: &SerialSerde,
+    proof2: &Proof2,
+) -> bool {
+    if !check_pok(&proof2.x_rG1, g1, proof2.pok_x, proof2.v.as_ref()) {
         return false;
     }
 
@@ -170,21 +239,23 @@ pub fn verify2(prev_x: &SerialSerde, cur_x: &SerialSerde, proof2: &Proof2) -> bo
         return false;
     }
 
-    let g2 = icicle_g2_generator();
-
     // Parallelize loop consistency checks
     (1..cur_x.len_g1()).into_par_iter().all(|i| {
         consistent(
             &[cur_x.get_g1(i - 1), cur_x.get_g1(i)],
             &[],
-            &[g2, cur_x.get_g2()],
+            &[*g2, cur_x.get_g2()],
         )
     })
 }
-pub fn verify2i(prev_x: &Vec<PairSerde>, cur_x: &Vec<PairSerde>, proof2: &Proof2) -> bool {
-    let g1 = icicle_g1_generator();
-
-    if !check_pok(proof2.x_rG1, g1, proof2.pok_x, proof2.v.as_ref()) {
+pub fn verify2i(
+    g1: &G1serde,
+    g2: &G2serde,
+    prev_x: &Vec<PairSerde>,
+    cur_x: &Vec<PairSerde>,
+    proof2: &Proof2,
+) -> bool {
+    if !check_pok(&proof2.x_rG1, g1, proof2.pok_x, proof2.v.as_ref()) {
         return false;
     }
 
@@ -198,35 +269,45 @@ pub fn verify2i(prev_x: &Vec<PairSerde>, cur_x: &Vec<PairSerde>, proof2: &Proof2
         return false;
     }
 
-    let g2 = icicle_g2_generator();
-
     // Parallelize the consistency checks across elements
     (1..cur_x.len())
         .into_par_iter()
-        .all(|i| consistent(&[cur_x[i - 1].g1, cur_x[i].g1], &[], &[g2, cur_x[0].g2]))
+        .all(|i| consistent(&[cur_x[i - 1].g1, cur_x[i].g1], &[], &[*g2, cur_x[0].g2]))
 }
 
 fn compute2_temp(
+    rng: &mut RandomGenerator,
+    g1: &G1serde,
     prev_x: &SerialSerde,
     v: &[u8; 32],
 ) -> (SerialSerde, Proof2, Vec<ScalarField>) {
-    let x_r = next_random();
-    let pok_x = pok(x_r, v);
-    let x_rG1 = icicle_g1_generator().mul(x_r);
+    let x_r = rng.next_random();
+    let pok_x = pok(g1, x_r, v);
+    let x_rG1 = g1.mul(x_r);
     let len_x = prev_x.len_g1();
 
     // Precompute the powers of x_r efficiently
     let mut x_powers = compute_powers(x_r, len_x);
     let cur_x = prev_x.mul(&x_powers);
-    (cur_x, Proof2 { x_rG1, pok_x, v: *v }, x_powers)
+    (
+        cur_x,
+        Proof2 {
+            x_rG1,
+            pok_x,
+            v: *v,
+        },
+        x_powers,
+    )
 }
 fn compute2_tempi(
+    rng: &mut RandomGenerator,
+    g1: &G1serde,
     prev_x: &Vec<PairSerde>,
     v: &[u8; 32],
 ) -> (Vec<PairSerde>, Proof2, Vec<ScalarField>) {
-    let x_r = next_random();
-    let pok_x = pok(x_r, v);
-    let x_rG1 = icicle_g1_generator().mul(x_r);
+    let x_r = rng.next_random();
+    let pok_x = pok(g1, x_r, v);
+    let x_rG1 = g1.mul(x_r);
     let len_x = prev_x.len();
 
     // Precompute the powers of x_r efficiently
@@ -237,30 +318,162 @@ fn compute2_tempi(
         .map(|(x, scalar)| x.mul(*scalar))
         .collect();
 
-    (cur_x, Proof2 { x_rG1, pok_x, v: *v }, x_powers)
+    (
+        cur_x,
+        Proof2 {
+            x_rG1,
+            pok_x,
+            v: *v,
+        },
+        x_powers,
+    )
+}
+pub enum RandomType { USERINPUTONLY, RANDOMONLY, RANDOMANDUSERINPUT, TESTING_ONLY }
+impl Default for RandomType {
+    fn default() -> Self {
+        RandomType::RANDOMONLY
+    }
+}
+pub struct RandomGenerator {
+    randomType: RandomType,
+    seed: [u8; 32],
+    ith: usize,
 }
 
-lazy_static! {
+impl RandomGenerator {
+    pub fn new(randomType: RandomType, initial_seed: [u8; 32]) -> Self {
+        Self { randomType: randomType, seed: initial_seed, ith: 0 }
+    }
+
+    pub fn next_scalar(&mut self) -> Result<ScalarField, Box<dyn std::error::Error>> {
+        let scalar = ScalarField::from_bytes_le(&self.seed);
+
+        let mut hasher = Hasher::new();
+        hasher.update(&self.seed);
+        let hash = hasher.finalize();
+
+        self.seed.copy_from_slice(hash.as_bytes());
+
+        Ok(scalar)
+    }
+    pub fn next_random(&mut self) -> ScalarField {
+        match self.randomType {
+            RandomType::USERINPUTONLY => {
+                let scalar = self.next_scalar().unwrap();
+                scalar
+            }
+            RandomType::RANDOMONLY => {
+                ScalarCfg::generate_random(1)[0]
+            }
+            RandomType::RANDOMANDUSERINPUT => {
+                let scalar = self.next_scalar().unwrap();
+                ScalarCfg::generate_random(1)[0] + scalar
+            }
+            RandomType::TESTING_ONLY => {
+                self.ith = self.ith + 1;
+                ScalarField::from_u32((self.ith * 2 + 1) as u32)
+            }
+        }
+    }
+}
+
+
+/// Prompts user for initial random input
+pub fn scalar_from_user_input() -> [u8; 32] {
+    print!("Enter initial input for randomization: ");
+    io::stdout().flush().unwrap();
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input).unwrap();
+
+    let mut hasher = Hasher::new();
+    hasher.update(input.trim().as_bytes());
+    let hash = hasher.finalize();
+
+    let mut bytes = [0u8; 32];
+    bytes.copy_from_slice(hash.as_bytes());
+    bytes
+}
+
+#[derive(Debug, Clone, ValueEnum)]
+pub enum Mode {
+    Testing,
+    Random,
+    Deterministic,
+}
+pub fn initialize_random_generator(mode: Mode) -> RandomGenerator {
+    match mode {
+        Mode::Testing => {
+            println!("random data generation: testing mode");
+            RandomGenerator::new(RandomType::TESTING_ONLY, [0u8; 32])
+        }
+        Mode::Deterministic => {
+            println!("random data generation: deterministic mode");
+            RandomGenerator::new(RandomType::USERINPUTONLY, scalar_from_user_input())
+        }
+        _ => {
+            println!("random data generation: full random mode");
+            RandomGenerator::new(RandomType::RANDOMANDUSERINPUT, scalar_from_user_input())
+        }
+    }
+}
+
+/*lazy_static! {
     static ref INDEX: Mutex<usize> = Mutex::new(0);
 }
 pub fn next_random() -> ScalarField {
-    let scalars = [ScalarField::from_u32(3),ScalarField::from_u32(5),ScalarField::from_u32(7)];
+    let scalars = [
+        ScalarField::from_u32(3),
+        ScalarField::from_u32(5),
+        ScalarField::from_u32(7),
+    ];
     //ScalarCfg::generate_random(1)[0]
     let mut idx = INDEX.lock().unwrap();
     let next = *idx;
     *idx = (*idx + 1) % scalars.len(); // Wrap around to avoid panic
-    
+
     println!("next random: {:?}", scalars[next]);
     scalars[next]
-}
+}*/
+pub fn hash_sigma(sigma: &Sigma) -> [u8; 32] {
+    // Serialize without the hash field
+    let serialized = bincode::serialize(sigma).expect("Serialization failed for Accumulator");
 
+    // Calculate Blake2b hash (32-byte output)
+    let hash = Blake2b::digest(&serialized);
+
+    // Convert GenericArray into [u8; 32]
+    let mut result = [0u8; 32];
+    result.copy_from_slice(&hash[..32]);
+    result
+}
 //type 3: compute3
 //Let [x^i*y^k]
-pub fn compute3(prev_xy: &Vec<G1serde>, prev_x: &Vec<PairSerde>, prev_y: &SerialSerde, v: &[u8; 32]) -> (Vec<G1serde>, Vec<PairSerde>, SerialSerde, Proof2, Proof2, Vec<ScalarField>, Vec<ScalarField>, Vec<ScalarField>) {
+pub fn compute3(
+    rng: &mut RandomGenerator,
+    g1: &G1serde,
+    prev_xy: &Vec<G1serde>,
+    prev_x: &Vec<PairSerde>,
+    prev_y: &SerialSerde,
+    v: &[u8; 32],
+) -> (
+    Vec<G1serde>,
+    Vec<PairSerde>,
+    SerialSerde,
+    Proof2,
+    Proof2,
+    Vec<ScalarField>,
+    Vec<ScalarField>,
+    Vec<ScalarField>,
+) {
     let len_x = prev_x.len();
 
-    let x_r = next_random();
-    let proof2_x = Proof2 { x_rG1: icicle_g1_generator().mul(x_r), pok_x: pok(x_r, v), v: *v };
+    let x_r = rng.next_random();
+    let proof2_x = Proof2 {
+        x_rG1: g1.mul(x_r),
+        pok_x: pok(g1, x_r, v),
+        v: *v,
+    };
 
     // Precompute the powers of x_r efficiently
     let x_powers = compute_powers(x_r, len_x);
@@ -270,7 +483,7 @@ pub fn compute3(prev_xy: &Vec<G1serde>, prev_x: &Vec<PairSerde>, prev_y: &Serial
         .map(|(x, scalar)| x.mul(*scalar))
         .collect();
 
-    let (cur_y, proof2_y, y_powers) = compute2_temp(prev_y, v);
+    let (cur_y, proof2_y, y_powers) = compute2_temp(rng, &g1, prev_y, v);
 
     let xy_powers = vector_product(&x_powers, &y_powers);
     let cur_xy: Vec<G1serde> = prev_xy
@@ -279,20 +492,30 @@ pub fn compute3(prev_xy: &Vec<G1serde>, prev_x: &Vec<PairSerde>, prev_y: &Serial
         .map(|(x, scalar)| x.mul(*scalar))
         .collect();
 
-    (cur_xy, cur_x, cur_y, proof2_x, proof2_y, x_powers, y_powers, xy_powers)
+    (
+        cur_xy, cur_x, cur_y, proof2_x, proof2_y, x_powers, y_powers, xy_powers,
+    )
 }
 
-
 //type 3: verify3
-pub fn verify3(prev_x: &Vec<PairSerde>, prev_y: &SerialSerde, cur_xy: &Vec<G1serde>, cur_x: &Vec<PairSerde>, cur_y: &SerialSerde, proof2_x: &Proof2, proof2_y: &Proof2) -> bool {
-    if !verify2i(prev_x, cur_x, proof2_x) {
+pub fn verify3(
+    g1: &G1serde,
+    g2: &G2serde,
+    prev_x: &Vec<PairSerde>,
+    prev_y: &SerialSerde,
+    cur_xy: &Vec<G1serde>,
+    cur_x: &Vec<PairSerde>,
+    cur_y: &SerialSerde,
+    proof2_x: &Proof2,
+    proof2_y: &Proof2,
+) -> bool {
+    if !verify2i(g1, g2, prev_x, cur_x, proof2_x) {
         return false;
     }
-    if !verify2(prev_y, cur_y, proof2_y) {
+    if !verify2(g1, g2, prev_y, cur_y, proof2_y) {
         return false;
     }
     //check xy consistency
-    let g2 = icicle_g2_generator();
     let len_y = cur_y.len_g1();
 
     (0..cur_x.len()).into_par_iter().all(|i| {
@@ -300,21 +523,30 @@ pub fn verify3(prev_x: &Vec<PairSerde>, prev_y: &SerialSerde, cur_xy: &Vec<G1ser
         (0..len_y).into_par_iter().all(|k| {
             let ykG1 = cur_y.get_g1(k);
             let xyG1 = cur_xy[i * len_y + k];
-            consistent(&[ykG1, xyG1], &[], &[g2, xi.g2])
+            consistent(&[ykG1, xyG1], &[], &[*g2, xi.g2])
         })
     })
 }
 
 //type 3: verify3i
-pub fn verify3i(prev_x: &Vec<PairSerde>, prev_y: &Vec<PairSerde>, cur_xy: &Vec<G1serde>, cur_x: &Vec<PairSerde>, cur_y: &Vec<PairSerde>, proof2_x: &Proof2, proof2_y: &Proof2) -> bool {
-    if !verify2i(prev_x, cur_x, proof2_x) {
+pub fn verify3i(
+    g1: &G1serde,
+    g2: &G2serde,
+    prev_x: &Vec<PairSerde>,
+    prev_y: &Vec<PairSerde>,
+    cur_xy: &Vec<G1serde>,
+    cur_x: &Vec<PairSerde>,
+    cur_y: &Vec<PairSerde>,
+    proof2_x: &Proof2,
+    proof2_y: &Proof2,
+) -> bool {
+    if !verify2i(g1, g2, prev_x, cur_x, proof2_x) {
         return false;
     }
-    if !verify2i(prev_y, cur_y, proof2_y) {
+    if !verify2i(g1, g2, prev_y, cur_y, proof2_y) {
         return false;
     }
     //check xy consistency
-    let g2 = icicle_g2_generator();
     let len_y = cur_y.len();
 
     // Nested parallel loops for consistency checks
@@ -323,13 +555,26 @@ pub fn verify3i(prev_x: &Vec<PairSerde>, prev_y: &Vec<PairSerde>, cur_xy: &Vec<G
         (0..len_y).into_par_iter().all(|k| {
             let ykG1 = cur_y[k].g1;
             let xyG1 = cur_xy[i * len_y + k];
-            consistent(&[ykG1, xyG1], &[], &[g2, xi.g2])
+            consistent(&[ykG1, xyG1], &[], &[*g2, xi.g2])
         })
     })
 }
+#[test]
+pub fn test_bilinear_map() {
+    //initialize
+    let g1 = icicle_g1_generator();
+    let g2 = icicle_g2_generator();
+
+    let minusG2 = G2serde::zero() - g2;
+
+    let pairing1 = pairing(&[g1, g1], &[g2, minusG2]);
+    assert_eq!(pairing1.0.is_one(), true)
+}
+
 
 #[test]
 pub fn test_compute3() {
+    let rng = &mut RandomGenerator::new(RandomType::RANDOMONLY, [0u8; 32]);
     //initialize
     let g1 = icicle_g1_generator();
     let g2 = icicle_g2_generator();
@@ -338,35 +583,73 @@ pub fn test_compute3() {
     let s_max2: usize = 5;
 
     let v = [34u8; 32];
-    let mut prev_x = vec![PairSerde { g1: g1.clone(), g2: g2.clone() }; s_max1];
-    let mut prev_y = SerialSerde::new(s_max2);
+    let mut prev_x = vec![
+        PairSerde {
+            g1: g1.clone(),
+            g2: g2.clone()
+        };
+        s_max1
+    ];
+    let mut prev_y = SerialSerde::new(g1, g2, s_max2);
     let mut prev_xy = vec![g1; s_max1 * s_max2];
 
     // first participant
-    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, _, _, _) = compute3(&prev_xy, &prev_x, &prev_y, &v);
-    assert_eq!(verify3(&prev_x,&prev_y,&cur_xy,&cur_x,&cur_y,&proof2_x, &proof2_y), true,);
+    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, _, _, _) =
+        compute3(rng, &g1, &prev_xy, &prev_x, &prev_y, &v);
+    assert_eq!(
+        verify3(&g1, &g2, &prev_x, &prev_y, &cur_xy, &cur_x, &cur_y, &proof2_x, &proof2_y),
+        true,
+    );
     prev_xy = cur_xy;
     prev_x = cur_x;
     prev_y = cur_y;
 
-    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, _, _, _) = compute3(&prev_xy, &prev_x, &prev_y, &v);
-    assert_eq!(verify3(&prev_x,&prev_y,&cur_xy,&cur_x,&cur_y,&proof2_x, &proof2_y), true,);
+    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, _, _, _) =
+        compute3(rng, &g1, &prev_xy, &prev_x, &prev_y, &v);
+    assert_eq!(
+        verify3(&g1, &g2, &prev_x, &prev_y, &cur_xy, &cur_x, &cur_y, &proof2_x, &proof2_y),
+        true,
+    );
     prev_xy = cur_xy;
     prev_x = cur_x;
     prev_y = cur_y;
 
-    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, _, _, _) = compute3(&prev_xy, &prev_x, &prev_y, &v);
-    assert_eq!(verify3(&prev_x,&prev_y,&cur_xy,&cur_x,&cur_y,&proof2_x, &proof2_y), true,);
+    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, _, _, _) =
+        compute3(rng, &g1, &prev_xy, &prev_x, &prev_y, &v);
+    assert_eq!(
+        verify3(&g1, &g2, &prev_x, &prev_y, &cur_xy, &cur_x, &cur_y, &proof2_x, &proof2_y),
+        true,
+    );
     prev_xy = cur_xy;
     prev_x = cur_x;
     prev_y = cur_y;
 }
 
-
-pub fn compute5(prev_alphaxy: &Vec<G1serde>, prev_xy: &Vec<G1serde>, prev_alphax: &Vec<G1serde>, prev_alphay: &Vec<G1serde>, prev_alpha: &Vec<PairSerde>, prev_x: &Vec<PairSerde>, prev_y: &SerialSerde, v: &[u8; 32])
-                -> (Vec<G1serde>, Vec<G1serde>, Vec<G1serde>, Vec<G1serde>, Vec<PairSerde>, Vec<PairSerde>, SerialSerde, Proof5) {
-    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, x_powers, y_powers, xy_powers) = compute3(&prev_xy, &prev_x, &prev_y, &v);
-    let (cur_alpha, proof2_alpha, alpha_powers) = compute2_tempi(prev_alpha, v);
+pub fn compute5(
+    rng: &mut RandomGenerator,
+    g1: &G1serde,
+    g2: &G2serde,
+    prev_alphaxy: &Vec<G1serde>,
+    prev_xy: &Vec<G1serde>,
+    prev_alphax: &Vec<G1serde>,
+    prev_alphay: &Vec<G1serde>,
+    prev_alpha: &Vec<PairSerde>,
+    prev_x: &Vec<PairSerde>,
+    prev_y: &SerialSerde,
+    v: &[u8; 32],
+) -> (
+    Vec<G1serde>,
+    Vec<G1serde>,
+    Vec<G1serde>,
+    Vec<G1serde>,
+    Vec<PairSerde>,
+    Vec<PairSerde>,
+    SerialSerde,
+    Phase1Proof,
+) {
+    let (cur_xy, cur_x, cur_y, proof2_x, proof2_y, x_powers, y_powers, xy_powers) =
+        compute3(rng, &g1, &prev_xy, &prev_x, &prev_y, &v);
+    let (cur_alpha, proof2_alpha, alpha_powers) = compute2_tempi(rng, g1, prev_alpha, v);
 
     let mut alphaxy_powers = vector_product(&alpha_powers, &xy_powers);
     let cur_alphaxy: Vec<G1serde> = prev_alphaxy
@@ -389,41 +672,115 @@ pub fn compute5(prev_alphaxy: &Vec<G1serde>, prev_xy: &Vec<G1serde>, prev_alphax
         .map(|(y, scalar)| y.mul(*scalar))
         .collect();
 
-    (cur_alphaxy, cur_xy, cur_alphax, cur_alphay, cur_alpha, cur_x, cur_y, Proof5 { proof2_alpha, proof2_x, proof2_y })
+    (
+        cur_alphaxy,
+        cur_xy,
+        cur_alphax,
+        cur_alphay,
+        cur_alpha,
+        cur_x,
+        cur_y,
+        Phase1Proof {
+            contributor_index: 0,
+            proof2_alpha,
+            proof2_x,
+            proof2_y,
+        },
+    )
 }
 
 //type 5: verify5
-pub fn verify5(prev_alpha: &Vec<PairSerde>, prev_x: &Vec<PairSerde>, prev_y: &SerialSerde,
-               cur_alphaxy: &Vec<G1serde>, cur_xy: &Vec<G1serde>, cur_alphax: &Vec<G1serde>, cur_alphay: &Vec<G1serde>, cur_alpha: &Vec<PairSerde>, cur_x: &Vec<PairSerde>, cur_y: &SerialSerde,
-               proof5: &Proof5) -> bool {
-    if !verify2i(prev_alpha, cur_alpha, &proof5.proof2_alpha) {
+pub fn verify5(
+    g1: &G1serde,
+    g2: &G2serde,
+    prev_alpha: &Vec<PairSerde>,
+    prev_x: &Vec<PairSerde>,
+    prev_y: &SerialSerde,
+    cur_alphaxy: &Vec<G1serde>,
+    cur_xy: &Vec<G1serde>,
+    cur_alphax: &Vec<G1serde>,
+    cur_alphay: &Vec<G1serde>,
+    cur_alpha: &Vec<PairSerde>,
+    cur_x: &Vec<PairSerde>,
+    cur_y: &SerialSerde,
+    proof5: &Phase1Proof,
+) -> bool {
+    if !verify2i(g1, g2, prev_alpha, cur_alpha, &proof5.proof2_alpha) {
         return false;
     }
-    if !verify3(prev_x, prev_y, cur_xy, cur_x, cur_y, &proof5.proof2_x, &proof5.proof2_y) {
+    if !verify3(
+        g1,
+        g2,
+        prev_x,
+        prev_y,
+        cur_xy,
+        cur_x,
+        cur_y,
+        &proof5.proof2_x,
+        &proof5.proof2_y,
+    ) {
         return false;
     }
-    if !verify3(prev_alpha, prev_y, cur_alphay, cur_alpha, cur_y, &proof5.proof2_alpha, &proof5.proof2_y) {
+    if !verify3(
+        g1,
+        g2,
+        prev_alpha,
+        prev_y,
+        cur_alphay,
+        cur_alpha,
+        cur_y,
+        &proof5.proof2_alpha,
+        &proof5.proof2_y,
+    ) {
         return false;
     }
-    if !verify3i(prev_alpha, prev_x, cur_alphax, cur_alpha, cur_x, &proof5.proof2_alpha, &proof5.proof2_x) {
+    if !verify3i(
+        g1,
+        g2,
+        prev_alpha,
+        prev_x,
+        cur_alphax,
+        cur_alpha,
+        cur_x,
+        &proof5.proof2_alpha,
+        &proof5.proof2_x,
+    ) {
         return false;
     }
     let start = Instant::now();
 
     let len_x = prev_x.len();
     let len_y = prev_y.len_g1();
-    let g2 = icicle_g2_generator();
 
-    let result = cur_alpha.iter().enumerate().all(|(h, alpha)| {
+    let result = cur_alpha.par_iter().enumerate().all(|(h, alpha)| {
         (0..cur_x.len()).into_par_iter().all(|i| {
-            (0..cur_y.len_g1()).into_par_iter().all(|k| {
+            let y_len = cur_y.len_g1();
+            let mut g1_0 = Vec::with_capacity(y_len);
+            let mut g2_1 = Vec::with_capacity(y_len);
+            let mut g1_1 = Vec::with_capacity(y_len);
+            let mut g2_0 = Vec::with_capacity(y_len);
+
+            for k in 0..y_len {
                 let xy = cur_xy[i * len_y + k];
                 let cur_alphaxy = cur_alphaxy[get_alphaxy_index(h, i, k, len_x, len_y)];
-                consistent(&[xy, cur_alphaxy], &[], &[g2, alpha.g2])
-            })
+                g1_0.push(xy);
+                g2_1.push(cur_alphaxy);
+                g1_1.push(*g2);
+                g2_0.push(alpha.g2);
+            }
+
+            let results: Vec<PairingOutput<Bls12_381>> = [(&g1_0, &g2_0), (&g2_1, &g1_1)]
+                .par_iter()
+                .map(|(g1, g2)| pairing(*g1, *g2))
+                .collect();
+            results[0].eq(&results[1])
         })
     });
-    println!("Time elapsed for verify for the last consistency: {:?}", start.elapsed().as_secs());
+
+    println!(
+        "Time elapsed for verify for the last consistency: {:?}",
+        start.elapsed().as_secs()
+    );
     result
 }
 //index = (h* len_x * len_y) + (i * len_y) + k;
@@ -431,21 +788,33 @@ fn get_alphaxy_index(h: usize, i: usize, k: usize, len_x: usize, len_y: usize) -
     h * len_x * len_y + i * len_y + k
 }
 
-
 #[test]
 pub fn test_compute5() {
+    let rng = &mut RandomGenerator::new(RandomType::RANDOMONLY, [0u8; 32]);
     //initialize
     let g1 = icicle_g1_generator();
     let g2 = icicle_g2_generator();
 
-    let s_max0: usize = 4;  //alpha
+    let s_max0: usize = 4; //alpha
     let s_max1: usize = 16; //x^i
     let s_max2: usize = 32; //y^k
 
     let v = [34u8; 32];
-    let mut prev_alpha = vec![PairSerde { g1: g1.clone(), g2: g2.clone() }; s_max0];
-    let mut prev_x = vec![PairSerde { g1: g1.clone(), g2: g2.clone() }; s_max1];
-    let mut prev_y = SerialSerde::new(s_max2);
+    let mut prev_alpha = vec![
+        PairSerde {
+            g1: g1.clone(),
+            g2: g2.clone()
+        };
+        s_max0
+    ];
+    let mut prev_x = vec![
+        PairSerde {
+            g1: g1.clone(),
+            g2: g2.clone()
+        };
+        s_max1
+    ];
+    let mut prev_y = SerialSerde::new(g1, g2, s_max2);
     let mut prev_xy = vec![g1; s_max1 * s_max2];
     let mut prev_alphax = vec![g1; s_max0 * s_max1];
     let mut prev_alphay = vec![g1; s_max0 * s_max2];
@@ -453,12 +822,37 @@ pub fn test_compute5() {
     let mut prev_alphaxy = vec![g1; s_max0 * s_max1 * s_max2];
 
     // first participant
-    let (cur_alphaxy, cur_xy, cur_alphax, cur_alphay, cur_alpha, cur_x, cur_y, proof5) =
-        compute5(&prev_alphaxy, &prev_xy, &prev_alphax, &prev_alphay, &prev_alpha, &prev_x, &prev_y, &v);
+    let (cur_alphaxy, cur_xy, cur_alphax, cur_alphay, cur_alpha, cur_x, cur_y, proof5) = compute5(rng,
+                                                                                                  &g1,
+                                                                                                  &g2,
+                                                                                                  &prev_alphaxy,
+                                                                                                  &prev_xy,
+                                                                                                  &prev_alphax,
+                                                                                                  &prev_alphay,
+                                                                                                  &prev_alpha,
+                                                                                                  &prev_x,
+                                                                                                  &prev_y,
+                                                                                                  &v,
+    );
 
-
-    assert_eq!(verify5(&prev_alpha,&prev_x,&prev_y,
-               &cur_alphaxy,&cur_xy,&cur_alphax,&cur_alphay,&cur_alpha,&cur_x,&cur_y,&proof5), true,);
+    assert_eq!(
+        verify5(
+            &g1,
+            &g2,
+            &prev_alpha,
+            &prev_x,
+            &prev_y,
+            &cur_alphaxy,
+            &cur_xy,
+            &cur_alphax,
+            &cur_alphay,
+            &cur_alpha,
+            &cur_x,
+            &cur_y,
+            &proof5
+        ),
+        true,
+    );
 
     prev_alpha = cur_alpha;
     prev_x = cur_x;
@@ -469,57 +863,78 @@ pub fn test_compute5() {
     prev_alphay = cur_alphay;
 
     // second participant
-    let (cur_alphaxy, cur_xy, cur_alphax, cur_alphay, cur_alpha, cur_x, cur_y, proof5) =
-        compute5(&prev_alphaxy, &prev_xy, &prev_alphax, &prev_alphay, &prev_alpha, &prev_x, &prev_y, &v);
+    let (cur_alphaxy, cur_xy, cur_alphax, cur_alphay, cur_alpha, cur_x, cur_y, proof5) = compute5(rng,
+                                                                                                  &g1,
+                                                                                                  &g2,
+                                                                                                  &prev_alphaxy,
+                                                                                                  &prev_xy,
+                                                                                                  &prev_alphax,
+                                                                                                  &prev_alphay,
+                                                                                                  &prev_alpha,
+                                                                                                  &prev_x,
+                                                                                                  &prev_y,
+                                                                                                  &v,
+    );
 
-
-    assert_eq!(verify5(&prev_alpha,&prev_x,&prev_y,
-               &cur_alphaxy,&cur_xy,&cur_alphax,&cur_alphay,&cur_alpha,&cur_x,&cur_y,&proof5), true,);
+    assert_eq!(
+        verify5(
+            &g1,
+            &g2,
+            &prev_alpha,
+            &prev_x,
+            &prev_y,
+            &cur_alphaxy,
+            &cur_xy,
+            &cur_alphax,
+            &cur_alphay,
+            &cur_alpha,
+            &cur_x,
+            &cur_y,
+            &proof5
+        ),
+        true,
+    );
 }
 
-
-//ab_g1 = [A1 B1], ab_g2 = [A2, B2], C = [C1, C2]
-pub fn consistent(ab_g1: &[G1serde], ab_g2: &[G2serde], C: &[G2serde]) -> bool {
-    let A1 = ab_g1[0];
-    let B1 = ab_g1[1];
-    let C1 = C[0];
-    let C2 = C[1];
+//ab_g1 = [A1 B1], ab_g2 = [A2, B2], c = [C1, C2]
+pub fn consistent(ab_g1: &[G1serde], ab_g2: &[G2serde], c: &[G2serde]) -> bool {
+    let a1 = ab_g1[0];
+    let b1 = ab_g1[1];
+    let c1 = c[0];
+    let c2 = c[1];
 
     if ab_g2.is_empty() {
-        same_ratio(A1, B1, C1, C2)
+        same_ratio(a1, b1, c1, c2)
     } else {
-        let A2 = ab_g2[0];
-        let B2 = ab_g2[1];
+        let a2 = ab_g2[0];
+        let b2 = ab_g2[1];
 
-        let (res_ab, res_c) = join(
-            || same_ratio(A1, B1, A2, B2),
-            || same_ratio(A1, B1, C1, C2),
-        );
+        let (res_ab, res_c) = join(|| same_ratio(a1, b1, a2, b2), || same_ratio(a1, b1, c1, c2));
 
         res_ab && res_c
     }
 }
 
-pub fn check_pok(A: G1serde, G1: G1serde, B: G2serde, v: &[u8]) -> bool {
-    let y = ro(&G1serde(A.0), v);
-    same_ratio(G1, A, y, B)
+pub fn check_pok(a: &G1serde, g1: &G1serde, b: G2serde, v: &[u8]) -> bool {
+    let y = ro(&G1serde(a.0), v);
+    same_ratio(*g1, *a, y, b)
 }
 
-pub fn pok(alpha: ScalarField, v: &[u8]) -> G2serde {
-    let g1 = icicle_g1_generator();
+pub fn pok(g1: &G1serde, alpha: ScalarField, v: &[u8]) -> G2serde {
     let alphaG1 = g1.mul(alpha);
     let y = ro(&alphaG1, v);
     y.mul(alpha)
 }
 
 pub fn same_ratio(g1_0: G1serde, g1_1: G1serde, g2_0: G2serde, g2_1: G2serde) -> bool {
-    let results : Vec<PairingOutput<Bls12_381>> = [(&[g1_0], &[g2_1]), (&[g1_1], &[g2_0])]
+    let results: Vec<PairingOutput<Bls12_381>> = [(&[g1_0], &[g2_1]), (&[g1_1], &[g2_0])]
         .par_iter()
         .map(|(g1, g2)| pairing(*g1, *g2))
         .collect();
 
     results[0].eq(&results[1])
 }
+
 
 pub fn ro(a: &G1serde, v: &[u8]) -> G2serde {
     let mut h = Blake2b::default();
@@ -549,12 +964,13 @@ fn compute_powers(x_r: ScalarField, len_x: usize) -> Vec<ScalarField> {
 
 #[test]
 pub fn test_consistent_case1() {
+    let rng = &mut RandomGenerator::new(RandomType::RANDOMONLY, [0u8; 32]);
     // a1*c2 == b1*c1
     let g1_gen = icicle_g1_generator();
     let g2_gen = icicle_g2_generator();
-    let a1 = next_random();
-    let b1 = next_random();
-    let c1 = next_random();
+    let a1 = rng.next_random();
+    let b1 = rng.next_random();
+    let c1 = rng.next_random();
     let c2 = b1 * c1 * a1.inv();
 
     let a1G = g1_gen.mul(a1);
@@ -568,10 +984,11 @@ pub fn test_consistent_case1() {
 
 #[test]
 pub fn test_consistent_case3() {
+    let rng = &mut RandomGenerator::new(RandomType::RANDOMONLY, [0u8; 32]);
     let g1_gen = icicle_g1_generator();
     let g2_gen = icicle_g2_generator();
 
-    let a = next_random();
+    let a = rng.next_random();
 
     let two = ScalarField::one() + ScalarField::one();
     let three = two + ScalarField::one();
@@ -593,9 +1010,10 @@ pub fn test_consistent_case3() {
 
 #[test]
 pub fn test_compute1() {
+    let rng = &mut RandomGenerator::new(RandomType::RANDOMONLY, [0u8; 32]);
     //initialize
-    let g1 = icicle_g1_generator();
-    let g2 = icicle_g2_generator();
+    let g1 = &icicle_g1_generator();
+    let g2 = &icicle_g2_generator();
 
     let alpha_0G1 = g1.clone();
     let alpha_0G2 = g2.clone();
@@ -606,45 +1024,82 @@ pub fn test_compute1() {
         g2: alpha_0G2,
     };
     // first participant
-    let (cur_pair, alphaG1, pok_alpha) = compute1(prev_pair.clone(), &v);
+    let (cur_pair, alphaG1, pok_alpha) = compute1(rng, g1, prev_pair.clone(), &v);
 
-    assert_eq!(verify1(prev_pair, cur_pair, alphaG1, pok_alpha, &v), true,);
+    assert_eq!(
+        verify1(g1, prev_pair, cur_pair, &alphaG1, pok_alpha, &v),
+        true,
+    );
     prev_pair = cur_pair;
-    let (cur_pair, alphaG1, pok_alpha) = compute1(prev_pair.clone(), &v);
+    let (cur_pair, alphaG1, pok_alpha) = compute1(rng, g1, prev_pair.clone(), &v);
 
-    assert_eq!(verify1(prev_pair, cur_pair, alphaG1, pok_alpha, &v), true,);
+    assert_eq!(
+        verify1(g1, prev_pair, cur_pair, &alphaG1, pok_alpha, &v),
+        true,
+    );
     prev_pair = cur_pair;
-    let (cur_pair, alphaG1, pok_alpha) = compute1(prev_pair.clone(), &v);
+    let (cur_pair, alphaG1, pok_alpha) = compute1(rng, g1, prev_pair.clone(), &v);
 
     //beacon verified
-    assert_eq!(verify1(prev_pair, cur_pair, alphaG1, pok_alpha, &v), true,);
+    assert_eq!(
+        verify1(g1, prev_pair, cur_pair, &alphaG1, pok_alpha, &v),
+        true,
+    );
+}
+
+#[test]
+pub fn test_invs() {
+    let g2 = &icicle_g2_generator();
+    let sc = ScalarField::from_u32(3);
+    let scInv = sc.inv();
+
+    println!("{}", sc);
+    println!("{}", scInv);
+
+    let x = g2.mul(sc);
+    //multiplicative inverse
+    let xInvG2 = g2.mul(scInv);
+    //addition inverse
+    let minusX = G2serde::zero().sub(x);
+
+    assert_eq!(xInvG2.mul(sc), *g2);
+    assert_eq!(x.add(minusX), G2serde::zero());
 }
 
 #[test]
 pub fn test_compute2() {
+    let rng = &mut RandomGenerator::new(RandomType::RANDOMONLY, [0u8; 32]);
     let s_max: usize = 16;
+
+    let g1 = &icicle_g1_generator();
+    let g2 = &icicle_g2_generator();
+
 
     let x = vec![ScalarField::one(); s_max];
 
     let v = [34u8; 32];
-    let mut prev_x_serial = SerialSerde::new(s_max);
+    let mut prev_x_serial = SerialSerde::new(*g1, *g2, s_max);
 
     // first participant
-    let (cur_pair, proof2) = compute2(&prev_x_serial, &v);
-    assert_eq!(verify2(&prev_x_serial, &cur_pair, &proof2), true,);
+    let (cur_pair, proof2) = compute2(rng, &g1, &prev_x_serial, &v);
+    assert_eq!(verify2(g1, g2, &prev_x_serial, &cur_pair, &proof2), true,);
     prev_x_serial = cur_pair;
 
     //second participant
-    let (cur_pair, proof2) = compute2(&prev_x_serial, &v);
-    assert_eq!(verify2(&prev_x_serial, &cur_pair, &proof2), true,);
+    let (cur_pair, proof2) = compute2(rng, &g1, &prev_x_serial, &v);
+    assert_eq!(verify2(g1, g2, &prev_x_serial, &cur_pair, &proof2), true,);
     prev_x_serial = cur_pair;
 
     //third participant
-    let (cur_x_serial, proof2) = compute2(&prev_x_serial, &v);
-    assert_eq!(verify2(&prev_x_serial, &cur_x_serial, &proof2), true,);
+    let (cur_x_serial, proof2) = compute2(rng, &g1, &prev_x_serial, &v);
+    assert_eq!(
+        verify2(g1, g2, &prev_x_serial, &cur_x_serial, &proof2),
+        true,
+    );
 }
 #[test]
 pub fn test_consistent_case4() {
+    let rng = &mut RandomGenerator::new(RandomType::RANDOMONLY, [0u8; 32]);
     let g1_gen = icicle_g1_generator();
     let g2_gen = icicle_g2_generator();
 
@@ -653,8 +1108,8 @@ pub fn test_consistent_case4() {
     //same_ratio(A1, B1, A2, B2) && same_ratio(A1, B1, G2serde(g2), C2)
     // a1*b2 == b1*a2
     // a1 * c2 == b1 * 1
-    let a1 = next_random();
-    let a2 = next_random();
+    let a1 = rng.next_random();
+    let a2 = rng.next_random();
 
     let b1 = a1 * two;
     let b2 = a2 * two;
@@ -697,9 +1152,9 @@ pub fn test_pok() {
     let tau = Tau::gen();
     let v = [72u8; 64];
     let A = g1.mul(tau.alpha);
-    let cpok = pok(tau.alpha, &v);
+    let cpok = pok(&g1, tau.alpha, &v);
 
-    let result = check_pok(A, g1, cpok, &v);
+    let result = check_pok(&A, &g1, cpok, &v);
     assert_eq!(result, true)
 }
 
