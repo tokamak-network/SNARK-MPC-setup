@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-mkdir.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-download.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-update.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-patch.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-configure.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-build.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-install.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\274b505c181ccead20d7f698f8b7632e\taskflow-populate-test.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\ab896497b6d2630cc5ff44b31ab4e32c\taskflow-populate-complete.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\f58ee3cedf49649171ac62eb1a8bdfc4\taskflow-populate.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-bls12-381-9024bd80e168cdef\out\build\_deps\taskflow-subbuild\CMakeFiles\taskflow-populate" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{E0EDC0CE-F71E-39FF-BDC3-E411771AC35F}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,10 @@
+^D:\MPC_CEREMONY\SNARK-MPC-SETUP\V2\PHASE2\TARGET\DEBUG\BUILD\ICICLE-BLS12-381-7797DA06E6A2C6FB\OUT\BUILD\_DEPS\TASKFLOW-SUBBUILD\CMAKEFILES\56F00D3E7C2E56AB12DA8B7A30EE580F\GENERATE.STAMP.RULE
+setlocal
+"C:\Program Files\CMake\bin\cmake.exe" -SD:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-subbuild -BD:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-subbuild --check-stamp-list CMakeFiles/generate.stamp.list --vs-solution-file D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-subbuild/taskflow-populate.sln
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal & call :cmErrorLevel %errorlevel% & goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd

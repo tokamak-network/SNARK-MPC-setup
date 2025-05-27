@@ -1,0 +1,1 @@
+/usr/bin/clang++ -fPIC  -ffunction-sections -fdata-sections -fPIC -m64 -g -shared -Wl,-soname,libicicle_device.so -o libicicle_device.so CMakeFiles/icicle_device.dir/src/device_api.cpp.o CMakeFiles/icicle_device.dir/src/runtime.cpp.o CMakeFiles/icicle_device.dir/src/config_extension.cpp.o CMakeFiles/icicle_device.dir/backend/cpu/src/cpu_device_api.cpp.o  -lpthread -ldl 

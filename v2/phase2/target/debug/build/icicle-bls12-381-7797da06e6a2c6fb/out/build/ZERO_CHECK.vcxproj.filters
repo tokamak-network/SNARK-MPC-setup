@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\v2\phase2\target\debug\build\icicle-bls12-381-7797da06e6a2c6fb\out\build\CMakeFiles\9bb9e66721b950ac766fdd7cda37037e\generate.stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{EAE64AFF-5900-32E0-92E7-45C328E49D84}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

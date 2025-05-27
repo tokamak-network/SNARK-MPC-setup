@@ -1,0 +1,182 @@
+cargo:rerun-if-env-changed=CXXFLAGS
+cargo:rerun-if-changed=/home/mabingol/.cargo/git/checkouts/icicle-e4fed18c5a8319f4/9d1ad1c/wrappers/rust/icicle-curves/icicle-bls12-381/../../../../icicle
+CMAKE_TOOLCHAIN_FILE_x86_64-unknown-linux-gnu = None
+CMAKE_TOOLCHAIN_FILE_x86_64_unknown_linux_gnu = None
+HOST_CMAKE_TOOLCHAIN_FILE = None
+CMAKE_TOOLCHAIN_FILE = None
+CMAKE_GENERATOR_x86_64-unknown-linux-gnu = None
+CMAKE_GENERATOR_x86_64_unknown_linux_gnu = None
+HOST_CMAKE_GENERATOR = None
+CMAKE_GENERATOR = None
+CMAKE_PREFIX_PATH_x86_64-unknown-linux-gnu = None
+CMAKE_PREFIX_PATH_x86_64_unknown_linux_gnu = None
+HOST_CMAKE_PREFIX_PATH = None
+CMAKE_PREFIX_PATH = None
+CMAKE_x86_64-unknown-linux-gnu = None
+CMAKE_x86_64_unknown_linux_gnu = None
+HOST_CMAKE = None
+CMAKE = None
+running: cd "/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out/build" && CMAKE_PREFIX_PATH="" LC_ALL="C" "cmake" "/home/mabingol/.cargo/git/checkouts/icicle-e4fed18c5a8319f4/9d1ad1c/wrappers/rust/icicle-curves/icicle-bls12-381/../../../../icicle" "-DCURVE=bls12_381" "-DFIELD=bls12_381" "-DHASH=OFF" "-DCMAKE_INSTALL_PREFIX=/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out/../../../deps/icicle/" "-DCMAKE_C_FLAGS= -ffunction-sections -fdata-sections -fPIC -m64" "-DCMAKE_C_COMPILER=/usr/bin/cc" "-DCMAKE_CXX_FLAGS= -ffunction-sections -fdata-sections -fPIC -m64" "-DCMAKE_CXX_COMPILER=/usr/bin/c++" "-DCMAKE_ASM_FLAGS= -ffunction-sections -fdata-sections -fPIC -m64" "-DCMAKE_ASM_COMPILER=/usr/bin/cc" "-DCMAKE_BUILD_TYPE=Debug"
+-- Configuring for native platform...
+-- ccache not found
+-- Build type: Debug
+-- The C compiler identification is Clang 14.0.0
+-- The CXX compiler identification is Clang 14.0.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/clang - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/clang++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- CMAKE_INSTALL_PREFIX=/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle
+-- building CURVE_NAME=bls12_381 ; CURVE_INDEX=2 ; SUPPORTED_FEATURES=NTT,MSM,G2,ECNTT,POSEIDON,POSEIDON2,SUMCHECK
+-- Fetching Taskflow v3.8.0 (CPU backend)
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out/build
+running: cd "/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out/build" && LC_ALL="C" MAKEFLAGS="-j --jobserver-fds=9,11 --jobserver-auth=9,11" "cmake" "--build" "/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out/build" "--target" "install" "--config" "Debug"
+[  2%] Building CXX object CMakeFiles/icicle_device.dir/src/device_api.cpp.o
+[  5%] Building CXX object CMakeFiles/icicle_device.dir/src/runtime.cpp.o
+[  8%] Building CXX object CMakeFiles/icicle_device.dir/src/config_extension.cpp.o
+[ 11%] Building CXX object CMakeFiles/icicle_device.dir/backend/cpu/src/cpu_device_api.cpp.o
+[ 14%] Linking CXX shared library libicicle_device.so
+[ 14%] Built target icicle_device
+[ 17%] Building CXX object CMakeFiles/icicle_field.dir/src/vec_ops.cpp.o
+[ 20%] Building CXX object CMakeFiles/icicle_field.dir/src/fields/ffi_extern.cpp.o
+[ 23%] Building CXX object CMakeFiles/icicle_field.dir/src/matrix_ops.cpp.o
+[ 26%] Building CXX object CMakeFiles/icicle_field.dir/src/ntt.cpp.o
+[ 29%] Building CXX object CMakeFiles/icicle_field.dir/src/polynomials/polynomials.cpp.o
+[ 32%] Building CXX object CMakeFiles/icicle_field.dir/src/polynomials/polynomials_c_api.cpp.o
+[ 35%] Building CXX object CMakeFiles/icicle_field.dir/src/polynomials/polynomials_abstract_factory.cpp.o
+[ 38%] Building CXX object CMakeFiles/icicle_field.dir/src/hash/poseidon.cpp.o
+[ 41%] Building CXX object CMakeFiles/icicle_field.dir/src/hash/poseidon_c_api.cpp.o
+[ 44%] Building CXX object CMakeFiles/icicle_field.dir/src/hash/poseidon2.cpp.o
+[ 47%] Building CXX object CMakeFiles/icicle_field.dir/src/hash/poseidon2_c_api.cpp.o
+[ 50%] Building CXX object CMakeFiles/icicle_field.dir/src/sumcheck/sumcheck.cpp.o
+[ 52%] Building CXX object CMakeFiles/icicle_field.dir/src/sumcheck/sumcheck_c_api.cpp.o
+[ 55%] Building CXX object CMakeFiles/icicle_field.dir/src/program/program_c_api.cpp.o
+[ 58%] Building CXX object CMakeFiles/icicle_field.dir/backend/cpu/src/field/cpu_vec_ops.cpp.o
+[ 61%] Building CXX object CMakeFiles/icicle_field.dir/backend/cpu/src/field/cpu_ntt.cpp.o
+[ 64%] Building CXX object CMakeFiles/icicle_field.dir/backend/cpu/src/polynomials/cpu_polynomial_backend.cpp.o
+[ 67%] Building CXX object CMakeFiles/icicle_field.dir/backend/cpu/src/hash/cpu_poseidon.cpp.o
+[ 70%] Building CXX object CMakeFiles/icicle_field.dir/backend/cpu/src/hash/cpu_poseidon2.cpp.o
+[ 73%] Building CXX object CMakeFiles/icicle_field.dir/backend/cpu/src/field/cpu_sumcheck.cpp.o
+[ 76%] Linking CXX shared library libicicle_field_bls12_381.so
+[ 76%] Built target icicle_field
+[ 79%] Building CXX object CMakeFiles/icicle_curve.dir/src/curves/ffi_extern.cpp.o
+[ 82%] Building CXX object CMakeFiles/icicle_curve.dir/src/msm.cpp.o
+[ 88%] Building CXX object CMakeFiles/icicle_curve.dir/src/ecntt.cpp.o
+[ 88%] Building CXX object CMakeFiles/icicle_curve.dir/src/curves/montgomery_conversion.cpp.o
+[ 91%] Building CXX object CMakeFiles/icicle_curve.dir/backend/cpu/src/curve/cpu_mont_conversion.cpp.o
+[ 94%] Building CXX object CMakeFiles/icicle_curve.dir/backend/cpu/src/curve/cpu_msm.cpp.o
+[ 97%] Building CXX object CMakeFiles/icicle_curve.dir/backend/cpu/src/curve/cpu_ecntt.cpp.o
+[100%] Linking CXX shared library libicicle_curve_bls12_381.so
+[100%] Built target icicle_curve
+Install the project...
+-- Install configuration: "Debug"
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/libicicle_device.so
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/libicicle_field_bls12_381.so
+-- Set runtime path of "/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/libicicle_field_bls12_381.so" to "/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib"
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/libicicle_curve_bls12_381.so
+-- Set runtime path of "/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/libicicle_curve_bls12_381.so" to "/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib"
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/data_pipeline.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/find.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/for_each.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/launch.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/partitioner.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/pipeline.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/reduce.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/scan.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/sort.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/algorithm/transform.hpp
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/async.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/async_task.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/atomic_notifier.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/declarations.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/environment.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/error.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/executor.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/flow_builder.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/freelist.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/graph.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/nonblocking_notifier.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/observer.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/semaphore.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/task.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/taskflow.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/topology.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/tsq.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/core/worker.hpp
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/find.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/for_each.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/matmul.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/merge.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/reduce.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/scan.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/sort.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/transform.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/algorithm/transpose.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cudaflow.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_capturer.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_device.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_error.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_execution_policy.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_graph.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_memory.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_meta.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_object.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_optimizer.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_stream.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/cuda/cuda_task.hpp
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/connection.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/dsl.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/meta_macro.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/task_analyzer.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/task_dsl.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/task_trait.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/tuple_utils.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/dsl/type_list.hpp
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/algorithm
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/algorithm/reduce.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/algorithm/sycl_for_each.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/algorithm/sycl_transform.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/syclflow.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/sycl_execution_policy.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/sycl_graph.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/sycl_meta.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/sycl/sycl_task.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/taskflow.hpp
+-- Up-to-date: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/iterator.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/latch.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/macros.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/math.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/mpmc.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/object_pool.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/os.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/serializer.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/singleton.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/small_vector.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/stream.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/traits.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/include/taskflow/utility/uuid.hpp
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/cmake/Taskflow/TaskflowTargets.cmake
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/cmake/Taskflow/TaskflowConfig.cmake
+-- Installing: /mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/deps/icicle/lib/cmake/Taskflow/TaskflowConfigVersion.cmake
+cargo:root=/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out
+cargo:rustc-link-search=/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out/../../../deps/icicle//lib
+cargo:rustc-link-lib=icicle_field_bls12_381
+cargo:rustc-link-lib=icicle_curve_bls12_381
+cargo:rustc-link-lib=icicle_hash
+cargo:rustc-link-arg=-Wl,-rpath,/mnt/d/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-4daf6f4b3f919e7a/out/../../../deps/icicle//lib

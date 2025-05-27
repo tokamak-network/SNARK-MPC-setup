@@ -1,0 +1,13 @@
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/CMakeFiles/icicle_device.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/CMakeFiles/icicle_field.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/CMakeFiles/icicle_curve.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/CMakeFiles/INSTALL.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/CMakeFiles/ALL_BUILD.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/CMakeFiles/ZERO_CHECK.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/backend/cpu/CMakeFiles/INSTALL.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-build/CMakeFiles/Experimental.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-build/CMakeFiles/Nightly.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-build/CMakeFiles/Continuous.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-build/CMakeFiles/NightlyMemoryCheck.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-build/CMakeFiles/INSTALL.dir
+D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-build/CMakeFiles/ALL_BUILD.dir

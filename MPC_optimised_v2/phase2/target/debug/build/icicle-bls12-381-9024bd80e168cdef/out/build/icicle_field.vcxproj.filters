@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\fields\ffi_extern.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\vec_ops.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\matrix_ops.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\ntt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\polynomials\polynomials.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\polynomials\polynomials_c_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\polynomials\polynomials_abstract_factory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\poseidon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\poseidon_c_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\poseidon2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\hash\poseidon2_c_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\sumcheck\sumcheck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\sumcheck\sumcheck_c_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\src\program\program_c_api.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\field\cpu_vec_ops.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\field\cpu_ntt.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\polynomials\cpu_polynomial_backend.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\cpu_poseidon.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\hash\cpu_poseidon2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\backend\cpu\src\field\cpu_sumcheck.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\Albtrs\.cargo\git\checkouts\icicle-9b25725c9b5d6dd2\9d1ad1c\icicle\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{09DF14A5-7A66-3E37-B2C3-E7A9FDBD3650}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

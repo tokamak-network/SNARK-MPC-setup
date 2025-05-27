@@ -1,0 +1,28 @@
+[package]
+name = "phase1"
+version = "0.1.1"
+edition = "2021"
+
+
+[dependencies]
+
+ark-std = "0.4"
+ark-ff = "0.4"
+ark-ec = "0.4"
+ark-poly = "0.4"
+ark-mnt4-753 = "0.4"
+ark-mnt6-753 = "0.4"
+ark-serialize = { version = "0.4", features = ["derive"] }
+rand = "0.8"
+rayon = "1.7"
+num_cpus = "1.16"
+num-traits = "0.2"
+
+blake2 = "0.10"
+generic-array = "0.14"
+typenum = "1.16"
+
+rand_chacha = "0.3.1"
+
+hex-literal = "0.4"
+rust-crypto = "0.2"

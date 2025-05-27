@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\v2\phase2\target\debug\build\icicle-runtime-d04de3b0625c3750\out\build\CMakeFiles\5f176a6ead33c5b97fe34176944104fe\Nightly.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\v2\phase2\target\debug\build\icicle-runtime-d04de3b0625c3750\out\build\_deps\taskflow-src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\MPC_ceremony\SNARK-MPC-setup\v2\phase2\target\debug\build\icicle-runtime-d04de3b0625c3750\out\build\_deps\taskflow-build\CMakeFiles\Nightly" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{FB334BC4-B045-3B0F-8E00-4A99AFEB1A71}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

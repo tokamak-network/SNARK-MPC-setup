@@ -1,0 +1,11 @@
+c:\Users\PC\Desktop\wsRust\Phase2\ceremony_phase2_7thWeek\target\debug\deps\libarrayvec-48124fc100bebe66.rmeta: C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\lib.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\maybe_uninit_stable.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\array.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\array_string.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\char.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\range.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\errors.rs
+
+c:\Users\PC\Desktop\wsRust\Phase2\ceremony_phase2_7thWeek\target\debug\deps\arrayvec-48124fc100bebe66.d: C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\lib.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\maybe_uninit_stable.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\array.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\array_string.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\char.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\range.rs C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\errors.rs
+
+C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\lib.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\maybe_uninit_stable.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\array.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\array_string.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\char.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\range.rs:
+C:\Users\PC\.cargo\registry\src\index.crates.io-6f17d22bba15001f\arrayvec-0.4.12\src\errors.rs:

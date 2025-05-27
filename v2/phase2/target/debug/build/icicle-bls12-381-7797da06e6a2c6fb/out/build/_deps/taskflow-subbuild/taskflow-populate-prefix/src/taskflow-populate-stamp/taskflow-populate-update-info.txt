@@ -1,0 +1,7 @@
+# This is a generated file and its contents are an internal implementation detail.
+# The patch step will be re-executed if anything in this file changes.
+# No other meaning or use of this file is supported.
+
+command (connected)=C:/Program Files/CMake/bin/cmake.exe;-Dcan_fetch=YES;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-subbuild/taskflow-populate-prefix/tmp/taskflow-populate-gitupdate.cmake
+command (disconnected)=C:/Program Files/CMake/bin/cmake.exe;-Dcan_fetch=NO;-DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE;-P;D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-subbuild/taskflow-populate-prefix/tmp/taskflow-populate-gitupdate.cmake
+work_dir=D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-bls12-381-7797da06e6a2c6fb/out/build/_deps/taskflow-src

@@ -1,0 +1,490 @@
+
+---
+events:
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineSystem.cmake:205 (message)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      The system is: Windows - 10.0.19045 - AMD64
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCCompiler.cmake:123 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Compiling the C compiler identification source file "CMakeCCompilerId.c" succeeded.
+      Compiler:  
+      Build flags: -nologo;-MD;-Brepro
+      Id flags:  
+      
+      The output was:
+      0
+      Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+      Copyright (C) Microsoft Corporation. All rights reserved.
+      
+      Build started 27/03/2025 10:25:40.
+      Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\3.31.6\\CompilerIdC\\CompilerIdC.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdC.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdC.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:classic /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc141.pdb" /Gd /TC /FC /errorReport:queue CMakeCCompilerId.c
+        CMakeCCompilerId.c
+      Link:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdC.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdC.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdC.lib" /MACHINE:X64 Debug\\CMakeCCompilerId.obj
+        CompilerIdC.vcxproj -> D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\3.31.6\\CompilerIdC\\.\\CompilerIdC.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_C_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_C_COMPILER=C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdC.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdC.tlog\\CompilerIdC.lastbuildstate".
+      Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\3.31.6\\CompilerIdC\\CompilerIdC.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:01.75
+      
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.exe"
+      
+      Compilation of the C compiler identification source "CMakeCCompilerId.c" produced "CompilerIdC.vcxproj"
+      
+      The C compiler identification is MSVC, found in:
+        D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:17 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:64 (__determine_compiler_id_test)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCXXCompiler.cmake:126 (CMAKE_DETERMINE_COMPILER_ID)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Compiling the CXX compiler identification source file "CMakeCXXCompilerId.cpp" succeeded.
+      Compiler:  
+      Build flags: -nologo;-MD;-Brepro
+      Id flags:  
+      
+      The output was:
+      0
+      Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+      Copyright (C) Microsoft Corporation. All rights reserved.
+      
+      Build started 27/03/2025 10:25:42.
+      Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\3.31.6\\CompilerIdCXX\\CompilerIdCXX.vcxproj" on node 1 (default targets).
+      PrepareForBuild:
+        Creating directory "Debug\\".
+        Creating directory "Debug\\CompilerIdCXX.tlog\\".
+      InitializeBuildStatus:
+        Creating "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+      ClCompile:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W0 /WX- /diagnostics:classic /Od /D _MBCS /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"Debug\\\\" /Fd"Debug\\vc141.pdb" /Gd /TP /FC /errorReport:queue CMakeCXXCompilerId.cpp
+        CMakeCXXCompilerId.cpp
+      Link:
+        C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:".\\CompilerIdCXX.exe" /INCREMENTAL:NO /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /PDB:".\\CompilerIdCXX.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:".\\CompilerIdCXX.lib" /MACHINE:X64 Debug\\CMakeCXXCompilerId.obj
+        CompilerIdCXX.vcxproj -> D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\3.31.6\\CompilerIdCXX\\.\\CompilerIdCXX.exe
+      PostBuildEvent:
+        for %%i in (cl.exe) do @echo CMAKE_CXX_COMPILER=%%~$PATH:i
+        :VCEnd
+        CMAKE_CXX_COMPILER=C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\Hostx64\\x64\\cl.exe
+      FinalizeBuildStatus:
+        Deleting file "Debug\\CompilerIdCXX.tlog\\unsuccessfulbuild".
+        Touching "Debug\\CompilerIdCXX.tlog\\CompilerIdCXX.lastbuildstate".
+      Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\3.31.6\\CompilerIdCXX\\CompilerIdCXX.vcxproj" (default targets).
+      
+      Build succeeded.
+          0 Warning(s)
+          0 Error(s)
+      
+      Time Elapsed 00:00:02.07
+      
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.exe"
+      
+      Compilation of the CXX compiler identification source "CMakeCXXCompilerId.cpp" produced "CompilerIdCXX.vcxproj"
+      
+      The CXX compiler identification is MSVC, found in:
+        D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/3.31.6/CompilerIdCXX/CompilerIdCXX.exe
+      
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    checks:
+      - "Detecting C compiler ABI info"
+    directories:
+      source: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-jdnnga"
+      binary: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-jdnnga"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -nologo -MD -Brepro"
+      CMAKE_C_FLAGS_DEBUG: " -nologo -MD -Brepro"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_C_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-jdnnga'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe" cmTC_fda7e.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=15.0 /v:n
+        Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 27/03/2025 10:25:45.
+        Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jdnnga\\cmTC_fda7e.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_fda7e.dir\\Debug\\".
+          Creating directory "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jdnnga\\Debug\\".
+          Creating directory "cmTC_fda7e.dir\\Debug\\cmTC_fda7e.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_fda7e.dir\\Debug\\cmTC_fda7e.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W1 /WX- /diagnostics:classic /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_fda7e.dir\\Debug\\\\" /Fd"cmTC_fda7e.dir\\Debug\\vc141.pdb" /Gd /TC /errorReport:queue  -Brepro -Brepro "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCCompilerABI.c"
+          CMakeCCompilerABI.c
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jdnnga\\Debug\\cmTC_fda7e.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-jdnnga/Debug/cmTC_fda7e.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-jdnnga/Debug/cmTC_fda7e.lib" /MACHINE:X64  /machine:x64 cmTC_fda7e.dir\\Debug\\CMakeCCompilerABI.obj
+          cmTC_fda7e.vcxproj -> D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jdnnga\\Debug\\cmTC_fda7e.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_fda7e.dir\\Debug\\cmTC_fda7e.tlog\\unsuccessfulbuild".
+          Touching "cmTC_fda7e.dir\\Debug\\cmTC_fda7e.tlog\\cmTC_fda7e.lastbuildstate".
+        Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-jdnnga\\cmTC_fda7e.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:01.74
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Parsed C implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'C': C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Running the C compiler's linker: "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.16.27035.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:74 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    checks:
+      - "Detecting CXX compiler ABI info"
+    directories:
+      source: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-0w0ppe"
+      binary: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-0w0ppe"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -nologo -MD -Brepro"
+      CMAKE_CXX_FLAGS_DEBUG: " -nologo -MD -Brepro"
+      CMAKE_CXX_SCAN_FOR_MODULES: "OFF"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_CXX_ABI_COMPILED"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-0w0ppe'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe" cmTC_c083b.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=15.0 /v:n
+        Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 27/03/2025 10:25:48.
+        Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0w0ppe\\cmTC_c083b.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_c083b.dir\\Debug\\".
+          Creating directory "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0w0ppe\\Debug\\".
+          Creating directory "cmTC_c083b.dir\\Debug\\cmTC_c083b.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_c083b.dir\\Debug\\cmTC_c083b.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W1 /WX- /diagnostics:classic /D _MBCS /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_c083b.dir\\Debug\\\\" /Fd"cmTC_c083b.dir\\Debug\\vc141.pdb" /Gd /TP /errorReport:queue  -Brepro -Brepro "C:\\Program Files\\CMake\\share\\cmake-3.31\\Modules\\CMakeCXXCompilerABI.cpp"
+          CMakeCXXCompilerABI.cpp
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0w0ppe\\Debug\\cmTC_c083b.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-0w0ppe/Debug/cmTC_c083b.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-0w0ppe/Debug/cmTC_c083b.lib" /MACHINE:X64  /machine:x64 cmTC_c083b.dir\\Debug\\CMakeCXXCompilerABI.obj
+          cmTC_c083b.vcxproj -> D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0w0ppe\\Debug\\cmTC_c083b.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_c083b.dir\\Debug\\cmTC_c083b.tlog\\unsuccessfulbuild".
+          Touching "cmTC_c083b.dir\\Debug\\cmTC_c083b.tlog\\cmTC_c083b.lastbuildstate".
+        Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-0w0ppe\\cmTC_c083b.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:01.76
+        
+      exitCode: 0
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:218 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Parsed CXX implicit link information:
+        link line regex: [^( *|.*[/\\])(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?|CMAKE_LINK_STARTFILE-NOTFOUND|([^/\\]+-)?ld|collect2)[^/\\]*( |$)]
+        linker tool regex: [^[ 	]*(->|")?[ 	]*(([^"]*[/\\])?(ld[0-9]*(\\.[a-z]+)?|link\\.exe|lld-link(\\.exe)?))("|,| |$)]
+        linker tool for 'CXX': C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64/link.exe
+        implicit libs: []
+        implicit objs: []
+        implicit dirs: []
+        implicit fwks: []
+      
+      
+  -
+    kind: "message-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CMakeDetermineLinkerId.cmake:40 (message)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeDetermineCompilerABI.cmake:255 (cmake_determine_linker_id)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CMakeTestCXXCompiler.cmake:26 (CMAKE_DETERMINE_COMPILER_ABI)"
+      - "CMakeLists.txt:5 (project)"
+    message: |
+      Running the CXX compiler's linker: "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/VC/Tools/MSVC/14.16.27023/bin/HostX64/x64/link.exe" "-v"
+      Microsoft (R) Incremental Linker Version 14.16.27035.0
+      Copyright (C) Microsoft Corporation.  All rights reserved.
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCXXSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/_deps/taskflow-src/cmake/Atomic/CheckAtomic.cmake:53 (check_cxx_source_compiles)"
+      - "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/_deps/taskflow-src/cmake/Atomic/CheckAtomic.cmake:111 (check_working_cxx_atomics)"
+      - "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/_deps/taskflow-src/CMakeLists.txt:50 (include)"
+    directories:
+      source: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-6rcwrk"
+      binary: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-6rcwrk"
+    cmakeVariables:
+      CMAKE_CXX_FLAGS: " -nologo -MD -Brepro"
+      CMAKE_CXX_FLAGS_DEBUG: " -nologo -MD -Brepro"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "HAVE_CXX_ATOMICS_WITHOUT_LIB"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-6rcwrk'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe" cmTC_7eac1.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=15.0 /v:n
+        Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 27/03/2025 10:26:24.
+        Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6rcwrk\\cmTC_7eac1.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_7eac1.dir\\Debug\\".
+          Creating directory "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6rcwrk\\Debug\\".
+          Creating directory "cmTC_7eac1.dir\\Debug\\cmTC_7eac1.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_7eac1.dir\\Debug\\cmTC_7eac1.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W1 /WX- /diagnostics:classic /D _MBCS /D HAVE_CXX_ATOMICS_WITHOUT_LIB /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /std:c++17 /Fo"cmTC_7eac1.dir\\Debug\\\\" /Fd"cmTC_7eac1.dir\\Debug\\vc141.pdb" /Gd /TP /errorReport:queue  -Brepro -Brepro "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6rcwrk\\src.cxx"
+          src.cxx
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6rcwrk\\Debug\\cmTC_7eac1.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-6rcwrk/Debug/cmTC_7eac1.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-6rcwrk/Debug/cmTC_7eac1.lib" /MACHINE:X64  /machine:x64 cmTC_7eac1.dir\\Debug\\src.obj
+          cmTC_7eac1.vcxproj -> D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6rcwrk\\Debug\\cmTC_7eac1.exe
+        FinalizeBuildStatus:
+          Deleting file "cmTC_7eac1.dir\\Debug\\cmTC_7eac1.tlog\\unsuccessfulbuild".
+          Touching "cmTC_7eac1.dir\\Debug\\cmTC_7eac1.tlog\\cmTC_7eac1.lastbuildstate".
+        Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-6rcwrk\\cmTC_7eac1.vcxproj" (default targets).
+        
+        Build succeeded.
+            0 Warning(s)
+            0 Error(s)
+        
+        Time Elapsed 00:00:03.15
+        
+      exitCode: 0
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/Internal/CheckSourceCompiles.cmake:108 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckCSourceCompiles.cmake:58 (cmake_check_source_compiles)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:97 (CHECK_C_SOURCE_COMPILES)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:163 (_threads_check_libc)"
+      - "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/_deps/taskflow-src/CMakeLists.txt:300 (find_package)"
+    directories:
+      source: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k8pkhc"
+      binary: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k8pkhc"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -nologo -MD -Brepro"
+      CMAKE_C_FLAGS_DEBUG: " -nologo -MD -Brepro"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_HAVE_LIBC_PTHREAD"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k8pkhc'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe" cmTC_aaa10.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=15.0 /v:n
+        Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 27/03/2025 10:26:29.
+        Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\cmTC_aaa10.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_aaa10.dir\\Debug\\".
+          Creating directory "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\Debug\\".
+          Creating directory "cmTC_aaa10.dir\\Debug\\cmTC_aaa10.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_aaa10.dir\\Debug\\cmTC_aaa10.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W1 /WX- /diagnostics:classic /D _MBCS /D CMAKE_HAVE_LIBC_PTHREAD /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_aaa10.dir\\Debug\\\\" /Fd"cmTC_aaa10.dir\\Debug\\vc141.pdb" /Gd /TC /errorReport:queue  -Brepro -Brepro "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\src.c"
+          src.c
+        D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\src.c(1): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\cmTC_aaa10.vcxproj]
+        Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\cmTC_aaa10.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\cmTC_aaa10.vcxproj" (default target) (1) ->
+        (ClCompile target) -> 
+          D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\src.c(1): fatal error C1083: Cannot open include file: 'pthread.h': No such file or directory [D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k8pkhc\\cmTC_aaa10.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.33
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:175 (_threads_check_lib)"
+      - "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/_deps/taskflow-src/CMakeLists.txt:300 (find_package)"
+    directories:
+      source: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-i2f1cl"
+      binary: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-i2f1cl"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -nologo -MD -Brepro"
+      CMAKE_C_FLAGS_DEBUG: " -nologo -MD -Brepro"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREADS_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-i2f1cl'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe" cmTC_a3abe.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=15.0 /v:n
+        Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 27/03/2025 10:26:31.
+        Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\cmTC_a3abe.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_a3abe.dir\\Debug\\".
+          Creating directory "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\Debug\\".
+          Creating directory "cmTC_a3abe.dir\\Debug\\cmTC_a3abe.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_a3abe.dir\\Debug\\cmTC_a3abe.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W1 /WX- /diagnostics:classic /D _MBCS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_a3abe.dir\\Debug\\\\" /Fd"cmTC_a3abe.dir\\Debug\\vc141.pdb" /Gd /TC /errorReport:queue  -Brepro -Brepro "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\Debug\\cmTC_a3abe.exe" /INCREMENTAL /NOLOGO pthreads.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-i2f1cl/Debug/cmTC_a3abe.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-i2f1cl/Debug/cmTC_a3abe.lib" /MACHINE:X64  /machine:x64 cmTC_a3abe.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\cmTC_a3abe.vcxproj]
+        Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\cmTC_a3abe.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\cmTC_a3abe.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthreads.lib' [D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-i2f1cl\\cmTC_a3abe.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.34
+        
+      exitCode: 1
+  -
+    kind: "try_compile-v1"
+    backtrace:
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/CheckLibraryExists.cmake:78 (try_compile)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:112 (CHECK_LIBRARY_EXISTS)"
+      - "C:/Program Files/CMake/share/cmake-3.31/Modules/FindThreads.cmake:176 (_threads_check_lib)"
+      - "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/_deps/taskflow-src/CMakeLists.txt:300 (find_package)"
+    directories:
+      source: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k0mil6"
+      binary: "D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k0mil6"
+    cmakeVariables:
+      CMAKE_C_FLAGS: " -nologo -MD -Brepro"
+      CMAKE_C_FLAGS_DEBUG: " -nologo -MD -Brepro"
+      CMAKE_EXE_LINKER_FLAGS: "/machine:x64"
+      CMAKE_POSITION_INDEPENDENT_CODE: "ON"
+    buildResult:
+      variable: "CMAKE_HAVE_PTHREAD_CREATE"
+      cached: true
+      stdout: |
+        Change Dir: 'D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k0mil6'
+        
+        Run Build Command(s): "C:/Program Files (x86)/Microsoft Visual Studio/2017/BuildTools/MSBuild/15.0/Bin/MSBuild.exe" cmTC_134c6.vcxproj /p:Configuration=Debug /p:Platform=x64 /p:VisualStudioVersion=15.0 /v:n
+        Microsoft (R) Build Engine version 15.9.21+g9802d43bc3 for .NET Framework
+        Copyright (C) Microsoft Corporation. All rights reserved.
+        
+        Build started 27/03/2025 10:26:33.
+        Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\cmTC_134c6.vcxproj" on node 1 (default targets).
+        PrepareForBuild:
+          Creating directory "cmTC_134c6.dir\\Debug\\".
+          Creating directory "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\Debug\\".
+          Creating directory "cmTC_134c6.dir\\Debug\\cmTC_134c6.tlog\\".
+        InitializeBuildStatus:
+          Creating "cmTC_134c6.dir\\Debug\\cmTC_134c6.tlog\\unsuccessfulbuild" because "AlwaysCreate" was specified.
+        ClCompile:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\CL.exe /c /nologo /W1 /WX- /diagnostics:classic /D _MBCS /D CHECK_FUNCTION_EXISTS=pthread_create /D "CMAKE_INTDIR=\\"Debug\\"" /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Zc:inline /Fo"cmTC_134c6.dir\\Debug\\\\" /Fd"cmTC_134c6.dir\\Debug\\vc141.pdb" /Gd /TC /errorReport:queue  -Brepro -Brepro "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\CheckFunctionExists.c"
+          CheckFunctionExists.c
+        Link:
+          C:\\Program Files (x86)\\Microsoft Visual Studio\\2017\\BuildTools\\VC\\Tools\\MSVC\\14.16.27023\\bin\\HostX64\\x64\\link.exe /ERRORREPORT:QUEUE /OUT:"D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\Debug\\cmTC_134c6.exe" /INCREMENTAL /NOLOGO pthread.lib kernel32.lib user32.lib gdi32.lib winspool.lib shell32.lib ole32.lib oleaut32.lib uuid.lib comdlg32.lib advapi32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG:FASTLINK /PDB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k0mil6/Debug/cmTC_134c6.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:/MPC_ceremony/SNARK-MPC-setup/v2/phase2/target/debug/build/icicle-hash-46cbba57ed534388/out/build/CMakeFiles/CMakeScratch/TryCompile-k0mil6/Debug/cmTC_134c6.lib" /MACHINE:X64  /machine:x64 cmTC_134c6.dir\\Debug\\CheckFunctionExists.obj
+        LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\cmTC_134c6.vcxproj]
+        Done Building Project "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\cmTC_134c6.vcxproj" (default targets) -- FAILED.
+        
+        Build FAILED.
+        
+        "D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\cmTC_134c6.vcxproj" (default target) (1) ->
+        (Link target) -> 
+          LINK : fatal error LNK1104: cannot open file 'pthread.lib' [D:\\MPC_ceremony\\SNARK-MPC-setup\\v2\\phase2\\target\\debug\\build\\icicle-hash-46cbba57ed534388\\out\\build\\CMakeFiles\\CMakeScratch\\TryCompile-k0mil6\\cmTC_134c6.vcxproj]
+        
+            0 Warning(s)
+            1 Error(s)
+        
+        Time Elapsed 00:00:01.34
+        
+      exitCode: 1
+...

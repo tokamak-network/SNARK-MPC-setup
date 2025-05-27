@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-hash-25dd54e6e2365715\out\build\CMakeFiles\56913cd4e6c10da0a3d2d469a9fb70f8\NightlyMemoryCheck.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-hash-25dd54e6e2365715\out\build\_deps\taskflow-src\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D:\MPC_ceremony\SNARK-MPC-setup\MPC_optimised_v2\phase2\target\debug\build\icicle-hash-25dd54e6e2365715\out\build\_deps\taskflow-build\CMakeFiles\NightlyMemoryCheck" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{0496DE0C-F6BC-356A-B683-43BB406A4270}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
